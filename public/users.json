@@ -1,0 +1,82 @@
+[
+    {
+        "name": "김태환",
+        "contact": "010.2525.2165",
+        "email": "wants@withfirst.com",
+        "company": "위드퍼스트",
+        "department": "개발팀",
+        "position": "대표"
+    },
+    {
+        "name": "이영희",
+        "contact": "010.1234.5678",
+        "email": "younghee@withfirst.com",
+        "company": "위드퍼스트",
+        "department": "기획팀",
+        "position": "팀장"
+    },
+    {
+        "name": "박지성",
+        "contact": "010.1111.2222",
+        "email": "park@withfirst.com",
+        "company": "위드퍼스트",
+        "department": "마케팅팀",
+        "position": "사원"
+    },
+    {
+        "name": "정우성",
+        "contact": "010.3333.4444",
+        "email": "jung@withfirst.com",
+        "company": "위드퍼스트",
+        "department": "인사팀",
+        "position": "매니저"
+    },
+    {
+        "name": "김하늘",
+        "contact": "010.5555.6666",
+        "email": "kim@withfirst.com",
+        "company": "위드퍼스트",
+        "department": "디자인팀",
+        "position": "디자이너"
+    },
+    {
+        "name": "이민호",
+        "contact": "010.7777.8888",
+        "email": "lee@withfirst.com",
+        "company": "위드퍼스트",
+        "department": "영업팀",
+        "position": "과장"
+    },
+    {
+        "name": "송혜교",
+        "contact": "010.9999.0000",
+        "email": "song@withfirst.com",
+        "company": "위드퍼스트",
+        "department": "기획팀",
+        "position": "대리"
+    },
+    {
+        "name": "김수현",
+        "contact": "010.1212.3434",
+        "email": "kimsh@withfirst.com",
+        "company": "위드퍼스트",
+        "department": "개발팀",
+        "position": "주임"
+    },
+    {
+        "name": "전지현",
+        "contact": "010.5656.7878",
+        "email": "jun@withfirst.com",
+        "company": "위드퍼스트",
+        "department": "기획팀",
+        "position": "사원"
+    },
+    {
+        "name": "강동원",
+        "contact": "010.3434.5656",
+        "email": "kang@withfirst.com",
+        "company": "위드퍼스트",
+        "department": "개발팀",
+        "position": "연구원"
+    }
+]
