@@ -253,32 +253,29 @@ table td {
     vertical-align: middle; /* 수직 정렬 중앙 */
 }
 
-.buttons {
-    width: 200px;
-}
-
 .buttons button {
     font-size: 12px;
     font-weight: 500;
     border-radius: 5px;
     padding: 5px 8px;
     border: none;
-    cursor: pointer; /* 커서 모양 변경 */
-    transition: opacity 0.3s ease; /* 투명도 전환 애니메이션 */
+    cursor: pointer;
+    transition: opacity 0.3s ease; 
 }
 
 .modifyBtn {
     background: #DFF0FF;
     color: #5073CC;
-    margin-right: 10px;
+    margin-right: 5px;
 }
 
 .deleteBtn {
     background: #FCE6E6;
     color: #EF4141;
+    margin-right: 5px;
 }
 
-.modifyBtn:hover, .deleteBtn:hover {
+.buttons button:hover {
     opacity: 0.7;
 }
 
@@ -312,7 +309,7 @@ table td {
     font-size: 14px;
     color: #606060;
     font-weight: 600;
-    transition: 0.3s ease; /* 투명도 전환 애니메이션 */
+    transition: 0.3s ease; 
 }
 
 .bottomContent button:hover {
@@ -444,6 +441,13 @@ table td {
 .saveBtnWrap {
     display: flex;
     justify-content: flex-end;
+    margin-top: 70px;
+}
+
+.noMarginTop {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 25px !important;
 }
 
 .saveBtnWrap button {
@@ -452,7 +456,7 @@ table td {
     height: 25px;
     font-size: 13px;
     border-radius: 3px;
-    margin-top: 70px;
+
 }
 
 .cancleBtn {
@@ -465,3 +469,284 @@ table td {
     background-color: #739AFF;
     color: #fff;
 }
+
+
+/* 회사목록(companies.html) */
+
+.table-center {
+    text-align: center;
+}
+
+.moveBtn {
+    background: #E7F6D4;
+    color: #78C97B;
+}
+
+.moveBtn a {
+    background: #E7F6D4;
+    color: #78C97B;
+}
+
+
+.approveBtn {
+    background: #EEEAF8;
+    color: #8D73D7;
+}
+
+
+.companyTable {
+    width: 100%;
+    border: 1px solid #EBECF0;
+    font-size: 14px;
+}
+
+.companyTable tr {
+    border: 1px solid #EBECF0;
+}
+
+.companyTable td {
+    padding: 10px 8px;
+    border: 1px solid #EBECF0;
+    vertical-align: middle; /* 수직 정렬 중앙 */
+}
+
+.companyTable td:nth-of-type(1) {
+    font-weight: 700;
+    background: #f8f8f8;
+    text-align: center;
+}
+
+.companyForm {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.companyForm input {
+    width: 100%;
+    height: 30px;
+    border: 1px solid #d8d8d8;
+    padding: 0px 10px;
+}
+
+.companyForm input:focus {
+    outline: none;
+}
+
+.companyForm input::placeholder {
+    font-size: 14px;
+    color: #606060;
+}
+
+.attachBtn {
+    background: #FFE3CA;
+    color: #EB9353;
+}
+
+
+.file-input-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+.file-input {
+    flex: 1;
+    margin-right: 5px;
+}
+
+.companyTable>tbody>tr:nth-of-type(1) {
+    border-top: 2px solid #606060;
+}
+
+/* 게시판 생성 (boardCreate.html) */
+
+.radio-group {
+    display: flex;
+    align-items: center;
+}
+
+.boardWrap {
+    padding: 40px;
+}
+
+.boardContent {
+    margin-bottom: 50px;
+}
+
+.boardContent table {
+    font-size: 16px;
+}
+
+.boardContent h5 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 25px;
+}
+
+.boardContent td {
+    border-right: 1px solid #EBECF0;
+}
+
+.boardContent td:nth-of-type(1) {
+    width: 200px;
+    font-weight: 600;
+}
+
+.boardContent select {
+    width: 450px;
+    height: 35px;
+    border: 1px solid #EBECF0;
+    border-radius: 5px;
+
+    font-size: 14px;
+    padding: 8px 5px;
+    color: #606060;
+}
+
+.boardContent select:focus {
+    outline: none;
+}
+
+.boardContent input[type="text"]  {
+    width: 450px;
+    height: 35px;
+    border: 1px solid #EBECF0;
+    border-radius: 5px;
+    padding: 0px 10px;
+}
+.boardContent input[type="date"] {
+    width: 150px;
+    height: 35px;
+    border: 1px solid #EBECF0;
+    border-radius: 5px;
+    padding: 0px 10px;
+}
+
+.boardContent input:focus {
+    outline: none;
+}
+
+.buttonsWrap {
+    margin-bottom: 40px;
+}
+
+.buttonsWrap button {
+    border: none;
+    width: 135px;
+    height: 40px;
+    border-radius: 5px;
+    background: #739AFF;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    margin-right: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 선택사항: 컨텐츠에 그림자 효과 */;
+}
+
+.buttonsWrap button img {
+    margin-right: 5px;
+}
+
+.boardContent h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.boardContent p {
+    font-size: 14px;
+    margin-bottom: 30px;
+}
+
+.addBtn {
+    font-size: 12px;
+    font-weight: 500;
+    border-radius: 5px;
+    padding: 7px 8px;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.3s ease; 
+    background: #fff;
+    border: 1px solid #EBECF0;
+    margin-right: 5px;
+}
+
+.createBtn {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.createBtn button {
+    font-size: 12px;
+    font-weight: 500;
+    border-radius: 5px;
+    padding: 5px 8px;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.3s ease; 
+}
+
+.createCancle {
+    background: #F9F9F9;
+    color: #4B4B4B;
+    margin-right: 5px;
+}
+
+.created {
+    background: #FEF0F0;
+    color: #C94848;
+}
+
+.moduleTable {
+    margin-bottom: 15px !important;
+}
+
+.spapceBetween {
+    display: flex;
+    justify-content: space-between;
+}
+
+.createSaveBtn {
+    display: flex;
+    justify-content: center;
+    margin-top: 80px;
+}
+
+.createSaveBtn button {
+    border: none;
+    width: 60px;
+    height: 25px;
+    font-size: 13px;
+    border-radius: 3px;
+}
+
+
+/* 게시글 목록 */
+
+.sort_form {
+    margin-right: 10px;
+}
+
+.sort_form button {
+    width: 15px;
+    height: 15px;
+    outline: none;
+    border: none;
+    background: transparent;
+    padding: 0;
+    margin-right: 4px;
+  }
+  
+  .sort_form img {
+    max-width: 100%;
+  }
+
+  .pic img {
+    width: 15px;
+  }
+  
+  .cmt_bold {
+    color: #9ea9e4;
+    font-weight: 700;
+  }

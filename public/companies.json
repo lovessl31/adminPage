@@ -1,0 +1,82 @@
+[
+    {
+        "id": 1,
+        "name": "위드퍼스트",
+        "representative": "김태환",
+        "businessNumber": "156548-156455",
+        "registrationDate": "2024.07.16",
+        "file": "사업자등록증.pdf"
+    },
+    {
+        "id": 2,
+        "name": "한빛소프트",
+        "representative": "이영희",
+        "businessNumber": "258741-369852",
+        "registrationDate": "2024.07.15",
+        "file": "사업자등록증.pdf"
+    },
+    {
+        "id": 3,
+        "name": "넥슨",
+        "representative": "박준수",
+        "businessNumber": "159753-486285",
+        "registrationDate": "2024.07.14",
+        "file": "사업자등록증.pdf"
+    },
+    {
+        "id": 4,
+        "name": "엔씨소프트",
+        "representative": "김혜민",
+        "businessNumber": "456321-789654",
+        "registrationDate": "2024.07.13",
+        "file": "사업자등록증.pdf"
+    },
+    {
+        "id": 5,
+        "name": "카카오게임즈",
+        "representative": "최영수",
+        "businessNumber": "987654-123456",
+        "registrationDate": "2024.07.12",
+        "file": "사업자등록증.pdf"
+    },
+    {
+        "id": 6,
+        "name": "라인게임즈",
+        "representative": "조현수",
+        "businessNumber": "654321-987654",
+        "registrationDate": "2024.07.11",
+        "file": "사업자등록증.pdf"
+    },
+    {
+        "id": 7,
+        "name": "펄어비스",
+        "representative": "서지현",
+        "businessNumber": "789456-123789",
+        "registrationDate": "2024.07.10",
+        "file": "사업자등록증.pdf"
+    },
+    {
+        "id": 8,
+        "name": "스마일게이트",
+        "representative": "최진수",
+        "businessNumber": "321654-987321",
+        "registrationDate": "2024.07.09",
+        "file": "사업자등록증.pdf"
+    },
+    {
+        "id": 9,
+        "name": "넥스트플로어",
+        "representative": "김진우",
+        "businessNumber": "456987-321654",
+        "registrationDate": "2024.07.08",
+        "file": "사업자등록증.pdf"
+    },
+    {
+        "id": 10,
+        "name": "컴투스",
+        "representative": "박민수",
+        "businessNumber": "987321-654987",
+        "registrationDate": "2024.07.07",
+        "file": "사업자등록증.pdf"
+    }
+]
