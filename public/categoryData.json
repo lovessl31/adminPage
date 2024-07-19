@@ -1,0 +1,51 @@
+{
+    "data": [
+      {
+        "cate_idx": 1,
+        "cate_name": "카테고리명1",
+        "s_depth": 1,
+        "sub_category": [
+          {
+            "s_c_idx": 1,
+            "s_cate_name": "Sub카테고리명1",
+            "s_depth": 2,
+            "s_g_c_idx": 1,
+            "s_p_c_idx": 0,
+            "sub_category": [
+              {
+                "s_c_idx": 2,
+                "s_cate_name": "depth3카테고리명1",
+                "s_depth": 3,
+                "s_g_c_idx": 1,
+                "s_p_c_idx": 1,
+                "sub_category": []
+              },
+              {
+                "s_c_idx": 3,
+                "s_cate_name": "depth3카테고리명2",
+                "s_depth": 3,
+                "s_g_c_idx": 1,
+                "s_p_c_idx": 1,
+                "sub_category": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "cate_idx": 2,
+        "cate_name": "카테고리명2",
+        "s_depth": 1,
+        "sub_category": [
+          {
+            "s_c_idx": 4,
+            "s_cate_name": "Sub카테고리명2",
+            "s_depth": 2,
+            "s_g_c_idx": 2,
+            "s_p_c_idx": 0,
+            "sub_category": []
+          }
+        ]
+      }
+    ]
+  }
