@@ -1,0 +1,396 @@
+// document.addEventListener('DOMContentLoaded', function() {
+//     const categories = [
+//         {
+//             "cate_idx": 1,
+//             "cate_name": "카테고리명1",
+//             "s_depth": 1,
+//             "sub_category": [
+//                 {
+//                     "s_c_idx": 1,
+//                     "s_cate_name": "Sub카테고리명1",
+//                     "s_depth": 2,
+//                     "s_g_c_idx": 1,
+//                     "s_p_c_idx": 0,
+//                     "sub_category": [
+//                         {
+//                             "s_c_idx": 2,
+//                             "s_cate_name": "depth3카테고리명1",
+//                             "s_depth": 3,
+//                             "s_g_c_idx": 1,
+//                             "s_p_c_idx": 1,
+//                             "sub_category": []
+//                         },
+//                         {
+//                             "s_c_idx": 3,
+//                             "s_cate_name": "depth3카테고리명2",
+//                             "s_depth": 3,
+//                             "s_g_c_idx": 1,
+//                             "s_p_c_idx": 1,
+//                             "sub_category": []
+//                         }
+//                     ]
+//                 }
+//             ]
+//         },
+//         {
+//             "cate_idx": 2,
+//             "cate_name": "카테고리명2",
+//             "s_depth": 1,
+//             "sub_category": [
+//                 {
+//                     "s_c_idx": 4,
+//                     "s_cate_name": "Sub카테고리명2",
+//                     "s_depth": 2,
+//                     "s_g_c_idx": 2,
+//                     "s_p_c_idx": 0,
+//                     "sub_category": []
+//                 }
+//             ]
+//         }
+//     ];
+
+//     const cateList = document.getElementById('cateList');
+
+//     // 카테고리 렌더링 함수
+//     function renderCategories(categories, parentElement, level = 0) {
+//         categories.forEach(category => {
+//             const li = document.createElement('li');
+//             li.innerHTML = `
+//                 <div style="padding-left: ${level * 20}px">
+//                     ${category.s_depth === 1 ? '<span class="folderImg"><img src="./images/folder.svg"></span>' : '<img src="./images/ct.svg" class="underImg">'}
+//                     ${category.cate_name || category.s_cate_name}
+//                     <span class="actionButtons">
+//                         <button class="addBtn" data-id="${category.cate_idx || category.s_c_idx}" data-depth="${category.s_depth}">+</button>
+//                         <button class="trashBtn" data-id="${category.cate_idx || category.s_c_idx}"><img src="./images/trash.svg"></button>
+//                     </span>
+//                 </div>
+//             `;
+//             parentElement.appendChild(li);
+
+//             if (category.sub_category && category.sub_category.length > 0) {
+//                 renderCategories(category.sub_category, parentElement, level + 1);
+//             }
+//         });
+//     }
+
+//     // 카테고리 초기 렌더링
+//     cateList.innerHTML = '';
+//     renderCategories(categories, cateList);
+
+//     // 새 카테고리 추가 버튼
+//     document.getElementById('addCategoryBtn').addEventListener('click', function() {
+//         const newCategory = {
+//             cate_idx: Date.now(),
+//             cate_name: '새 카테고리',
+//             s_depth: 1,
+//             sub_category: []
+//         };
+//         categories.push(newCategory);
+//         cateList.innerHTML = '';
+//         renderCategories(categories, cateList);
+//     });
+
+//     // 카테고리 추가 및 삭제 버튼 이벤트
+//     cateList.addEventListener('click', function(event) {
+//         if (event.target.classList.contains('addBtn')) {
+//             const id = event.target.getAttribute('data-id');
+//             const depth = parseInt(event.target.getAttribute('data-depth'), 10);
+//             addSubCategory(id, depth);
+//         } else if (event.target.classList.contains('trashBtn')) {
+//             const id = event.target.getAttribute('data-id');
+//             deleteCategory(id);
+//         }
+//     });
+
+//     // 서브 카테고리 추가 함수
+//     function addSubCategory(id, depth) {
+//         const category = findCategoryById(categories, id, depth);
+//         const newSubCategory = {
+//             s_c_idx: Date.now(),
+//             s_cate_name: '새 서브 카테고리',
+//             s_depth: category.s_depth + 1,
+//             sub_category: []
+//         };
+//         category.sub_category.push(newSubCategory);
+//         cateList.innerHTML = '';
+//         renderCategories(categories, cateList);
+//     }
+
+//     // 카테고리 삭제 함수
+//     function deleteCategory(id) {
+//         const index = findCategoryIndexById(categories, id);
+//         if (index !== -1) {
+//             categories.splice(index, 1);
+//         } else {
+//             deleteSubCategory(categories, id);
+//         }
+//         cateList.innerHTML = '';
+//         renderCategories(categories, cateList);
+//     }
+
+//     // 카테고리 또는 서브 카테고리를 찾는 함수
+//     function findCategoryById(categories, id, depth) {
+//         for (const category of categories) {
+//             if ((category.cate_idx == id || category.s_c_idx == id) && category.s_depth === depth) {
+//                 return category;
+//             }
+//             if (category.sub_category && category.sub_category.length > 0) {
+//                 const result = findCategoryById(category.sub_category, id, depth);
+//                 if (result) {
+//                     return result;
+//                 }
+//             }
+//         }
+//         return null;
+//     }
+
+//     // 카테고리 인덱스를 찾는 함수
+//     function findCategoryIndexById(categories, id) {
+//         return categories.findIndex(category => category.cate_idx == id || category.s_c_idx == id);
+//     }
+
+//     // 서브 카테고리 삭제 함수
+//     function deleteSubCategory(categories, id) {
+//         for (const category of categories) {
+//             const index = category.sub_category.findIndex(sub => sub.s_c_idx == id);
+//             if (index !== -1) {
+//                 category.sub_category.splice(index, 1);
+//                 return;
+//             }
+//             if (category.sub_category && category.sub_category.length > 0) {
+//                 deleteSubCategory(category.sub_category, id);
+//             }
+//         }
+//     }
+// });
+
+// document.addEventListener('DOMContentLoaded', function() {
+//     let categories = [
+//         {
+//             "cate_idx": 1,
+//             "cate_name": "카테고리명1",
+//             "s_depth": 1,
+//             "sub_category": [
+//                 {
+//                     "s_c_idx": 1,
+//                     "s_cate_name": "Sub카테고리명1",
+//                     "s_depth": 2,
+//                     "s_g_c_idx": 1,
+//                     "s_p_c_idx": 0,
+//                     "sub_category": [
+//                         {
+//                             "s_c_idx": 2,
+//                             "s_cate_name": "depth3카테고리명1",
+//                             "s_depth": 3,
+//                             "s_g_c_idx": 1,
+//                             "s_p_c_idx": 1,
+//                             "sub_category": []
+//                         },
+//                         {
+//                             "s_c_idx": 3,
+//                             "s_cate_name": "depth3카테고리명2",
+//                             "s_depth": 3,
+//                             "s_g_c_idx": 1,
+//                             "s_p_c_idx": 1,
+//                             "sub_category": []
+//                         }
+//                     ]
+//                 }
+//             ]
+//         },
+//         {
+//             "cate_idx": 2,
+//             "cate_name": "카테고리명2",
+//             "s_depth": 1,
+//             "sub_category": [
+//                 {
+//                     "s_c_idx": 4,
+//                     "s_cate_name": "Sub카테고리명2",
+//                     "s_depth": 2,
+//                     "s_g_c_idx": 2,
+//                     "s_p_c_idx": 0,
+//                     "sub_category": []
+//                 }
+//             ]
+//         }
+//     ];
+
+//     let selectedCategory = null;
+//     const cateList = document.getElementById('cateList');
+
+//     // 카테고리 렌더링 함수
+//     function renderCategories(categories, parentElement, level = 0) {
+//         categories.forEach(category => {
+//             const li = document.createElement('li');
+//             li.classList.add('category-item');
+//             if (selectedCategory === category) {
+//                 li.classList.add('selected');
+//             }
+//             li.innerHTML = `
+//                 <div style="padding-left: ${level * 20}px">
+//                     ${category.s_depth === 1 ? '<span class="folderImg"><img src="./images/folder.svg"></span>' : '<img src="./images/ct.svg" class="underImg">'}
+//                     ${category.cate_name || category.s_cate_name}
+//                     ${selectedCategory === category ? `
+//                     <span class="actionButtons">
+//                         <button class="addBtn" data-id="${category.cate_idx || category.s_c_idx}" data-depth="${category.s_depth}">+</button>
+//                         <button class="trashBtn" data-id="${category.cate_idx || category.s_c_idx}">
+//                             <img src="./images/trash.svg">
+//                         </button>
+//                     </span>
+//                     ` : ''}
+//                 </div>
+//             `;
+            
+//             const addBtn = li.querySelector('.addBtn');
+//             const trashBtn = li.querySelector('.trashBtn');
+
+//             if (addBtn) {
+//                 addBtn.addEventListener('click', function(event) {
+//                     event.stopPropagation();
+//                     const id = event.target.getAttribute('data-id');
+//                     const depth = parseInt(event.target.getAttribute('data-depth'), 10);
+//                     addSubCategory(id, depth);
+//                 });
+//             }
+
+//             if (trashBtn) {
+//                 trashBtn.addEventListener('click', function(event) {
+//                     event.stopPropagation();
+//                     const id = event.target.getAttribute('data-id');
+//                     deleteCategory(id);
+//                 });
+//             }
+
+//             li.onclick = (event) => {
+//                 event.stopPropagation();
+//                 selectCategory(category);
+//             };
+//             parentElement.appendChild(li);
+
+//             if (category.sub_category && category.sub_category.length > 0) {
+//                 renderCategories(category.sub_category, parentElement, level + 1);
+//             }
+//         });
+//     }
+
+    
+   
+
+//     // 카테고리 초기 렌더링
+//     function renderInitialCategories() {
+//         cateList.innerHTML = '';
+//         renderCategories(categories, cateList);
+//     }
+
+//     // 카테고리 선택 함수
+//     function selectCategory(category) {
+//         selectedCategory = category;
+//         document.getElementById('cateInput').value = category.cate_name || category.s_cate_name;
+//         document.getElementById('explain').style.display = 'none';
+//         document.getElementById('cateInputWrap').style.display = 'block';
+//         renderInitialCategories();
+//     }
+
+//     // 새 카테고리 추가 버튼
+//     document.getElementById('addCategoryBtn').addEventListener('click', function() {
+//         const newCategory = {
+//             cate_idx: Date.now(),
+//             cate_name: '새 카테고리',
+//             s_depth: 1,
+//             sub_category: []
+//         };
+//         categories.push(newCategory);
+//         selectCategory(newCategory);
+//         renderInitialCategories();
+//     });
+
+//     // 서브 카테고리 추가 함수
+//     function addSubCategory(id, depth) {
+//         const category = findCategoryById(categories, id, depth);
+//         const newSubCategory = {
+//             s_c_idx: Date.now(),
+//             s_cate_name: '새 서브 카테고리',
+//             s_depth: category.s_depth + 1,
+//             sub_category: []
+//         };
+//         category.sub_category.push(newSubCategory);
+//         selectCategory(newSubCategory);
+//         renderInitialCategories();
+//     }
+
+//     // 카테고리 삭제 함수
+//     function deleteCategory(id) {
+//         categories = removeCategoryById(categories, id);
+//         selectedCategory = null; // 삭제 후 선택된 카테고리를 초기화
+//         document.getElementById('cateInputWrap').style.display = 'none';
+//         document.getElementById('explain').style.display = 'block';
+//         renderInitialCategories();
+//     }
+
+//     // 카테고리 또는 서브 카테고리를 찾는 함수
+//     function findCategoryById(categories, id, depth) {
+//         for (const category of categories) {
+//             if ((category.cate_idx == id || category.s_c_idx == id) && category.s_depth === depth) {
+//                 return category;
+//             }
+//             if (category.sub_category && category.sub_category.length > 0) {
+//                 const result = findCategoryById(category.sub_category, id, depth);
+//                 if (result) {
+//                     return result;
+//                 }
+//             }
+//         }
+//         return null;
+//     }
+
+//     // 카테고리 인덱스를 찾는 함수
+//     function findCategoryIndexById(categories, id) {
+//         return categories.findIndex(category => category.cate_idx == id || category.s_c_idx == id);
+//     }
+
+//     // 카테고리 ID로 카테고리 삭제 함수
+//     function removeCategoryById(categories, id) {
+//         return categories.filter(category => {
+//             if (category.cate_idx === id || category.s_c_idx === id) {
+//                 return false;
+//             }
+//             if (category.sub_category && category.sub_category.length > 0) {
+//                 category.sub_category = removeCategoryById(category.sub_category, id);
+//             }
+//             return true;
+//         });
+//     }
+
+//     // 취소 버튼 클릭 시 폼 초기화
+//     function cancleChange() {
+//         if (confirm("변경 사항이 저장되지 않을 수 있습니다. 계속하시겠습니까?")) {
+//             resetForm();
+//         }
+//     }
+
+//     // 폼 초기화 함수
+//     function resetForm() {
+//         renderInitialCategories(); // 카테고리 리스트 초기화
+//         selectedCategory = null;
+//         document.getElementById('cateInputWrap').style.display = 'none';
+//         document.getElementById('explain').style.display = 'block';
+//     }
+
+//     // 입력 필드 변경 시 카테고리 이름 업데이트
+//     document.getElementById('cateInput').addEventListener('input', function() {
+//         if (selectedCategory) {
+//             if (selectedCategory.cate_name !== undefined) {
+//                 selectedCategory.cate_name = this.value;
+//             } else {
+//                 selectedCategory.s_cate_name = this.value;
+//             }
+//             renderInitialCategories();
+//         }
+//     });
+
+//     // 이벤트 리스너 등록
+//     document.getElementById('cancleChangeBtn').addEventListener('click', cancleChange);
+
+//     // 초기 카테고리 로드
+//     renderInitialCategories();
+// });

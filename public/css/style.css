@@ -1389,42 +1389,102 @@ table td {
   
   
 
-  /* 카테고리 관리 (category.html) */
+/* 카테고리 관리 (category.html) */
 
-  .cateList {
-    list-style-type: none;
-    padding: 0;
-}
-.cateList li {
-    cursor: pointer;
-    margin-bottom: 5px;
-}
-.selected {
-    background-color: #d3d3d3;
-}
-.actionButtons button {
-    margin-left: 5px;
-}
-.folderImg, .underImg {
-    width: 20px;
-    height: 20px;
+
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
 }
 
-  /* .cateList {
-    padding: 0;
-  }
-  
-  .selected {
-    background: #eaeaea;
-  } */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
 
 .categoryWrap {
-    border: 1px solid #9e9e9e;
-    margin-bottom: 10px;
+  border: 1px solid #9e9e9e;
+  margin-bottom: 10px;
+}
+
+.cateList {
+  list-style-type: none;
+  padding: 0;
+  /* margin-top: 20px; */
+  min-width: 100%; /* 최소 너비 설정 */
+}
+
+.cateList ul {
+  padding: 0;
+}
+
+.cateList li {
+  cursor: pointer;
+  align-items: center;
+  list-style: none;
+  font-size: 1.1rem;
+  font-weight: 700;
+  position: relative;
+  white-space: nowrap;
+}
+
+.cateList li button {
+  padding: 0;
+}
+
+.paddingLeft {
+  font-size: 15px;
+  font-weight: 600;
+  padding-left: 20px; /* 이 부분 추가 */
   }
-  
-  
-  .add_img button {
+
+.selected {
+    background-color: #ecf3fc; /* 선택된 배경색 */
+}
+
+.listStyle {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 40px;
+}
+
+.iconContainer {
+  display: flex;
+  align-items: center;
+}
+
+.iconContainer img {
+  margin-right: 5px;
+  max-width: 100%;
+}
+
+.cateAdmin {
+  display: flex;
+  align-items: center;
+  margin-left: 5px;
+  gap: 3px;
+}
+
+.cateAdmin button {
+  display: flex;
+  align-items: center;
+}
+
+.cateList button {
+  border: none;
+  background: transparent;
+}
+
+.add_img button {
     display: flex;
     align-items: center;
     font-size: 1.1rem;
@@ -1449,6 +1509,7 @@ table td {
     border-bottom: 1px solid #9e9e9e;
     padding: 20px 0px;
   }
+
   /* 
   .addWrap div:first-child button::before {
     content: "+";
@@ -1541,84 +1602,7 @@ table td {
     outline: none;
   }
   
-  .cateList {
-    margin-top: 20px;
-    min-width: 100%; /* 최소 너비 설정 */
-  }
-  
-  .cateList li {
-    display: flex;
-    align-items: center;
-    list-style: none;
-    font-size: 1.1rem;
-    font-weight: 700;
-    position: relative;
-    padding: 5px;
-    padding-left: 10px;
-    white-space: nowrap; 
-  }
-  
-  .subCate li {
-    padding-left: 40px;
-    padding-top: 3px;
-    padding-bottom: 3px;
-  }
-  
-  .cateList li button {
-    padding: 0;
-  }
-  
-  .cateList li::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 18px;
-    height: 18px;
-    background-image: url('/assets/images/folder.png');
-    background-size: contain;
-    background-repeat: no-repeat;
-    margin-right: 5px;
-  }
-  
-  .folderImg img {
-    margin-right: 5px;
-  }
-  
-  .underImg {
-    width: 10px;
-    height: 10px;
-  }
-  
-  .trashImg {
-    width: 13px;
-  }
-  
-  .trashImg>img {
-    max-width: 100%;
-  }
-  
-  .subCate>li {
-    font-size: 1rem;
-    list-style: none;
-    font-weight: 400;
-    margin-left: ;
-    /* 선택됬을 경우만 배경색 변경 */
-    /* background: #eaeaea; */
-  }
-  
-  .subCate>li>img {
-    width: 10px;
-  }
-  
-  .cateList button {
-    border: none;
-    background: transparent;
-  }
-  
 
-  
 /* 글쓰기 페이지 write.html */
 
 .write_title h5 {
