@@ -114,6 +114,12 @@ p, h1,h2,h3,h4,h5,h6 { margin: 0;}
     font-weight: 700;
 }
 
+.rightHeader>div, .rightHeader>ul {
+  display: flex;
+  align-items: center;
+  margin: 0;
+}
+
 .rightHeader .imgBg {
     width: 40px;
     height: 40px;
@@ -121,6 +127,114 @@ p, h1,h2,h3,h4,h5,h6 { margin: 0;}
     background-size: cover;
     border-radius: 50%;
     margin-left: 10px;
+}
+
+#loginButtons ul {
+  display: flex;
+  align-items: center;
+  margin: 0;
+}
+
+#loginButtons>ul>li>a {
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+  margin-right: 10px;
+}
+
+#loginButtons>ul>li>button {
+  border: none;
+  background: transparent;
+  color: #fff;
+  font-weight: 600;
+}
+
+#logoutButton {
+  border: none;
+  background: transparent;
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+#userInfo {
+  margin-left: 12px;
+}
+
+/* 로그인 login.html */
+
+#loginC {
+  flex-grow: 1;
+  background-color: #F8F8F8;
+  margin-left: 200px;
+  margin-bottom: 34px;
+  margin-top: 35px;
+  overflow-y: auto;
+  padding: 50px 40px 32px 50px;
+  display: flex;
+}
+
+.loginWrap {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loginContent {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 450px;
+  height: 400px;
+  background: #fff;
+  border-radius: 5px;
+  position: relative;
+}
+
+.loginContent::after {
+  content: "";
+  display: block;
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 86px;
+  height: 5px;
+  margin-left: -43px;
+  background: #2F2F37;
+}
+
+.contentBox {
+  width: 80%;
+  margin: 0 auto;
+}
+
+.contentBox h4 {
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.contentBox input {
+  width: 100%;
+  height: 40px;
+  margin-bottom: 10px;
+  border: 1px solid #EEEAF8;
+  padding: 0px 10px;
+}
+
+.contentBox input::placeholder {
+  font-size: 14px;
+}
+
+.contentBox button {
+  width: 100%;
+  height: 40px;
+  margin-top: 10px;
+  border: none;
+  background: #2F2F37;
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
 }
 
 /* user.html */

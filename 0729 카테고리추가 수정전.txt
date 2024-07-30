@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AMDIN - 관리자페이지</title>
+    <link rel="icon" href="./images/favicon.png" type="image/png">
+    <!-- Reset CSS -->
+    <link rel="stylesheet" href="./css/reset.css">
+    <!-- Pretendard Font -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <!-- sweetalert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.10/dist/sweetalert2.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./images/downArrow.png">
+</head>
+<body>
+    <div class="wrap">
+        <!-- 헤더 -->
+        <div id="header">
+            <div class="headerWrap">
+                <div class="leftHeader">
+                    <img src="">
+                    <a href="index.html">ADMIN</a>
+                </div>
+                <div class="rightHeader">
+                    <div id="loginButtons">
+                        <ul>
+                            <li><a href="login.html">최고</a></li> <!-- 최고 관리자 로그인 페이지 -->
+                            <li><a href="com_login.html">슈퍼</a></li> <!-- 회사관리자 로그인 페이지 -->
+                        </ul>
+                    </div>
+                    
+                    <button id="logoutButton" style="display: none;">LOGOUT</button>
+                    <div id="userInfo" style="display: none;"> <!-- 로그인 성공 시 로그인 사용자 정보-->
+                        <div class="d-flex align-items-center">
+                            <span>guest</span>
+                            <div class="imgBg"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 사이드네비 -->
+        <div class="sideNav">
+            <ul>
+                <li><a href="user.html">사용자관리</a></li>
+                <li><a href="company.html">회사관리</a></li>
+                <li><a href="category.html">카테고리관리</a></li>
+                <li><a href="board.html">게시판관리</a></li>
+            </ul>
+        </div>
+        <!-- 메인 컨텐츠 -->
+        <div id="content">
+            <h4>카테고리관리</h4>
+            <div class="contentInner">
+               <div class="contentWrap">
+
+                <div class="categoryWrap">
+                    <div class="addWrap">
+                        <div class="add_img">
+                            <button id="addCategoryBtn">
+                                <img src="/images/add.svg">새 카테고리 추가
+                            </button>
+                        </div>
+                        <!-- <div class="addCateBtn">
+                            <button class="cancleBtn" id="cancleChangeBtn">취소</button>
+                            <button class="saveBtn" id="saveCategoriesBtn">저장</button>
+                        </div> -->
+                    </div>
+                    <div class="cateContentWrap">
+                        <div class="cateListWrap">
+                            <!-- #addCategoryBtn 새 카테고리 추가 버튼 누르면 최상위 li 추가-->
+                            <ul class="cateList" id="cateList">
+                               
+                            </ul>
+                        </div>
+    
+                        <div class="cateEx" id="cateEx">
+                            <!-- 카테고리 추가 전 초기 화면 -->
+                            <div id="explain" class="explain">
+                                <h5>카테고리 생성 안내</h5>
+                                <ul>
+                                    <li>최상위 카테고리는 상단의 메뉴가 됩니다.</li>
+                                    <li>카테고리를 편집한 후에 저장하기 버튼을 꼭 클릭해야 변경된 내용이 카테고리에 반영됩니다.
+                                    </li>
+                                </ul>
+                            </div>
+    
+                            <!-- 카테고리 추가 후 카테고리 선택 시 나타나는 화면 -->
+                            <div id="cateInputWrap" class="cateInputWrap" style="display:none;">
+                                <h5>카테고리명</h5>
+                                <div>
+                                    <input class="cateInput" type="text" id="cateInput">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                </div>
+            </div>
+        </div>
+
+       
+
+        <!-- 푸터 -->
+        <div id="footer">
+            <div class="footerWrap">
+                <div>
+                    <span>문의사항</span>
+                    <span>wants@withfirst.com</span>
+                </div>
+                <div>
+                    <p>©withfirst All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <!-- jQuery -->
+<script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <!-- Popper.js -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+    <!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="./js/script.js"></script>
+<!-- Sweetalert2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+<script>
+
+let currentMaxId = 0; // 현재 최대 ID
+let selectedCategory = null;
+let categoryData = []; // 전체 카테고리 데이터를 저장할 배열
+let previouslySelectedDiv = null; // 이전에 선택된 카테고리의 div 요소
+let expandedCategories = new Set(); // 열림 상태의 카테고리를 저장
+
+
+async function sendCredentials() {
+    const formData = new FormData();
+    formData.append('user_id', 'admin');
+    formData.append('user_pw', 1);
+
+    try {
+        const response = await axios({
+            method: 'post',
+            url: `http://192.168.0.18:3500/with/login?accessUrl=${encodeURIComponent(accessUrl)}`,
+            data: formData
+        });
+
+        // 전체 응답을 콘솔에 출력
+        console.log('Login response:', response);
+        console.log('로그인데이터:', response.data);
+
+        // 토큰 추출
+        const accessToken = response.data.data.accessToken;
+        const refreshToken = response.data.data.refreshToken;
+
+        console.log('토큰값 들어갔어:', accessToken);
+
+        if (accessToken && refreshToken) {
+            // 쿠키에 토큰 저장
+            setCookie('accessToken', accessToken, 1); // 1일 후 만료
+            setCookie('refreshToken', refreshToken, 3); // 3일 후 만료
+            console.log('Tokens are stored in cookies.');
+        } else {
+            throw new Error('Token not provided by server');
+        }
+    } catch (error) {
+        console.error('Login error:', error);
+
+    }
+}
+
+function getCookie(name) {
+    let value = `; ${document.cookie}`;
+    let parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
+function updateCategory(category, initialName) {
+    const isCategory = category.cate_idx && !category.s_c_idx ? 'top' : 'sub';
+    const cate_idx = category.cate_idx || category.s_c_idx;
+    const cate_name = category.cate_name || category.s_cate_name;
+    const initial_name = initialName;
+
+    // 로컬 스토리지에서 com_idx 추출
+    const comIdx = localStorage.getItem('com_idx');
+
+    // JSON 객체 생성
+    const data = {
+        cate_name: cate_name
+    };
+
+    const token = localStorage.getItem('accessToken');
+
+    // JSON 객체 내용을 콘솔에 출력
+    console.log('---- JSON 데이터로 보내는 키랑 값 ----');
+    console.log(data);
+    console.log('----파라미터에 들어가는 값----');
+    console.log('isCategory:', isCategory);
+    console.log('cate_idx:', cate_idx);
+    console.log('초기값:', initial_name);
+    console.log('토큰:', token);
+    
+    
+    // axios를 사용하여 PUT 요청 보내기
+    axios.put(`http://192.168.0.18:3500/with/cate/${isCategory}/${cate_idx}/${encodeURIComponent(initial_name)}/${comIdx}`, data, {
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        }
+    })
+    .then(response => {
+        console.log('수정 완료:', response.data);
+    })
+    .catch(error => {
+        console.error('수정 오류:', error);
+    });
+}
+
+function findMaxId(categories) {
+    categories.forEach(category => {
+        if (category.cate_idx && category.cate_idx > currentMaxId) {
+            currentMaxId = category.cate_idx;
+        }
+        if (category.s_c_idx && category.s_c_idx > currentMaxId) {
+            currentMaxId = category.s_c_idx;
+        }
+        if (category.sub_category && category.sub_category.length > 0) {
+            findMaxId(category.sub_category);
+        }
+    });
+}
+
+function createCategoryElement(category, depth, parentCategory = null) {
+    const li = document.createElement('li');
+    const div = document.createElement('div');
+    div.className = 'listStyle';
+    div.style.paddingLeft = depth === 1 ? '20px' : `${(depth - 1) * 20 + 20}px`; // 최상위 카테고리에 20px, 하위 카테고리에 깊이에 따라 20px씩 패딩
+    div.setAttribute('data-category-id', category.cate_idx || category.s_c_idx);
+    div.setAttribute('data-initial-name', category.cate_name || category.s_cate_name); // 초기 이름 저장
+
+    const spanFolder = document.createElement('span');
+    spanFolder.className = 'iconContainer';
+
+    const imgRightArrow = document.createElement('img');
+    imgRightArrow.src = './images/rightArrow.png';
+    imgRightArrow.className = 'toggleArrow';
+
+    if (!(category.sub_category && category.sub_category.length > 0)) {
+        imgRightArrow.style.visibility = 'hidden'; // 하위 카테고리가 없는 경우 투명하게 처리
+    }
+
+    spanFolder.appendChild(imgRightArrow);
+
+    if (category.sub_category && category.sub_category.length > 0) {
+        imgRightArrow.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const ul = li.querySelector('ul');
+            const isExpanded = ul.style.display === 'block';
+            ul.style.display = isExpanded ? 'none' : 'block';
+            imgRightArrow.src = isExpanded ? './images/rightArrow.png' : './images/downArrow.png';
+            imgFolder.src = isExpanded ? './images/folder.png' : './images/openFolder.png';
+            if (isExpanded) {
+                expandedCategories.delete(category.cate_idx || category.s_c_idx);
+            } else {
+                expandedCategories.add(category.cate_idx || category.s_c_idx);
+            }
+        });
+    }
+
+    const imgFolder = document.createElement('img');
+    imgFolder.src = './images/folder.png';
+    spanFolder.appendChild(imgFolder);
+
+    div.appendChild(spanFolder);
+    const categoryNameText = document.createTextNode(category.cate_name || category.s_cate_name);
+    div.appendChild(categoryNameText);
+
+    const spanButtons = document.createElement('span');
+    spanButtons.className = 'cateAdmin';
+    const buttonAdd = document.createElement('button');
+    const imgAdd = document.createElement('img');
+    imgAdd.src = './images/addCate.png';
+    buttonAdd.appendChild(imgAdd);
+    buttonAdd.addEventListener('click', (e) => {
+        e.stopPropagation();
+        addSubCategory(li, category, depth + 1);
+    });
+
+    const buttonTrash = document.createElement('button');
+    const imgTrash = document.createElement('img');
+    imgTrash.src = './images/minuCate.png';
+    buttonTrash.appendChild(imgTrash);
+    buttonTrash.addEventListener('click', (e) => {
+        e.stopPropagation();
+        deleteCategory(li, category, parentCategory);
+    });
+
+    spanButtons.appendChild(buttonAdd);
+    spanButtons.appendChild(buttonTrash);
+
+    div.appendChild(spanButtons);
+    li.appendChild(div);
+
+    if (category.sub_category && category.sub_category.length > 0) {
+        const ul = document.createElement('ul');
+        ul.style.display = expandedCategories.has(category.cate_idx || category.s_c_idx) ? 'block' : 'none';
+        category.sub_category.forEach(subCat => {
+            ul.appendChild(createCategoryElement(subCat, depth + 1, category));
+        });
+        li.appendChild(ul);
+
+        if (expandedCategories.has(category.cate_idx || category.s_c_idx)) {
+            imgRightArrow.src = './images/downArrow.png';
+            imgFolder.src = './images/openFolder.png';
+        }
+    }
+
+    div.addEventListener('click', () => {
+        if (previouslySelectedDiv) {
+            previouslySelectedDiv.classList.remove('selected');
+        }
+        div.classList.add('selected');
+        previouslySelectedDiv = div;
+
+        document.getElementById('cateInputWrap').style.display = 'block';
+        const cateInput = document.getElementById('cateInput');
+        cateInput.value = category.cate_name || category.s_cate_name;
+        const initialName = div.getAttribute('data-initial-name'); // 초기 이름 가져오기
+        selectedCategory = category;
+        cateInput.oninput = () => {
+            selectedCategory.cate_name = cateInput.value;
+            categoryNameText.textContent = cateInput.value;
+        };
+        // 입력 필드를 벗어날 때, 변경 사항이 있으면 updateCategory 함수 호출
+        cateInput.onblur = () => {
+            if (cateInput.value !== initialName) {
+                updateCategory(selectedCategory, initialName);
+                // 변경된 이름을 새로운 초기 이름으로 저장
+                div.setAttribute('data-initial-name', cateInput.value);
+            }
+        };
+    });
+
+    return li;
+}
+
+function renderCategories(categories) {
+    const cateList = document.getElementById('cateList');
+    const explainDiv = document.getElementById('explain');
+    const cateInputWrap = document.getElementById('cateInputWrap');
+    cateList.innerHTML = ''; // 카테고리 목록을 초기화
+
+    if (categories.length === 0) { // 카테고리가 하나도 없는 경우
+        explainDiv.style.display = 'block';
+        cateInputWrap.style.display = 'none';
+    } else { // 카테고리가 있는 경우
+        explainDiv.style.display = 'none';
+        categories.forEach(category => { // 각 카테고리에 대해
+            cateList.appendChild(createCategoryElement(category, 1)); // 카테고리 요소를 생성하여 <ul> 요소에 추가
+        });
+        findMaxId(categories); // 최대 ID를 찾음
+    }
+}
+
+function cateGetData() {
+    axios.get('http://192.168.0.18:3500/with/cateList')
+        .then(response => {
+            console.log('서버 응답 데이터:', response.data.data); // 서버 응답 데이터 콘솔 출력
+            if (response.data && Array.isArray(response.data.data)) {
+                categoryData = response.data.data; // 전체 카테고리 데이터를 저장
+                renderCategories(categoryData);
+            } else {
+                console.error('Invalid data format:', response.data);
+            }
+        })
+        .catch(error => {
+            console.log('Error loading user data:', error);
+        });
+}
+
+function isElementBeyondViewport(el, container) {
+    const elRect = el.getBoundingClientRect();
+    const containerRect = container.getBoundingClientRect();
+    return elRect.bottom > containerRect.bottom || elRect.top < containerRect.top;
+}
+
+// 최상위 카테고리
+function addTopCategory() {
+    const newCategory = {
+        cate_name: '새로운 카테고리',
+        s_depth: 1,
+        sub_category: []
+    };
+
+    const isCategory = 'top'; // isCategory 값을 변수로 설정
+    const token = localStorage.getItem('accessToken');
+
+    // FormData 객체 생성
+    const formData = new FormData();
+    formData.append('cate_name', newCategory.cate_name);
+    formData.append('isCategory', isCategory);
+
+    // 서버에 새로운 카테고리 추가 요청
+    axios.post(`http://192.168.0.18:3500/with/addCate/${isCategory}`, formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+            'Authorization': `Bearer ${token}`
+        }
+    })
+    .then(response => {
+        console.log('카테고리 생성 완료:', response.data);
+
+        // 서버에서 실제로 저장된 카테고리 데이터 가져오기
+        const savedCategory = response.data.data; // 응답 데이터에 따라 조정 필요
+
+        // 새로 추가된 카테고리를 로컬 상태에 추가
+        categoryData.push(savedCategory);
+        renderCategories(categoryData);
+
+        // 새로 추가된 카테고리를 선택된 상태로 표시
+        const addedCategoryDiv = document.querySelector(`div[data-category-id='${savedCategory.cate_idx}']`);
+        if (previouslySelectedDiv) {
+            previouslySelectedDiv.classList.remove('selected');
+        }
+        addedCategoryDiv.classList.add('selected');
+        previouslySelectedDiv = addedCategoryDiv;
+
+        // 입력창에 새 카테고리명 표시 및 수정 가능하게 설정
+        const cateInputWrap = document.getElementById('cateInputWrap');
+        const cateInput = document.getElementById('cateInput');
+        cateInput.value = savedCategory.cate_name; // 기본값 설정
+        cateInputWrap.style.display = 'block';
+        selectedCategory = savedCategory;
+        cateInput.oninput = () => {
+            selectedCategory.cate_name = cateInput.value;
+            addedCategoryDiv.childNodes[1].textContent = cateInput.value;
+        };
+
+        // .cateListWrap 범위를 벗어나는 경우에만 스크롤
+        const cateListWrap = document.querySelector('.cateListWrap');
+        if (isElementBeyondViewport(addedCategoryDiv, cateListWrap)) {
+            addedCategoryDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    })
+    .catch(error => {
+        console.error('카테고리 생성 오류:', error);
+    });
+}
+
+// 하위 카테고리 추가 함수
+function addSubCategory(parentLi, parentCategory, depth) {
+    const newSubCategory = {
+        s_c_idx: ++currentMaxId, // 새로운 ID 할당
+        s_cate_name: '새로운 하위 카테고리',
+        s_depth: depth,
+        s_g_c_idx: parentCategory.s_g_c_idx || parentCategory.cate_idx,
+        s_p_c_idx: parentCategory.s_c_idx || parentCategory.cate_idx,
+        sub_category: []
+    };
+
+    const isCategory = 'sub'; // isCategory 값을 변수로 설정
+
+    const token = localStorage.getItem('accessToken');
+
+    // FormData 객체 생성
+    const formData = new FormData();
+    formData.append('cate_name', newSubCategory.s_cate_name);
+    formData.append('isCategory', isCategory);
+
+    // 서버에 새로운 하위 카테고리 추가 요청
+    axios.post(`http://192.168.0.18:3500/with/addCate/${isCategory}`, formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+             'Authorization': `Bearer ${token}`
+        }
+    })
+    .then(response => {
+        console.log('하위 카테고리 생성 완료');
+        if (!parentCategory.sub_category) {
+            parentCategory.sub_category = [];
+        }
+        parentCategory.sub_category.push(newSubCategory);
+        expandedCategories.add(parentCategory.cate_idx || parentCategory.s_c_idx); // 부모 카테고리를 펼침 상태로 유지
+        renderCategories(categoryData);
+
+        // 새로 추가된 하위 카테고리를 선택된 상태로 표시
+        const addedSubCategoryDiv = document.querySelector(`div[data-category-id='${newSubCategory.s_c_idx}']`);
+        if (previouslySelectedDiv) {
+            previouslySelectedDiv.classList.remove('selected');
+        }
+        addedSubCategoryDiv.classList.add('selected');
+        previouslySelectedDiv = addedSubCategoryDiv;
+
+        // 입력창에 새 하위 카테고리명 표시 및 수정 가능하게 설정
+        const cateInputWrap = document.getElementById('cateInputWrap');
+        const cateInput = document.getElementById('cateInput');
+        cateInput.value = '새로운 하위 카테고리'; // 기본값 설정
+        cateInputWrap.style.display = 'block';
+        selectedCategory = newSubCategory;
+        cateInput.oninput = () => {
+            selectedCategory.s_cate_name = cateInput.value;
+            addedSubCategoryDiv.childNodes[1].textContent = cateInput.value;
+        };
+
+        // .cateListWrap 범위를 벗어나는 경우에만 스크롤
+        const cateListWrap = document.querySelector('.cateListWrap');
+        if (isElementBeyondViewport(addedSubCategoryDiv, cateListWrap)) {
+            addedSubCategoryDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    })
+    .catch(error => {
+        console.error('하위 카테고리 생성 오류:', error);
+    });
+}
+
+
+// 카테고리 삭제 함수
+function deleteCategory(li, category, parentCategory) {
+    const isCategory = category.cate_idx && !category.s_c_idx ? 'top' : 'sub';
+    const cate_idx = category.cate_idx || category.s_c_idx;
+    const cate_name = category.cate_name || category.s_cate_name;
+    
+    // FormData 객체 생성
+    const formData = new FormData();
+    formData.append('cate_name', cate_name);
+    formData.append('isCategory', isCategory);
+    formData.append('cate_idx', cate_idx);
+
+    // const token = getCookie('accessToken');
+    const token = localStorage.getItem('accessToken');
+
+    // URL에 파라미터 추가
+    const url = `http://192.168.0.18:3500/with/cate/${isCategory}/${cate_idx}/${cate_name}`;
+
+    // 서버에 삭제 요청
+    axios.delete(url, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+            'Authorization': `Bearer ${token}`
+        },
+        data: formData
+    })
+    .then(response => {
+        console.log('카테고리 삭제 완료:', response.data);
+        
+        // 로컬 데이터에서 카테고리 삭제
+        if (parentCategory) {
+            const index = parentCategory.sub_category.indexOf(category);
+            if (index > -1) {
+                parentCategory.sub_category.splice(index, 1);
+            }
+        } else {
+            const index = categoryData.indexOf(category);
+            if (index > -1) {
+                categoryData.splice(index, 1);
+            }
+        }
+        renderCategories(categoryData);
+
+        // 카테고리가 모두 삭제된 경우 입력 필드를 숨김
+        if (categoryData.length === 0) {
+            document.getElementById('cateInputWrap').style.display = 'none';
+        }
+    })
+    .catch(error => {
+        console.error('카테고리 삭제 오류:', error);
+    });
+}
+
+// 페이지 로드 시 데이터 로드
+document.addEventListener('DOMContentLoaded', () => {
+    cateGetData();
+    document.getElementById('addCategoryBtn').addEventListener('click', addTopCategory);
+    
+    // 로컬스토리지에서 com_idx 추출
+    const comIdx = localStorage.getItem('com_idx');
+    console.log('Company ID:', comIdx);
+});
+</script>
+</body>
+</html>

@@ -11,8 +11,6 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css">
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <!-- AOS CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
     <!-- sweetalert2 CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.10/dist/sweetalert2.min.css">
     <!-- Custom CSS -->
@@ -28,25 +26,11 @@
                     <a href="index.html">ADMIN</a>
                 </div>
                 <div class="rightHeader">
-                    <div id="loginButtons">
-                        <ul>
-                            <li><a href="login.html">LOGIN</a></li> <!-- 최고 관리자 로그인 페이지 -->
-                            <!-- 회사관리자 로그인 페이지 -->
-                            <!-- <li><a href="com_login.html">슈퍼</a></li> -->
-                        </ul>
-                    </div>
-                    
-                    <button id="logoutButton" style="display: none;">LOGOUT</button>
-                    <div id="userInfo" style="display: none;"> <!-- 로그인 성공 시 로그인 사용자 정보-->
-                        <!-- <div class="d-flex align-items-center">
-                            <span>guest</span>
-                            <div class="imgBg"></div>
-                        </div> -->
-                    </div>
+                    <span>guest</span>
+                    <div class="imgBg"></div>
                 </div>
             </div>
         </div>
-        
         <!-- 사이드네비 -->
         <div class="sideNav">
             <ul>
@@ -57,9 +41,17 @@
             </ul>
         </div>
         <!-- 메인 컨텐츠 -->
-        <div id="content">
-            <div class="contentInner">
-                <!-- 여기에 실제 컨텐츠가 들어갑니다. -->
+        <div id="loginC">
+            <div class="loginWrap">
+                <div class="loginContent">
+                    <div class="contentBox">
+                        <h4>COMPANY</h4>
+                        <input type="text" id="username" placeholder="아이디">
+                        <input type="password" id="password" placeholder="비밀번호">
+                        <button id="login-button">Login</button>
+                    </div>
+                  
+                    </div>
             </div>
         </div>
         <!-- 푸터 -->
@@ -75,7 +67,6 @@
             </div>
         </div>
     </div>
-    
 
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <!-- jQuery -->
@@ -86,13 +77,60 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="./js/script.js"></script>
-    <!-- AOS JS -->
-    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
     <!-- Sweetalert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <script>
-        
-    </script>
+    
+    function setCookie(name, value, days) {
+    const expires = new Date(Date.now() + days * 864e5).toUTCString();
+    document.cookie = `${name}=${value}; expires=${expires}; path=/; SameSite=Lax`;
+}
+
+    async function sendCredentials() {
+    const user_id = document.getElementById('username').value;
+    const user_pw = document.getElementById('password').value;
+
+    const formData = new FormData();
+    formData.append('user_id', user_id);
+    formData.append('user_pw', user_pw);
+
+    try {
+        const response = await axios({
+            method: 'post',
+            url: 'http://192.168.0.18:3500/with/login',
+            data: formData,
+            withCredentials: true // 서버가 설정한 쿠키를 자동으로 포함합니다.
+        });
+
+        // 전체 응답을 콘솔에 출력
+        console.log('Login response:', response);
+        console.log('로그인데이터:', response.data);
+
+        // 토큰 추출
+        const accessToken = response.data.data.accessToken;
+        const refreshToken = response.data.data.refreshToken;
+
+        console.log('토큰값 들어갔어:', accessToken);
+
+        if (accessToken && refreshToken) {
+            // 쿠키에 토큰 저장
+            setCookie('accessToken', accessToken, 1); // 1일 후 만료
+            setCookie('refreshToken', refreshToken, 3); // 3일 후 만료
+            console.log('Tokens are stored in cookies.');
+        } else {
+            throw new Error('Token not provided by server');
+        }
+
+        alert('로그인 성공');
+    } catch (error) {
+        console.error('Login error:', error);
+    }
+}
+
+// 페이지 로드 시 데이터 로드
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('login-button').addEventListener('click', sendCredentials);
+});
     </script>
 </body>
 </html>
