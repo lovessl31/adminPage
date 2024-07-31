@@ -106,8 +106,6 @@
             </div>
         </div>
 
-       
-
         <!-- 푸터 -->
         <div id="footer">
             <div class="footerWrap">
@@ -168,7 +166,6 @@
         console.log('cate_idx:', cate_idx);
         console.log('초기값:', initial_name);
         console.log('토큰:', token);
-        
         
         // axios를 사용하여 PUT 요청 보내기
         axios.put(url, data, {
@@ -380,18 +377,16 @@
         }
         addedCategoryDiv.classList.add('selected');
         previouslySelectedDiv = addedCategoryDiv;
-    
+
         // 입력창에 새 카테고리명 표시 및 수정 가능하게 설정
         const cateInputWrap = document.getElementById('cateInputWrap');
         const cateInput = document.getElementById('cateInput');
         cateInput.value = '새로운 카테고리'; // 기본값 설정
         cateInputWrap.style.display = 'block';
         selectedCategory = newCategory;
-        cateInput.oninput = () => {
-            selectedCategory.cate_name = cateInput.value;
-            addedCategoryDiv.childNodes[1].textContent = cateInput.value;
-        };
-    
+
+        let initialName = newCategory.cate_name;
+
         // .cateListWrap 범위를 벗어나는 경우에만 스크롤
         const cateListWrap = document.querySelector('.cateListWrap');
         if (isElementBeyondViewport(addedCategoryDiv, cateListWrap)) {
@@ -414,31 +409,24 @@
         })
         .then(response => {
             console.log('최상위 카테고리 생성 완료:', response);
+
+            newCategory.cate_idx = response.data.data.cate_idx;
+
+             // 이후에 수정 작업 가능하게 설정
+        selectedCategory = newCategory;
+        initialName = newCategory.cate_name; // 초기 이름을 응답 받은 데이터로 갱신
+        cateInput.oninput = () => {
+            selectedCategory.cate_name = cateInput.value;
+            addedCategoryDiv.childNodes[1].textContent = cateInput.value;
+        };
+        cateInput.onblur = () => {
+            if (cateInput.value !== initialName) {
+                updateCategory(selectedCategory, initialName);
+                initialName = cateInput.value; // 업데이트 후 초기 이름 갱신
+                addedCategoryDiv.setAttribute('data-initial-name', initialName); // 새로운 초기 이름을 data 속성으로 저장
+            }
+        };
     
-            // 데이터를 다시 조회하여 실제 cate_idx 가져오기
-            cateGetData().then(() => {
-                // 임시 ID로 카테고리를 찾고, 실제 ID로 업데이트
-                const updatedCategory = categoryData.find(category => category.cate_name === newCategory.cate_name && category.cate_idx > tempId);
-                if (updatedCategory) {
-                    addedCategoryDiv = document.querySelector(`div[data-category-id='${updatedCategory.cate_idx}']`);
-                    if (previouslySelectedDiv) {
-                        previouslySelectedDiv.classList.remove('selected');
-                    }
-                    if (addedCategoryDiv) {
-                        addedCategoryDiv.classList.add('selected');
-                        previouslySelectedDiv = addedCategoryDiv;
-    
-                        // 입력창에 새 카테고리명 표시 및 수정 가능하게 설정
-                        cateInput.value = updatedCategory.cate_name;
-                        selectedCategory = updatedCategory;
-    
-                        // .cateListWrap 범위를 벗어나는 경우에만 스크롤
-                        if (isElementBeyondViewport(addedCategoryDiv, cateListWrap)) {
-                            addedCategoryDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        }
-                    }
-                }
-            });
         })
         .catch(error => {
             console.error('카테고리 생성 오류:', error);
@@ -447,78 +435,101 @@
     
     // 하위 카테고리 추가 함수
     function addSubCategory(parentLi, parentCategory, depth) {
-        const newSubCategory = {
-            s_c_idx: ++currentMaxId, // 새로운 ID 할당
-            s_cate_name: '새로운 하위 카테고리',
-            s_depth: depth,
-            s_g_c_idx: parentCategory.s_g_c_idx || parentCategory.cate_idx,
-            s_p_c_idx: parentCategory.s_c_idx || parentCategory.cate_idx,
-            sub_category: []
-        };
-    
-        // 로컬 데이터에 새 하위 카테고리 추가
-        if (!parentCategory.sub_category) {
-            parentCategory.sub_category = [];
+    const newSubCategory = {
+        s_c_idx: ++currentMaxId, // 새로운 ID 할당
+        s_cate_name: '새로운 하위 카테고리',
+        s_depth: depth,
+        s_g_c_idx: parentCategory.s_g_c_idx || parentCategory.cate_idx,
+        s_p_c_idx: parentCategory.s_c_idx || parentCategory.cate_idx,
+        sub_category: []
+    };
+
+    // 로컬 데이터에 새 하위 카테고리 추가
+    if (!parentCategory.sub_category) {
+        parentCategory.sub_category = [];
+    }
+    parentCategory.sub_category.push(newSubCategory);
+    expandedCategories.add(parentCategory.cate_idx || parentCategory.s_c_idx); // 부모 카테고리를 펼침 상태로 유지
+    renderCategories(categoryData);
+
+    // 새로 추가된 하위 카테고리를 선택된 상태로 표시
+    const addedSubCategoryDiv = document.querySelector(`div[data-category-id='${newSubCategory.s_c_idx}']`);
+    if (previouslySelectedDiv) {
+        previouslySelectedDiv.classList.remove('selected');
+    }
+    addedSubCategoryDiv.classList.add('selected');
+    previouslySelectedDiv = addedSubCategoryDiv;
+
+    // 입력창에 새 하위 카테고리명 표시 및 수정 가능하게 설정
+    const cateInputWrap = document.getElementById('cateInputWrap');
+    const cateInput = document.getElementById('cateInput');
+    cateInput.value = '새로운 하위 카테고리'; // 기본값 설정
+    cateInputWrap.style.display = 'block';
+    selectedCategory = newSubCategory;
+
+    let initialName = newSubCategory.s_cate_name;
+
+    cateInput.oninput = () => {
+        selectedCategory.s_cate_name = cateInput.value;
+        addedSubCategoryDiv.childNodes[1].textContent = cateInput.value;
+    };
+
+    cateInput.onblur = () => {
+        if (cateInput.value !== initialName) {
+            updateCategory(selectedCategory, initialName);
+            initialName = cateInput.value; // 업데이트 후 초기 이름 갱신
+            addedSubCategoryDiv.setAttribute('data-initial-name', initialName); // 새로운 초기 이름을 data 속성으로 저장
         }
-        parentCategory.sub_category.push(newSubCategory);
-        expandedCategories.add(parentCategory.cate_idx || parentCategory.s_c_idx); // 부모 카테고리를 펼침 상태로 유지
-        renderCategories(categoryData);
-    
-        // 새로 추가된 하위 카테고리를 선택된 상태로 표시
-        const addedSubCategoryDiv = document.querySelector(`div[data-category-id='${newSubCategory.s_c_idx}']`);
-        if (previouslySelectedDiv) {
-            previouslySelectedDiv.classList.remove('selected');
+    };
+
+    // .cateListWrap 범위를 벗어나는 경우에만 스크롤
+    const cateListWrap = document.querySelector('.cateListWrap');
+    if (isElementBeyondViewport(addedSubCategoryDiv, cateListWrap)) {
+        addedSubCategoryDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    const isCategory = 'sub'; // isCategory 값을 변수로 설정
+    const token = localStorage.getItem('accessToken');
+
+    // FormData 객체 생성
+    const formData = new FormData();
+    formData.append('cate_name', newSubCategory.s_cate_name);
+    formData.append('s_g_c_idx', newSubCategory.s_g_c_idx);
+    formData.append('s_p_c_idx', newSubCategory.s_p_c_idx);
+    formData.append('s_depth', newSubCategory.s_depth);
+
+    // 서버에 새로운 하위 카테고리 추가 요청
+    axios.post(`http://192.168.0.18:3500/with/addCate/${isCategory}`, formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+            'Authorization': `Bearer ${token}`
         }
-        addedSubCategoryDiv.classList.add('selected');
-        previouslySelectedDiv = addedSubCategoryDiv;
-    
-        // 입력창에 새 하위 카테고리명 표시 및 수정 가능하게 설정
-        const cateInputWrap = document.getElementById('cateInputWrap');
-        const cateInput = document.getElementById('cateInput');
-        cateInput.value = '새로운 하위 카테고리'; // 기본값 설정
-        cateInputWrap.style.display = 'block';
+    })
+    .then(response => {
+        console.log('하위 카테고리 생성 완료:', response);
+
+        // 서버 응답에서 새로운 하위 카테고리 ID를 가져와서 업데이트
+        newSubCategory.s_c_idx = response.data.data.cate_idx;
+
+        // 이후에 수정 작업 가능하게 설정
         selectedCategory = newSubCategory;
+        initialName = newSubCategory.s_cate_name; // 초기 이름을 응답 받은 데이터로 갱신
         cateInput.oninput = () => {
             selectedCategory.s_cate_name = cateInput.value;
             addedSubCategoryDiv.childNodes[1].textContent = cateInput.value;
         };
-    
-        // .cateListWrap 범위를 벗어나는 경우에만 스크롤
-        const cateListWrap = document.querySelector('.cateListWrap');
-        if (isElementBeyondViewport(addedSubCategoryDiv, cateListWrap)) {
-            addedSubCategoryDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-    
-        const isCategory = 'sub'; // isCategory 값을 변수로 설정
-        const token = localStorage.getItem('accessToken');
-    
-        // FormData 객체 생성
-        const formData = new FormData();
-        formData.append('cate_name', newSubCategory.s_cate_name);
-        formData.append('s_g_c_idx', newSubCategory.s_g_c_idx);
-        formData.append('s_p_c_idx', newSubCategory.s_p_c_idx);
-        formData.append('s_depth', newSubCategory.s_depth);
-    
-         // FormData 데이터 콘솔에 출력
-         for (let pair of formData.entries()) {
-            console.log(pair[0]+ ': ' + pair[1]);
-        }
-    
-        //서버에 새로운 하위 카테고리 추가 요청
-        axios.post(`http://192.168.0.18:3500/with/addCate/${isCategory}`, formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-                'Authorization': `Bearer ${token}`
+        cateInput.onblur = () => {
+            if (cateInput.value !== initialName) {
+                updateCategory(selectedCategory, initialName);
+                initialName = cateInput.value; // 업데이트 후 초기 이름 갱신
+                addedSubCategoryDiv.setAttribute('data-initial-name', initialName); // 새로운 초기 이름을 data 속성으로 저장
             }
-        })
-        .then(response => {
-            console.log('하위 카테고리 생성 완료:', response);
-            cateGetData();
-        })
-        .catch(error => {
-            console.error('하위 카테고리 생성 오류:', error);
-        });
-    }
+        };
+    })
+    .catch(error => {
+        console.error('하위 카테고리 생성 오류:', error);
+    });
+}
     
     
     // 카테고리 삭제 함수
