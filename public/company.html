@@ -198,22 +198,11 @@
                                 <td>첨부파일</td>
                                 <td class="buttons">
                                     <div class="file-input-wrapper">
-                                        <input type="text" class="file-input" id="fileInput">
-                                        <button class="attachBtn">첨부</button>
+                                        <input type="text" class="file-input" id="fileInput" readonly>
+                                        <input type="file" id="realFileInput" style="display:none;">
+                                        <button class="attachBtn" id="attachBtn">첨부</button>
                                     </div>
                                 </td>
-                            </tr>
-                            <tr>
-                                <td>카테고리 관리</td>
-                                <td class="buttons"><button class="moveBtn">이동</button></td>
-                            </tr>
-                            <tr>
-                                <td>게시판 관리</td>
-                                <td class="buttons"><button class="moveBtn">이동</button></td>
-                            </tr>
-                            <tr>
-                                <td>승인</td>
-                                <td class="buttons approveBtnContainer"></td>
                             </tr>
                         </tbody>
                     </table>
@@ -248,6 +237,15 @@
     let optionValue = ""; // 검색어
     
     document.addEventListener('DOMContentLoaded', () => {
+
+        document.querySelector('thead input[type="checkbox"]').addEventListener('change', function() {
+            const isChecked = this.checked;
+            const checkboxes = document.querySelectorAll('tbody input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = isChecked;
+            });
+        });
+
         // 페이지 로드 시 데이터 로드
         fetchCompanyData(1);
 
@@ -258,7 +256,7 @@
 
         document.getElementById('searchInput').addEventListener('keydown', (event) => {
             if (event.key === 'Enter') {
-                event.preventDefault(); // 엔터 키 기본 동작 방지 (필요시)
+                event.preventDefault(); // 엔터 키 기본 동작 방지
                 executeSearch();
             }
         });
@@ -273,10 +271,11 @@
             if (searchInput) {
                 optionValue = searchInput.value.trim();
             }
+            // 검색 조건이 변경 될 때마다 페이지를 1로 설정하고 데이터를 가져옴
             fetchCompanyData(1);
         }
         
-        // 페이지네이션과 아이템 카운트 옵션 적용
+        // 페이지 당 항목 수를 변경
         document.getElementById('itemCountSelect').addEventListener('change', (event) => {
             itemsPerPage = parseInt(event.target.value, 10);
             fetchCompanyData(1);
@@ -290,15 +289,53 @@
         if (parts.length === 2) return parts.pop().split(';').shift();
     }
     
+    // 회사 데이터 가져오기
+    function fetchCompanyData(page = 1) {
+        currentPage = page; // 매개 변수로 전달된 page 값 currentPage 변수에 저장
+        const token = getCookieValue('refreshToken');
+        const url = `http://192.168.0.18:3500/with/com-info?option_type=${optionType}&option_value=${optionValue}&per_page=${itemsPerPage}&page=${currentPage}`;
+        
+        axios.get(url, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
+        .then(response => {
+            console.log('성공');
+            const data = response.data.data;
+            console.log('data', data);
+
+            // 데이터를 created_date 기준으로 내림차순 정렬
+            data.sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
+
+            companies = data;
+            totalPage = response.data.total_page || 1; // 기본값으로 1 사용
+            renderTable();
+
+            // 페이지네이션 이동 시 thead 체크박스 초기화
+            document.querySelector('thead input[type="checkbox"]').checked = false;
+        })
+        .catch(error => {
+            console.error('Error loading company data:', error.response ? error.response.data : error.message);
+        });
+    }
+    
+    // 테이블 렌더링 
     function renderTable() {
         const tableBody = document.getElementById('companyTableBody');
-        tableBody.innerHTML = '';
-        companies.forEach(company => {
-            const row = document.createElement('tr');
+        tableBody.innerHTML = ''; // 체이블 본문 초기화
+
+        // 전체 데이터에서 현재 페이지의 시작 인덱스 계산
+        const startIndex = (currentPage - 1) * itemsPerPage;
+
+        companies.forEach((company, index) => {
+            const row = document.createElement('tr'); 
             let approveButton = '';
             
             if (company.chan_yn === 'N') {
                 approveButton = `<button class="approveBtn" data-com-idx="${company.com_idx}" data-c-id="${company.c_id}">승인</button>`;
+            } else if (company.chan_yn === 'Y') {
+                approveButton = `<button class="approveCBtn" disabled>완료</button>`;
             }
             
             row.innerHTML = `
@@ -307,13 +344,13 @@
                     <input type="checkbox">
                 </div>
             </td>
-            <td>${company.c_id}</td>
+            <td>${startIndex + index + 1}</td>
             <td>${company.c_name}</td>
             <td>${company.owner_name}</td>
             <td>${company.c_id}</td>
             <td>${company.created_date.split(' ')[0]}</td>
             <td><img src="images/download.svg" alt="download">${company.o_f_name}</td>
-            <td class="buttons"><button class="categoryBtn" data-com-idx="${company.com_idx}" data-c-id="${company.c_id}">이동</button></td>
+            <td class="buttons"><button class="categoryBtn moveBtn" data-com-idx="${company.com_idx}" data-c-id="${company.c_id}">이동</button></td>
             <td class="buttons"><button class="moveBtn">이동</button></td>
             <td class="buttons">${approveButton}</td>
             <td class="buttons center-align">
@@ -337,13 +374,7 @@
                 document.getElementById('registrationDate').textContent = company.created_date.split(' ')[0];
                 document.getElementById('fileInput').value = company.o_f_name;
 
-                // 승인 버튼 동적 생성
-                const approveButtonContainer = document.querySelector('.approveBtnContainer');
-                if (company.chan_yn === 'N') {
-                    approveButtonContainer.innerHTML = `<button class="approveBtn" data-com-idx="${company.com_idx}" data-c-id="${company.c_id}">승인</button>`;
-                } else {
-                    approveButtonContainer.innerHTML = '';
-                }
+           
                 
                  // 저장 버튼에 com_idx를 data 속성으로 추가
                 document.getElementById('saveBtn').setAttribute('data-com-idx', company.com_idx);
@@ -417,30 +448,6 @@
             // 페이지네이션 업데이트
             renderPagination();
         }
-        
-        // 회사 데이터 가져오기
-        function fetchCompanyData(page = 1) {
-            currentPage = page;
-            const token = getCookieValue('refreshToken');
-            const url = `http://192.168.0.18:3500/with/com-info?option_type=${optionType}&option_value=${optionValue}&per_page=${itemsPerPage}&page=${currentPage}`;
-            
-            axios.get(url, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            })
-            .then(response => {
-                console.log('성공');
-                const data = response.data.data;
-                console.log('data', data);
-                companies = data;
-                totalPage = response.data.total_page || 1; // 기본값으로 1 사용
-                renderTable();
-            })
-            .catch(error => {
-                console.error('Error loading company data:', error.response ? error.response.data : error.message);
-            });
-        }
     
         // 페이지네이션 렌더링
         function renderPagination() {
@@ -502,7 +509,8 @@
         const representativeName = document.getElementById('representativeName').value.trim();
         // const businessNumber = document.getElementById('businessNumber').value.trim(); 
         const comIdx = this.getAttribute('data-com-idx'); // 저장된 com_idx 값 가져오기
-
+        const cId = document.getElementById('businessNumber').value.trim(); // c_id를 가져오는 부분
+        
         // 요청할 폼 데이터
         const formData = new FormData();
         formData.append('owner_name', representativeName);
@@ -511,7 +519,7 @@
         const token = getCookieValue('refreshToken');
 
         // 수정 PUT 요청 보내기
-        axios.put(`http://192.168.0.18:3500//with/com-change/${comIdx}`, formData, {
+        axios.put(`http://192.168.0.18:3500//with/com-change/${cId}`, formData, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'multipart/form-data' // 폼데이터 전송 시 설정
@@ -521,23 +529,41 @@
             console.log('회사 정보 수정 응답:', response.data);
             alert('수정되엇습니다.');
             fetchCompanyData(currentPage); // 현재 페이지 데이터 새로고침
+            document.getElementById('popupLayer').style.display = 'none'; // 팝업창 닫기
         })
         .catch(error => {
             console.error('회사 정보 수정 오류:', error.response ? error.response.data : error.message);
             alert('수정에 실패했습니다.');
         });
     });
+    
+    // 첨부 파일 수정
+    document.getElementById('attachBtn').addEventListener('click', function() {
+        // 숨겨진 파일 입력 필드를 클릭하여 파일 선택 창 열기
+        document.getElementById('realFileInput').click();
+    });
+
+    // 파일 선택 시 이벤트
+    document.getElementById('realFileInput').addEventListener('change', function() {
+        const fileInput = document.getElementById('fileInput');
+        const files = this.files;
+
+        // 선택된 파일이 있으면 파일명을 표시
+        if (files.length > 0) {
+            fileInput.value = files[0].name;
+        }
+    });
+    
+    // 취소 버튼 누르면 팝업 레이어 닫기
+    document.getElementById('cancleBtn').addEventListener('click', function() {
+        document.getElementById('popupLayer').style.display = 'none';
+    });
 
     // 팝업 레이어 닫기
     document.querySelector('.close').onclick = function() {
         document.getElementById('popupLayer').style.display = 'none';
     };
-    
-    window.onclick = function(event) {
-        if (event.target == document.getElementById('popupLayer')) {
-            document.getElementById('popupLayer').style.display = 'none';
-        }
-    };
+
     </script>
     
 </body>
