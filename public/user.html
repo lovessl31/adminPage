@@ -47,8 +47,8 @@
         <!-- 사이드네비 -->
         <div class="sideNav">
             <ul>
-                <li><a href="user.html">사용자관리</a></li>
                 <li><a href="company.html">회사관리</a></li>
+                <li><a href="user.html">사용자관리</a></li>
                 <li><a href="category.html">카테고리관리</a></li>
                 <li><a href="board.html">게시판관리</a></li>
             </ul>
@@ -62,11 +62,11 @@
 
                 <div class="searchContent">
                     <div class="searchWrap">
-                        <select class="searchSelect">
-                            <option>전체</option>
-                            <option>이름</option>
-                            <option>연락처</option>
-                            <option>회사</option>
+                        <select class="searchSelect" id="searchSelect">
+                            <option value="all">전체</option>
+                            <option value="name">이름</option>
+                            <option value="contact">연락처</option>
+                            <option value="company">회사</option>
                         </select>
                         
                         <div class="divider"></div> <!-- 구분선 추가 -->
@@ -75,9 +75,9 @@
                                 <img src="./images/search.svg">
                             </div>
                             <div class="searchInput">
-                                <input type="text" placeholder="검색어를 입력해주세요">
+                                <input type="text" id="searchInput" placeholder="검색어를 입력해주세요">
                             </div>
-                            <div class="searchBtn"><button>검색</button></div>
+                            <div class="searchBtn"><button id="searchButton">검색</button></div>
                         </div>
                     </div>
                     <div>
@@ -94,11 +94,13 @@
                                 </div>
                             </th>
                             <th>이름</th>
+                            <th>아이디</th>
                             <th>연락처</th>
                             <th>메일</th>
                             <th>회사</th>
                             <th>부서</th>
                             <th>직급</th>
+                            <th>승인</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -131,18 +133,10 @@
                             <option value="50">50개</option>
                             <option value="100">100개</option>
                         </select>
-                        <button>삭제</button>
+                        <button id="deleteBtn">삭제</button>
                     </div>
-                    <div class="pagination" id="pagination">
-                        <a href="#">&laquo;</a>
-                        <a href="#" class="active">1</a>
-                        <a href="#">2</a>
-                        <a href="#">3</a>
-                        <a href="#">4</a>
-                        <a href="#">5</a>
-                        <a href="#">6</a>
-                        <a href="#">&raquo;</a>
-                    </div>
+                    <!-- 페이지네이션 영역 -->
+                    <div class="pagination" id="pagination"></div>
                 </div>
                </div>
             </div>
@@ -178,15 +172,29 @@
             <div class="contentPadding">
 
                 <!-- 클릭시 유저이미지 첨부할 수 있도록 -->
-                <span class="userImageSubmit"></span>
+                <!-- <span class="userImageSubmit"> -->
+                    <!-- 이미지 미리보기 요소 추가 -->
+                    <!-- <img class="userImagePreview" id="userImagePreview" src="" alt="이미지 미리보기" style="display: none;">
+                </span>
+                <input type="file" id="userImageInput" accept="image/*" style="display: none;"> -->
 
                 <div class="userForm">
-                    <input type="text" placeholder="이름">
-                    <input type="text" placeholder="메일">
-                    <input type="text" placeholder="연락처">
-                    <input type="text" placeholder="회사">
-                    <input type="text" placeholder="부서">
-                    <input type="text" placeholder="직급">
+                    <input type="email" placeholder="아이디" id="userId">
+                    <input type="password" placeholder="비밀번호" id="userPassword">
+                    <input type="text" placeholder="이름" id="userName">
+                    <input type="text" placeholder="연락처" id="userPhone">
+                    <input type="text" placeholder="부서" id="department">
+                    <input type="text" placeholder="직급" id="position">
+                    <div class="d-flex align-items-center">
+                        <div class="d-flex align-items-center me-2">
+                            <input type="radio" id="statusYes" name="status" value="Y">
+                            <label for="statusYes">승인</label>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <input type="radio" id="statusNo" name="status" value="N">
+                            <label for="statusNo">미승인</label>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="saveBtnWrap">
@@ -194,7 +202,55 @@
                     <button class="saveBtn">저장</button>
                 </div>
             </div>
-            
+        </div>
+    </div>
+
+      <!-- 사용자 수정 팝업 레이어 -->
+      <div id="userModify" class="popup">
+        <div class="popup-content">
+            <div class="popup-title">
+                <div class="d-flex align-items-center">
+                    <h2>사용자관리</h2>
+                    <span>추가</span>
+                </div>
+                <div>
+                    <span class="close">&times;</span>
+                </div>
+            </div>
+
+            <div class="contentPadding">
+
+                <!-- 클릭시 유저이미지 첨부할 수 있도록 -->
+                <!-- <span class="userImageSubmit"> -->
+                    <!-- 이미지 미리보기 요소 추가 -->
+                    <!-- <img class="userImagePreview" id="userImagePreview" src="" alt="이미지 미리보기" style="display: none;">
+                </span>
+                <input type="file" id="userImageInput" accept="image/*" style="display: none;"> -->
+
+                <div class="userForm">
+                    <input type="email" placeholder="아이디" id="userId">
+                    <input type="password" placeholder="비밀번호" id="userPassword">
+                    <input type="text" placeholder="이름" id="userName">
+                    <input type="text" placeholder="연락처" id="userPhone">
+                    <input type="text" placeholder="부서" id="department">
+                    <input type="text" placeholder="직급" id="position">
+                    <div class="d-flex align-items-center">
+                        <div class="d-flex align-items-center me-2">
+                            <input type="radio" id="statusYes" name="status" value="Y">
+                            <label for="statusYes">승인</label>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <input type="radio" id="statusNo" name="status" value="N">
+                            <label for="statusNo">미승인</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="saveBtnWrap">
+                    <button class="cancleBtn">취소</button>
+                    <button class="saveBtn">저장</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -207,64 +263,11 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="./js/script.js"></script>
+    <script src="./js/user.js"></script>
     <!-- Sweetalert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <script>
-
-        // 팝업 레이어
-        document.getElementById('addUserBtn').onclick = function() {
-            document.getElementById('popupLayer').style.display = 'flex';
-        };
-
-        document.querySelector('.close').onclick = function() {
-            document.getElementById('popupLayer').style.display = 'none';
-        };
-
-        window.onclick = function(event) {
-            if (event.target == document.getElementById('popupLayer')) {
-                document.getElementById('popupLayer').style.display = 'none';
-            }
-        };
-
-       // JSON 파일에서 데이터 불러오기
-       function loadUserData() {
-        axios.get('./users.json')
-            .then(response => {
-                const users = response.data;
-                const tableBody = document.getElementById('userTableBody');
-                users.forEach(user => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>
-                            <div class="d-flex align-items-center justify-content-center">
-                                <input type="checkbox">
-                            </div>
-                        </td>
-                        <td class="userInfo">
-                            <span class="userImage"></span>
-                            ${user.name}
-                        </td>
-                        <td>${user.contact}</td>
-                        <td>${user.email}</td>
-                        <td>${user.company}</td>
-                        <td>${user.department}</td>
-                        <td>${user.position}</td>
-                        <td class="buttons center-align">
-                            <button class="modifyBtn">수정</button>
-                            <button class="deleteBtn">삭제</button>
-                        </td>
-                    `;
-                    tableBody.appendChild(row);
-                });
-            })
-            .catch(error => {
-                console.error('Error loading user data:', error);
-            });
-    }
-
-    // 페이지 로드 시 가상 데이터 로드
-    document.addEventListener('DOMContentLoaded', loadUserData);
-
+      
     </script>
 </body>
 </html>
