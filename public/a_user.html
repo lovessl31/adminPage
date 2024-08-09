@@ -19,7 +19,7 @@
 <body>
     <div class="wrap">
         <!-- 헤더 -->
-         <div id="header">
+        <div id="header">
             <div class="headerWrap">
                 <div class="leftHeader">
                     <img src="">
@@ -44,7 +44,6 @@
                 </div>
             </div>
         </div>
-
         <!-- 사이드네비 -->
         <div class="sideNav">
             <ul>
@@ -66,7 +65,7 @@
                         <select class="searchSelect" id="searchSelect">
                             <option value="all">전체</option>
                             <option value="name">이름</option>
-                            <option value="phone">연락처</option>
+                            <option value="contact">연락처</option>
                             <option value="company">회사</option>
                         </select>
                         
@@ -101,7 +100,6 @@
                             <th>회사</th>
                             <th>부서</th>
                             <th>직급</th>
-                            <th>직책</th>
                             <th>승인</th>
                             <th></th>
                         </tr>
@@ -157,112 +155,117 @@
             </div>
         </div>
     </div>
+    
+    <!-- 팝업 레이어 -->
+     <div id="popupLayer" class="popup">
+        <div class="popup-content">
+            <div class="popup-title">
+                <div class="d-flex align-items-center">
+                    <h2>사용자관리</h2>
+                    <span>추가</span>
+                </div>
+                <div>
+                    <span class="close">&times;</span>
+                </div>
+            </div>
 
-        <!-- 사용자 추가 레이어 -->
-        <div id="addPopupLayer" class="popup">
-            <div class="popup-content">
-                <div class="popup-title">
+            <div class="contentPadding">
+
+                <!-- 클릭시 유저이미지 첨부할 수 있도록 -->
+                <!-- <span class="userImageSubmit"> -->
+                    <!-- 이미지 미리보기 요소 추가 -->
+                    <!-- <img class="userImagePreview" id="userImagePreview" src="" alt="이미지 미리보기" style="display: none;">
+                </span>
+                <input type="file" id="userImageInput" accept="image/*" style="display: none;"> -->
+
+                <div class="userForm">
+                    <input type="email" placeholder="아이디" id="userId">
+                    <input type="password" placeholder="비밀번호" id="userPassword">
+                    <input type="text" placeholder="이름" id="userName">
+                    <input type="text" placeholder="연락처" id="userPhone">
+                    <input type="text" placeholder="부서" id="department">
+                    <input type="text" placeholder="직급" id="position">
                     <div class="d-flex align-items-center">
-                        <h2>사용자관리</h2>
-                        <span>추가</span>
-                    </div>
-                    <div>
-                        <span class="close">&times;</span>
+                        <div class="d-flex align-items-center me-2">
+                            <input type="radio" id="statusYes" name="status" value="Y">
+                            <label for="statusYes">승인</label>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <input type="radio" id="statusNo" name="status" value="N">
+                            <label for="statusNo">미승인</label>
+                        </div>
                     </div>
                 </div>
-    
-                <div class="contentPadding">
-                    <!-- 클릭시 유저이미지 첨부할 수 있도록 -->
-                    <!-- <span class="userImageSubmit"> -->
-                        <!-- 이미지 미리보기 요소 추가 -->
-                        <!-- <img class="userImagePreview" id="userImagePreview" src="" alt="이미지 미리보기" style="display: none;">
-                    </span>
-                    <input type="file" id="userImageInput" accept="image/*" style="display: none;"> -->
-    
-                    <div class="userForm">
-                        <input type="email" placeholder="아이디" id="addUserId">
-                        <input type="password" placeholder="비밀번호" id="addUserPassword">
-                        <input type="text" placeholder="이름" id="addUserName">
-                        <input type="text" placeholder="연락처" id="addUserPhone">
-                        <input type="text" placeholder="직급" id="addPosition">
-                        <input type="text" placeholder="직책" id="addRank">
-                        <select id="addCompanySelect">
-                            <option value="" disabled selected hidden>회사를 선택해주세요.</option>
-                        </select>
-                        <div class="d-flex align-items-center approveWrap">
-                            <div class="d-flex align-items-center me-2">
-                                <input type="radio" id="addStatusYes" name="addStatus" value="Y" class="me-1">
-                                <label for="addStatusYes">승인</label>
-                            </div>
-                            <div class="d-flex align-items-center">
-                                <input type="radio" id="addStatusNo" name="addStatus" value="N" class="me-1">
-                                <label for="addStatusNo">미승인</label>
-                            </div>
-                    </div>
-    
-                    <div class="saveBtnWrap">
-                        <button class="cancleBtn">취소</button>
-                        <button id="addSaveBtn" class="saveBtn">저장</button>
-                    </div>
+
+                <div class="saveBtnWrap">
+                    <button class="cancleBtn">취소</button>
+                    <button class="saveBtn">저장</button>
                 </div>
             </div>
         </div>
     </div>
-        
-   <!-- 사용자 수정 팝업 레이어 -->
-    <div id="modifyPopupLayer" class="popup">
-    <div class="popup-content">
-        <div class="popup-title">
-            <div class="d-flex align-items-center">
-                <h2>사용자관리</h2>
-                <span>수정</span>
-            </div>
-            <div>
-                <span class="close">&times;</span>
-            </div>
-        </div>
 
-        <div class="contentPadding">
-            <div class="userForm">
-                <input type="email" placeholder="아이디" id="modifyUserId">
-                <!-- <input type="password" placeholder="비밀번호" id="modifyUserPassword"> -->
-                <input type="text" placeholder="이름" id="modifyUserName">
-                <input type="text" placeholder="연락처" id="modifyUserPhone">
-                <input type="text" placeholder="직급" id="modifyPosition">
-                <input type="text" placeholder="직책" id="modifyRank">
-                <div class="d-flex align-items-center approveWrap">
-                    <div class="d-flex align-items-center me-2">
-                        <input type="radio" id="modifyStatusYes" name="modifyStatus" value="Y" class="me-1">
-                        <label for="modifyStatusYes">승인</label>
-                    </div>
+      <!-- 사용자 수정 팝업 레이어 -->
+      <div id="userModify" class="popup">
+        <div class="popup-content">
+            <div class="popup-title">
+                <div class="d-flex align-items-center">
+                    <h2>사용자관리</h2>
+                    <span>추가</span>
+                </div>
+                <div>
+                    <span class="close">&times;</span>
+                </div>
+            </div>
+
+            <div class="contentPadding">
+
+                <!-- 클릭시 유저이미지 첨부할 수 있도록 -->
+                <!-- <span class="userImageSubmit"> -->
+                    <!-- 이미지 미리보기 요소 추가 -->
+                    <!-- <img class="userImagePreview" id="userImagePreview" src="" alt="이미지 미리보기" style="display: none;">
+                </span>
+                <input type="file" id="userImageInput" accept="image/*" style="display: none;"> -->
+
+                <div class="userForm">
+                    <input type="email" placeholder="아이디" id="userId">
+                    <input type="password" placeholder="비밀번호" id="userPassword">
+                    <input type="text" placeholder="이름" id="userName">
+                    <input type="text" placeholder="연락처" id="userPhone">
+                    <input type="text" placeholder="부서" id="department">
+                    <input type="text" placeholder="직급" id="position">
                     <div class="d-flex align-items-center">
-                        <input type="radio" id="modifyStatusNo" name="modifyStatus" value="N" class="me-1">
-                        <label for="modifyStatusNo">미승인</label>
+                        <div class="d-flex align-items-center me-2">
+                            <input type="radio" id="statusYes" name="status" value="Y">
+                            <label for="statusYes">승인</label>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <input type="radio" id="statusNo" name="status" value="N">
+                            <label for="statusNo">미승인</label>
+                        </div>
                     </div>
-            </div>
+                </div>
 
-            <div class="saveBtnWrap">
-                <button class="cancleBtn">취소</button>
-                <button id="modifySaveBtn" class="saveBtn">저장</button>
+                <div class="saveBtnWrap">
+                    <button class="cancleBtn">취소</button>
+                    <button class="saveBtn">저장</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-<!-- jQuery -->
- <script src="https://code.jquery.com/jquery-latest.min.js"></script>
- <!-- Popper.js -->
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
-  <!-- Bootstrap JS -->
-   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
-   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-   <script src="./js/script.js"></script>
-   <script src="./js/user.js"></script>
-   <!-- Sweetalert2 JS -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-<script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <!-- Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="./js/script.js"></script>
+    <!-- Sweetalert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script>
       
     </script>
 </body>

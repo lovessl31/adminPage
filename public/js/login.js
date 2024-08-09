@@ -18,7 +18,7 @@ async function sendCredentials() {
     try {
         const response = await axios({
             method: 'post',
-            url: 'http://192.168.0.18:3500/with/login',
+            url: 'http://192.168.0.18:28888/with/login',
             data: formData,
             withCredentials: true // 서버가 설정한 쿠키를 자동으로 포함합니다.
         });
@@ -30,8 +30,6 @@ async function sendCredentials() {
         // 토큰 추출
         const accessToken = response.data.data.accessToken;
         const refreshToken = response.data.data.refreshToken;
-
-        console.log('토큰값 들어갔어:', accessToken);
 
         if (accessToken && refreshToken) {
             // 쿠키에 토큰 저장
@@ -51,6 +49,13 @@ async function sendCredentials() {
         }
     } catch (error) {
         console.error('Login error:', error);
+
+        if (error.response && error.response.status === 401) {
+            // 401 에러 시 로그아웃 처리
+            logout();
+        } else {
+            console.error('An unexpected error occurred:', error);
+        }
     }
 }
 
@@ -68,6 +73,9 @@ function logout() {
     // 페이지 리디렉션
     window.location.href = 'login.html';
 }
+
+// 로그아웃 함수를 전역에서 접근할 수 있도록 설정
+window.logout = logout;
 
 // 페이지 로드 시 데이터 로드
 document.addEventListener('DOMContentLoaded', () => {

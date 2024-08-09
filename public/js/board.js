@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', ()=> {
 function deleteBoards(boards) {
     const token = getCookieValue('refreshToken');
 
-    axios.delete('http://192.168.0.18:3500/with/', {
+    axios.delete('http://192.168.0.18:28888/with/', {
         data : boards,
         headers : {
             'Authorization': `Bearer ${token}`,
@@ -110,7 +110,7 @@ function getCookieValue(name) {
 function loadBoardData(page = 1) {
     currentPage = page;
     const token = localStorage.getItem('accessToken');
-    const url = `http://192.168.0.18:3500/with/boards?option_type=${optionType}&option_value=${optionValue}&per_page=${itemsPerPage}&page=${currentPage}`;
+    const url = `http://192.168.0.18:28888/with/boards?option_type=${optionType}&option_value=${optionValue}&per_page=${itemsPerPage}&page=${currentPage}`;
 
     axios.get(url, {
         headers: {

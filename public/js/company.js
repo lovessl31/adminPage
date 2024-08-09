@@ -6,7 +6,6 @@ let optionType = "all"; // 기본 옵션 타입
 let optionValue = ""; // 검색어
 
 document.addEventListener('DOMContentLoaded', () => {
-
     document.querySelector('thead input[type="checkbox"]').addEventListener('change', function() {
         const isChecked = this.checked;
         const checkboxes = document.querySelectorAll('tbody input[type="checkbox"]');
@@ -15,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 다중 삭제
+// 다중 삭제
 document.getElementById('deleteBtn').addEventListener('click', () => {
     const selectedCompanies = Array.from(document.querySelectorAll('tbody input[type="checkbox"]:checked'))
     .map(checkbox => ({
@@ -36,7 +35,7 @@ function deleteCompanies(companies) {
     
     console.log('전송될 데이터:', JSON.stringify(companies));
     
-    axios.delete('http://192.168.0.18:3500/with/del_com', {
+    axios.delete('http://192.168.0.18:28888/with/del_com', {
         data : companies ,
         headers: {
             'Authorization': `Bearer ${token}`,
@@ -46,14 +45,15 @@ function deleteCompanies(companies) {
     .then(response => {
         console.log('회사 삭제 응답:', response.data);
         alert('삭제되었습니다.');
-        fetchCompanyData(currentPage); // 데이터를 다시 불러와서 갱신
+        localStorage.setItem('currentPage', currentPage);
+        //페이지 새로 고침
+        location.reload();
         })
         .catch(error => {
             console.error('회사 삭제 오류:', error.response ? error.response.data : error.message);
             alert('삭제에 실패했습니다.');
         });
     }
-
 
     // localStorage에서 현재 페이지 번호 가져오기
     const savedPage = localStorage.getItem('currentPage');
@@ -135,7 +135,7 @@ function getCookieValue(name) {
 function fetchCompanyData(page = 1) {
     currentPage = page; // 매개 변수로 전달된 page 값 currentPage 변수에 저장
     const token = getCookieValue('refreshToken');
-    const url = `http://192.168.0.18:3500/with/com-info?option_type=${optionType}&option_value=${optionValue}&per_page=${itemsPerPage}&page=${currentPage}`;
+    const url = `http://192.168.0.18:28888/with/com-info?option_type=${optionType}&option_value=${optionValue}&per_page=${itemsPerPage}&page=${currentPage}`;
     
     axios.get(url, {
         headers: {
@@ -146,6 +146,8 @@ function fetchCompanyData(page = 1) {
         console.log('성공');
         const data = response.data.data;
         console.log('data', data);
+        console.log('파일', response.data);
+        
 
         // 데이터를 created_date 기준으로 내림차순 정렬
         // data.sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
@@ -212,7 +214,7 @@ function renderTable() {
                 const fileIdx = this.getAttribute('data-f-idx'); // f_idx 값 가져오기
                 const token = getCookieValue('accessToken'); 
     
-                const url = `http://192.168.0.18:3500/file/download/${fileIdx}`;
+                const url = `http://192.168.0.18:28888/file/download/${fileIdx}`;
     
                 axios.get(url, {
                     headers: {
@@ -246,6 +248,12 @@ function renderTable() {
                 })
                 .catch(error => {
                     console.error('파일 다운로드 오류:', error.response ? error.response.data : error.message);
+                    if (error.response && error.response.status === 401) {
+                        // 401에러 발생 시 로그아웃 함수 호출
+                        window.logout();
+                    } else {
+                        handleError(error, '삭제에 실패했습니다.');
+                    }
                 });
             });
         });
@@ -284,7 +292,7 @@ function deleteCompany(company) {
     
     console.log('전송될 데이터:', JSON.stringify(company));
     
-    axios.delete('http://192.168.0.18:3500/with/del_com', {
+    axios.delete('http://192.168.0.18:28888/with/del_com', {
         data : company ,
         headers: {
             'Authorization': `Bearer ${token}`,
@@ -294,11 +302,18 @@ function deleteCompany(company) {
     .then(response => {
         console.log('회사 삭제 응답:', response.data);
         alert('삭제되었습니다.');
-        fetchCompanyData(currentPage); // 데이터를 다시 불러와서 갱신
+        localStorage.setItem('currentPage', currentPage);
+        //페이지 새로 고침
+        location.reload();
         })
         .catch(error => {
             console.error('회사 삭제 오류:', error.response ? error.response.data : error.message);
-            alert('삭제에 실패했습니다.');
+            if (error.response && error.response.status === 401) {
+                // 401에러 발생 시 로그아웃 함수 호출
+                window.logout();
+            } else {
+                alert('삭제에 실패했습니다.');
+            }
         });
     }
 
@@ -316,7 +331,7 @@ document.querySelectorAll('.userBtn').forEach(button => {
         const token = getCookieValue('refreshToken');
         
         //서버에 POST 요청
-        axios.post(`http://192.168.0.18:3500/with/com-change/${com_id}`, {}, {
+        axios.post(`http://192.168.0.18:28888/with/com-change/${com_id}`, {}, {
             headers: {
                 'Authorization': `Bearer ${token}`
             },
@@ -336,6 +351,14 @@ document.querySelectorAll('.userBtn').forEach(button => {
             })
             .catch(error => {
                 console.error('Error during post request:', error);
+
+                if (error.response && error.response.status === 401) {
+                    // 401 에러 발생 시 로그아웃 함수 호출
+                    window.logout();
+                } else {
+                    // 기타 에러 처리
+                    alert('요청 중 오류가 발생했습니다.');
+                }
             });
         });
     });
@@ -353,7 +376,7 @@ document.querySelectorAll('.categoryBtn').forEach(button => {
         const token = getCookieValue('refreshToken');
         
         //서버에 POST 요청
-        axios.post(`http://192.168.0.18:3500/with/com-change/${com_id}`, {}, {
+        axios.post(`http://192.168.0.18:28888/with/com-change/${com_id}`, {}, {
             headers: {
                 'Authorization': `Bearer ${token}`
             },
@@ -372,12 +395,18 @@ document.querySelectorAll('.categoryBtn').forEach(button => {
                 window.location.href = `category.html?=${comIdx}`;
             })
             .catch(error => {
-                console.error('Error during post request:', error);
+                if (error.response && error.response.status === 401) {
+                    // 401 에러 발생 시 로그아웃 함수 호출
+                    window.logout();
+                } else {
+                    // 기타 에러 처리
+                    alert('요청 중 오류가 발생했습니다.');
+                }
             });
         });
     });
-    
-    // 동적으로 생성된 게시판관리 이동 버튼에 이벤트 리스너 추가
+
+// 동적으로 생성된 게시판관리 이동 버튼에 이벤트 리스너 추가
 document.querySelectorAll('.boardBtn').forEach(button => {
     button.addEventListener('click', function() {
         const com_id = this.getAttribute('data-c-id');
@@ -390,7 +419,7 @@ document.querySelectorAll('.boardBtn').forEach(button => {
         const token = getCookieValue('refreshToken');
         
         //서버에 POST 요청
-        axios.post(`http://192.168.0.18:3500/with/com-change/${com_id}`, {}, {
+        axios.post(`http://192.168.0.18:28888/with/com-change/${com_id}`, {}, {
             headers: {
                 'Authorization': `Bearer ${token}`
             },
@@ -409,7 +438,13 @@ document.querySelectorAll('.boardBtn').forEach(button => {
                 window.location.href = `board.html?=${comIdx}`;
             })
             .catch(error => {
-                console.error('Error during post request:', error);
+                if (error.response && error.response.status === 401) {
+                    // 401 에러 발생 시 로그아웃 함수 호출
+                    window.logout();
+                } else {
+                    // 기타 에러 처리
+                    alert('요청 중 오류가 발생했습니다.');
+                }
             });
         });
     });
@@ -422,7 +457,7 @@ document.querySelectorAll('.boardBtn').forEach(button => {
             const token = getCookieValue('refreshToken');
             
             // 서버에 PUT 요청
-            axios.put(`http://192.168.0.18:3500/with/com-approved/${comIdx}/${comId}`, {}, {
+            axios.put(`http://192.168.0.18:28888/with/com-approved/${comIdx}/${comId}`, {}, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -431,12 +466,9 @@ document.querySelectorAll('.boardBtn').forEach(button => {
                 console.log('Approval response:', response.data);
                 // 승인 후 UI 업데이트 등 추가 작업 가능
                 alert('승인되었습니다.');
-
                 localStorage.setItem('currentPage', currentPage);
                 //페이지 새로 고침
                 location.reload();
-
-
                 })
                 .catch(error => {
                     console.error('Error approving company:', error.response ? error.response.data : error.message);
@@ -519,7 +551,7 @@ document.getElementById('modifySaveBtn').addEventListener('click', function() {
     const token = getCookieValue('refreshToken');
 
     // 수정 PUT 요청 보내기
-    axios.put(`http://192.168.0.18:3500//with/com-change/${cId}`, formData, {
+    axios.put(`http://192.168.0.18:28888//with/com-change/${cId}`, formData, {
         headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'multipart/form-data' // 폼데이터 전송 시 설정
@@ -527,13 +559,21 @@ document.getElementById('modifySaveBtn').addEventListener('click', function() {
     })
     .then(response => {
         console.log('회사 정보 수정 응답:', response.data);
-        alert('수정되엇습니다.');
-        fetchCompanyData(currentPage); // 현재 페이지 데이터 새로고침
-        document.getElementById('modifyPopup').style.display = 'none'; // 팝업창 닫기
+        alert('회사 정보가 수정되었습니다.');
+        localStorage.setItem('currentPage', currentPage);
+        //페이지 새로 고침
+        location.reload();
     })
     .catch(error => {
         console.error('회사 정보 수정 오류:', error.response ? error.response.data : error.message);
-        alert('수정에 실패했습니다.');
+
+        if (error.response && error.response.status === 401) {
+            // 401 에러 발생 시 로그아웃 함수 호출
+            window.logout();
+        } else {
+            // 기타 에러 처리
+            alert('수정에 실패했습니다.');
+        }
     });
 });
 
@@ -558,7 +598,7 @@ document.getElementById('registerSaveBtn').addEventListener('click', ()=> {
     const token = getCookieValue('accessToken'); // 쿠키에서 토큰 가져오기
 
      // 서버에 POST 요청 보내기
-    axios.post('http://192.168.0.18:3500/with/com-info', formData, {
+    axios.post('http://192.168.0.18:28888/with/com-info', formData, {
         headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'multipart/form-data'
