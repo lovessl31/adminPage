@@ -6,7 +6,7 @@ let optionType = "all";
 let optionValue = "";
 
 document.addEventListener('DOMContentLoaded', ()=> {
-    
+        
     // 전체 선택 기능
     document.querySelector('thead input[type="checkbox"]').addEventListener('change', function() {
         const isChecked = this.checked;
@@ -96,7 +96,6 @@ function deleteBoards(boards) {
         itemsPerPage = parseInt(event.target.value, 10);
         fetchCompanyData(1);
     });
-
 });
 
 // 쿠키 가져오기
@@ -135,13 +134,15 @@ function loadBoardData(page = 1) {
 
 // 테이블 랜더링
 function renderTable() {
-    const tableBody = document.getElementById('companyTableBody');
+    const tableBody = document.getElementById('boardTableBody');
     tableBody.innerHTML = ''; // 체이블 본문 초기화
 
     // 전체 데이터에서 현재 페이지의 시작 인덱스 계산
     const startIndex = (currentPage - 1) * itemsPerPage;
 
     boards.forEach(board => {
+        console.log("테이블 렌더링board :", board);
+        
         const row = document.createElement('tr');
         row.innerHTML = `
         <td>
@@ -149,11 +150,13 @@ function renderTable() {
                 <input type="checkbox">
             </div>
         </td>
-        <td>${board.id}</td>
-        <td><a href="/postList.html">${board.name}<img src="./images/link.svg"></a></td>
-        <td>${board.category}</td>
-        <td>${board.type}</td>
-        <td>${board.like}</td>
+        <td>${board["게시판 번호"]}</td>
+        <td><a href="/postList.html">${board["게시판 명"]}<img src="./images/link.svg"></a></td>        
+        <td>${board["게시판 타입"]}</td>
+        <td>${board["좋아요 유/무"]}</td>
+        <td>${board["카테고리 명"]}</td>
+        <td>${board["카테고리 유형"]}</td>
+        <td>${board["게시판 생성일"].split(' ')[0]}</td>
         <td class="buttons center-align">
             <button class="modifyBtn">수정</button>
             <button class="deleteBtn">삭제</button>

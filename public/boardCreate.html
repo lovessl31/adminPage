@@ -65,7 +65,7 @@
                                 <tr>
                                     <td>카테고리 선택</td>
                                     <td>
-                                        <select>
+                                        <select id="selectCategory">
                                             <option>카테고리 선택</option>
                                         </select>
                                     </td>
@@ -85,13 +85,13 @@
                                 <tr>
                                     <td>유형</td>
                                     <td>
-                                        <div class="radio-group">
+                                        <div id="boardtype" class="radio-group">
                                             <div class="d-flex align-items-center me-2">
-                                                <input type="radio" id="listType" class="me-1" name="boardType" value="list" checked>
+                                                <input type="radio" id="listType" class="me-1" name="boardType" value="L" checked>
                                                 <label for="listType">리스트</label>
                                             </div>
                                             <div class="d-flex align-items-center">
-                                                <input type="radio" id="albumType" class="me-1" name="boardType" value="album">
+                                                <input type="radio" id="albumType" class="me-1" name="boardType" value="P">
                                                 <label for="albumType">앨범</label>
                                             </div>
                                         </div>
@@ -100,13 +100,13 @@
                                 <tr>
                                     <td>좋아요</td>
                                     <td>
-                                        <div class="radio-group">
+                                        <div id="likeset" class="radio-group">
                                             <div class="d-flex align-items-center me-2">
-                                                <input type="radio" id="likeDisabled" class="me-1" name="likeOption" value="disabled" checked>
+                                                <input type="radio" id="likeDisabled" class="me-1" name="likeOption" value="N" checked>
                                                 <label for="likeDisabled">미사용</label>
                                             </div>
                                             <div class="d-flex align-items-center">
-                                                <input type="radio" id="likeEnabled" class="me-1" name="likeOption" value="enabled">
+                                                <input type="radio" id="likeEnabled" class="me-1" name="likeOption" value="Y">
                                                 <label for="likeEnabled">사용</label>
                                             </div>
                                         </div>
@@ -265,7 +265,7 @@
     
                         <div class="createSaveBtn">
                             <button class="cancleBtn">취소</button>
-                            <button class="saveBtn">저장</button>
+                            <button class="saveBtn" id="boardSaveBtn">저장</button>
                         </div>
                     </div>
                 </div>
@@ -304,61 +304,65 @@
     <script src="./js/script.js"></script>
     <!-- Sweetalert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-    <script>
+    <script src="./js/boardCreate.js"></script>
+    <script>        
+        
+    //     // 팝업 레이어
+    //     document.getElementById('boardModify').onclick = function() {
+    //         document.getElementById('popupLayer').style.display = 'flex';
+    //     };
 
-        // 팝업 레이어
-        document.getElementById('boardModify').onclick = function() {
-            document.getElementById('popupLayer').style.display = 'flex';
-        };
+    //     document.querySelector('.close').onclick = function() {
+    //         document.getElementById('popupLayer').style.display = 'none';
+    //     };
 
-        document.querySelector('.close').onclick = function() {
-            document.getElementById('popupLayer').style.display = 'none';
-        };
+    //     window.onclick = function(event) {
+    //         if (event.target == document.getElementById('popupLayer')) {
+    //             document.getElementById('popupLayer').style.display = 'none';
+    //         }
+    //     };
 
-        window.onclick = function(event) {
-            if (event.target == document.getElementById('popupLayer')) {
-                document.getElementById('popupLayer').style.display = 'none';
-            }
-        };
+    //    // JSON 파일에서 데이터 불러오기
+    //     function loadUserData() {
+    //     axios.get('./')
+    //         .then(response => {
+    //             const users = response.data;
+    //             const tableBody = document.getElementById('userTableBody');
+    //             users.forEach(user => {
+    //                 const row = document.createElement('tr');
+    //                 row.innerHTML = `
+    //                     <td>
+    //                         <div class="d-flex align-items-center justify-content-center">
+    //                             <input type="checkbox">
+    //                         </div>
+    //                     </td>
+    //                     <td class="userInfo">
+    //                         <span class="userImage"></span>
+    //                         ${user.name}
+    //                     </td>
+    //                     <td>${user.contact}</td>
+    //                     <td>${user.email}</td>
+    //                     <td>${user.company}</td>
+    //                     <td>${user.department}</td>
+    //                     <td>${user.position}</td>
+    //                     <td class="buttons center-align">
+    //                         <button class="modifyBtn">수정</button>
+    //                         <button class="deleteBtn">삭제</button>
+    //                     </td>
+    //                 `;
+    //                 tableBody.appendChild(row);
+    //             });
+    //         })
+    //         .catch(error => {
+    //             console.error('Error loading user data:', error);
+    //         });
+    // }
 
-       // JSON 파일에서 데이터 불러오기
-       function loadUserData() {
-        axios.get('./')
-            .then(response => {
-                const users = response.data;
-                const tableBody = document.getElementById('userTableBody');
-                users.forEach(user => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>
-                            <div class="d-flex align-items-center justify-content-center">
-                                <input type="checkbox">
-                            </div>
-                        </td>
-                        <td class="userInfo">
-                            <span class="userImage"></span>
-                            ${user.name}
-                        </td>
-                        <td>${user.contact}</td>
-                        <td>${user.email}</td>
-                        <td>${user.company}</td>
-                        <td>${user.department}</td>
-                        <td>${user.position}</td>
-                        <td class="buttons center-align">
-                            <button class="modifyBtn">수정</button>
-                            <button class="deleteBtn">삭제</button>
-                        </td>
-                    `;
-                    tableBody.appendChild(row);
-                });
-            })
-            .catch(error => {
-                console.error('Error loading user data:', error);
-            });
-    }
+    // // 페이지 로드 시 가상 데이터 로드
+    // document.addEventListener('DOMContentLoaded', loadUserData);
 
-    // 페이지 로드 시 가상 데이터 로드
-    document.addEventListener('DOMContentLoaded', loadUserData);
+
+
 
     </script>
 </body>
