@@ -908,6 +908,103 @@ table td {
     font-size: 13px;
     border-radius: 3px;
 }
+.likeDisabled{
+  margin-left: 20px;
+}
+
+.boardDesc{
+  width: 100%; /* 부모의 너비에 맞추기 */
+  height: 100px; /* 기본 높이 설정 */
+  padding: 10px;
+  box-sizing: border-box;
+  resize: none;           
+}
+
+.input-container {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  max-width: 450px;
+}
+
+.input-container textarea {
+  border: 1px solid #EBECF0;
+  border-radius: 5px;
+  width: 450px;
+  padding-right: 30px;
+  box-sizing: border-box;
+  resize: vertical;
+  min-height: 60px;
+  max-height: 150px;
+}
+
+.expand-icon {
+  position: absolute;  
+  top: 0;
+  /* left: 22vw; */
+  right: 5px;
+  cursor: pointer;
+  font-size: 16px; 
+}
+.expand-icon img {
+  height: 15px;
+  width: 15px;
+}
+
+.expand-icon:hover {
+  color: #0056b3;
+}
+
+.bpopup {
+  display: none;
+  position: fixed;  
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  border: 1px solid #ccc;  
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  max-height: 50vh;
+  /* height: auto; */
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.bpopup-header {
+  position: sticky;
+  height: 30px;
+  top: 0;
+  background-color: #fff;
+  border-bottom: 1px solid #f7f7f7;
+  z-index: 1001;
+}
+
+
+.bpopup.active {  
+  display: block;
+}
+
+.bpopup-close {
+  position: absolute;
+  top: 0px;
+  right: 10px;
+  cursor: pointer;
+  font-size: 18px;
+  color: #ff0000;
+}
+
+.bpopup textarea {
+  padding-left: 30px;
+  padding-right: 30px;
+  padding-bottom: 10px;
+  width: calc(100% - 20px);
+  height: calc(100% - 50px);
+  resize: none;
+  border: none;
+  outline: none;
+  font-size: 16px;
+}
 
 
 /* 게시글 목록 */
