@@ -21,7 +21,7 @@ function updateCategory(category, initialName) {
     const token = localStorage.getItem('accessToken');
     
     // 요청 URL 확인
-    const url = `http://192.168.0.18:28888/with/cate/${isCategory}/${cate_idx}/${initial_name}`;
+    const url = `http://192.168.0.18:28888/with/cate/${isCategory}/${cate_idx}`;
     console.log('Request URL:', url);
     // JSON 객체 내용을 콘솔에 출력
     console.log('---- JSON 데이터로 보내는 키랑 값 ----');
