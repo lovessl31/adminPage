@@ -938,6 +938,10 @@ table td {
   max-height: 150px;
 }
 
+.input-container textarea:focus {
+  outline: none;
+}
+
 .expand-icon {
   position: absolute;  
   top: 0;

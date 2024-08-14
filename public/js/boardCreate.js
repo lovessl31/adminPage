@@ -71,7 +71,456 @@ document.addEventListener('DOMContentLoaded', () => {
         popupText.style.width = `${width - 70}px`;
         popupText.style.height = `${height}px`;
     }
+
+    // // 동적 옵션 기능 구현
+    // const buttonsWrap = document.querySelector('.buttonsWrap');
+
+    // buttonsWrap.addEventListener('click', (event) => {
+    //     // 클릭된 요소가 버튼인지 확인해야함
+    //     if (event.target.tagName === 'BUTTON' || event.target.closest('button')) {
+    //         const button = event.target.tagName === 'BUTTON' ? event.target : event.target.closest('button');
+    //         const buttonText = button.textContent.trim();
+
+    //         // text를 보고 분기해서 판단함
+    //         console.log(buttonText);
+    //         switch (buttonText) {                                                
+    //             case '드롭다운 메뉴':
+    //                 handleDropdownMenu();
+    //                 break;
+    //             case '데이터 입력 필드':
+    //                 handleDataInputField();
+    //                 break;
+    //             case '날짜 입력 위젯':
+    //                 handleDateInputWidget();
+    //                 break;
+    //             default:
+    //                 console.log('알 수 없는 버튼이 클릭되었습니다.');
+    //         }
+    //     }
+    // });
+    // const optionsBody = document.getElementById('optionsBody');
+    // function handleDropdownMenu() {        
+    //     console.log('드롭다운 메뉴 추가');        
+    //     optionsBody.innerHTML += `<div class="dropOption">
+    //                                 <h5>드롭다운 메뉴</h5>
+    //                                 <table class="moduleTable">
+    //                                     <tbody>
+    //                                         <tr>
+    //                                             <td>속성명</td>
+    //                                             <td><input type="text" placeholder="속성명을 입력하세요."></td>
+    //                                         </tr>
+    //                                         <tr>
+    //                                             <td>옵션값</td>
+    //                                             <td class="d-flex align-items-center"><input type="text"
+    //                                                     placeholder="옵션값을 입력하세요">
+    //                                                 <button class="addBtn ms-1">추가</button>
+    //                                             </td>
+    //                                         </tr>
+    //                                         <!-- 플러스 버튼 클릭하면 생성되는 부분-->
+    //                                         <tr>
+    //                                             <td>옵션값1</td>
+    //                                             <td> <!-- 위에서 속성 입력한 값 들어가는 부분-->딸기</td>
+    //                                         </tr>
+    //                                         <tr>
+    //                                             <td>옵션값2</td>
+    //                                             <td> <!-- 위에서 속성 입력한 값 들어가는 부분-->바나나</td>
+    //                                         </tr>
+    //                                     </tbody>
+    //                                 </table>
+    //                                 <div class="createBtn">
+    //                                     <button class="createCancle">취소</button>
+    //                                     <button class="created">생성</button>
+    //                                 </div>
+
+    //                                 // 생성 버튼을 눌렀을때 생길 ui
+    //                                 <div>
+    //                                     <table>
+    //                                         <tbody>
+    //                                             <tr>
+    //                                                 <td>과일</td>
+    //                                                 <td class="spapceBetween">
+    //                                                     <select>
+    //                                                         <option>딸기</option>
+    //                                                         <option>바나나</option>
+    //                                                     </select>
+    //                                                     <div class="createBtn">
+    //                                                         <button class="modifyBtn">수정</button>
+    //                                                         <button class="deleteBtn">삭제</button>
+    //                                                     </div>
+    //                                                 </td>
+    //                                             </tr>
+    //                                         </tbody>
+    //                                     </table>
+    //                                 </div>
+
+
+    //                             <br>
+    //                             </div>`;
+    // }
+    // function handleDataInputField() {
+    //     console.log('데이터 입력 필드 추가 로직');
+    //     // 여기에 데이터 입력 필드 추가 로직 구현
+    //     optionsBody.innerHTML += `
+    //                             <div class="dataOption">
+    //                             <h5>데이터 입력 필드</h5>
+    //                                 <div>
+    //                                     <table class="moduleTable">
+    //                                         <tbody>
+    //                                             <tr>
+    //                                                 <td>속성명</td>
+    //                                                 <td><input type="text" placeholder="속성명을 입력하세요."></td>
+    //                                             </tr>
+    //                                         </tbody>
+    //                                     </table>
+    //                                     <div class="createBtn">
+    //                                         <button class="createCancle">취소</button>
+    //                                         <button class="created">생성</button>
+    //                                     </div>
+    //                                 </div>
+
+
+    //                             <br>
+    //                             </div>`;
+    // }
+
+    // function handleDateInputWidget() {
+    //     console.log('날짜 입력 위젯 추가 로직');
+    //     optionsBody.innerHTML += `
+    //                             <div class="dataOption">
+    //                             <h5>날짜 입력 위젯</h5>
+    //                                 <div>
+    //                                     <table class="moduleTable">
+    //                                         <tbody>
+    //                                             <tr>
+    //                                                 <td>속성명</td>
+    //                                                 <td><input type="text" placeholder="속성명을 입력하세요."></td>
+    //                                             </tr>
+    //                                         </tbody>
+    //                                     </table>
+    //                                     <div class="createBtn">
+    //                                         <button class="createCancle">취소</button>
+    //                                         <button class="created">생성</button>
+    //                                     </div>
+    //                                 </div>
+
+
+    //                             <br>
+    //                             </div>
+    //                             `
+    // }
+
+
+
+    // const optionsBody = document.getElementById('optionsBody');
+    // optionsBody.addEventListener('click', function () {
+    //     optionsBody.innerHTML = `<div class="dropOption">
+    //                         <table class="moduleTable">
+    //                             <tbody>
+    //                                 <tr>
+    //                                     <td>속성명</td>
+    //                                     <td><input type="text" placeholder="속성명을 입력하세요."></td>
+    //                                 </tr>
+    //                                 <tr>
+    //                                     <td>옵션값</td>
+    //                                     <td class="d-flex align-items-center"><input type="text"
+    //                                             placeholder="옵션값을 입력하세요">
+    //                                         <button class="addBtn ms-1">추가</button>
+    //                                     </td>
+    //                                 </tr>
+    //                                 <!-- 플러스 버튼 클릭하면 생성되는 부분-->
+    //                                 <tr>
+    //                                     <td>옵션값1</td>
+    //                                     <td> <!-- 위에서 속성 입력한 값 들어가는 부분-->딸기</td>
+    //                                 </tr>
+    //                                 <tr>
+    //                                     <td>옵션값2</td>
+    //                                     <td> <!-- 위에서 속성 입력한 값 들어가는 부분-->바나나</td>
+    //                                 </tr>
+    //                             </tbody>
+    //                         </table>
+    //                         <div class="createBtn">
+    //                             <button class="createCancle">취소</button>
+    //                             <button class="created">생성</button>
+    //                         </div>
+    //                     </div>`;     
+    // });      
+    
+    
+
+    
+
+
 });
+
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    const buttonsWrap = document.querySelector('.buttonsWrap');
+    const optionsBody = document.getElementById('optionsBody');
+    let optionCounter = 0;
+
+    buttonsWrap.addEventListener('click', (event) => {
+        const button = event.target.closest('button');
+        if (!button) return;
+
+        const buttonText = button.textContent.trim();
+        switch (buttonText) {
+            case '드롭다운 메뉴':
+                addOption('dropdown');
+                break;
+            case '데이터 입력 필드':
+                addOption('dataInput');
+                break;
+            case '날짜 입력 위젯':
+                addOption('dateInput');
+                break;
+            default:
+                console.log('알 수 없는 버튼이 클릭되었습니다.');
+        }
+    });
+
+    optionsBody.addEventListener('click', handleOptionEvents);
+
+    function addOption(type) {
+        const id = `option-${++optionCounter}`;
+        const optionElement = createOptionElement(type, id);
+        optionsBody.appendChild(optionElement);
+    }
+
+    function createOptionElement(type, id) {
+        const div = document.createElement('div');
+        div.className = `${type}Option`;
+        div.dataset.id = id;
+        div.dataset.type = type;
+
+        let content = '';
+        switch (type) {
+            case 'dropdown':
+                content = createDropdownContent(id);
+                break;
+            case 'dataInput':
+                content = createDataInputContent(id);
+                break;
+            case 'dateInput':
+                content = createDateInputContent(id);
+                break;
+        }
+
+        div.innerHTML = content;
+        return div;
+    }
+
+    function createDropdownContent(id) {
+        return `
+            <h5>드롭다운 메뉴</h5>
+            <table class="moduleTable">
+                <tbody>
+                    <tr>
+                        <td>속성명</td>
+                        <td><input type="text" placeholder="속성명을 입력하세요." class="attribute-name"></td>
+                    </tr>
+                    <tr>
+                        <td>옵션값</td>
+                        <td class="d-flex align-items-center">
+                            <input type="text" placeholder="옵션값을 입력하세요" class="option-value">
+                            <button class="addBtn ms-1" data-action="addOption">추가</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="option-list"></div>
+            <div class="createBtn">
+                <button class="createCancle" data-action="cancel">취소</button>
+                <button class="created" data-action="create">생성</button>
+            </div>
+        `;
+    }
+
+    function createDataInputContent(id) {
+        return `
+            <h5>데이터 입력 필드</h5>
+            <table class="moduleTable">
+                <tbody>
+                    <tr>
+                        <td>속성명</td>
+                        <td><input type="text" placeholder="속성명을 입력하세요." class="attribute-name"></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="createBtn">
+                <button class="createCancle" data-action="cancel">취소</button>
+                <button class="created" data-action="create">생성</button>
+            </div>
+        `;
+    }
+
+    function createDateInputContent(id) {
+        return `
+            <h5>날짜 입력 위젯</h5>
+            <table class="moduleTable">
+                <tbody>
+                    <tr>
+                        <td>속성명</td>
+                        <td><input type="text" placeholder="속성명을 입력하세요." class="attribute-name"></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="createBtn">
+                <button class="createCancle" data-action="cancel">취소</button>
+                <button class="created" data-action="create">생성</button>
+            </div>
+        `;
+    }
+
+    function handleOptionEvents(event) {
+        const target = event.target;
+        const action = target.dataset.action;
+        if (!action) return;
+
+        const optionElement = target.closest('[data-id]');
+        const id = optionElement.dataset.id;
+        const type = optionElement.dataset.type;
+
+        switch (action) {
+            case 'addOption':
+                if (type === 'dropdown') addDropdownOption(optionElement);
+                break;
+            case 'create':
+                createOption(optionElement, type);
+                break;
+            case 'cancel':
+                optionElement.remove();
+                break;
+            case 'modify':
+                modifyOption(optionElement);
+                break;
+            case 'delete':
+                deleteOption(optionElement);
+                break;
+        }
+    }
+
+    function addDropdownOption(optionElement) {
+        const optionValue = optionElement.querySelector('.option-value').value;
+        if (!optionValue) return;
+
+        const optionList = optionElement.querySelector('.option-list');
+        const optionItem = document.createElement('div');
+        optionItem.textContent = optionValue;
+        optionList.appendChild(optionItem);
+
+        optionElement.querySelector('.option-value').value = '';
+    }
+
+    function createOption(optionElement, type) {
+        const attributeName = optionElement.querySelector('.attribute-name').value;
+        if (!attributeName) {
+            alert('속성명을 입력해주세요.');
+            return;
+        }
+
+        let createdElement;
+        switch (type) {
+            case 'dropdown':
+                createdElement = createDropdownElement(attributeName, optionElement);
+                break;
+            case 'dataInput':
+                createdElement = createDataInputElement(attributeName);
+                break;
+            case 'dateInput':
+                createdElement = createDateInputElement(attributeName);
+                break;
+        }
+
+        optionElement.innerHTML = '';
+        optionElement.appendChild(createdElement);
+    }
+
+    function createDropdownElement(attributeName, optionElement) {
+        const options = Array.from(optionElement.querySelectorAll('.option-list div')).map(div => div.textContent);
+        const select = document.createElement('select');
+        options.forEach(option => {
+            const optionElement = document.createElement('option');
+            optionElement.textContent = option;
+            select.appendChild(optionElement);
+        });
+
+        const div = document.createElement('div');
+        div.innerHTML = `
+            <table>
+                <tbody>
+                    <tr>
+                        <td>${attributeName}</td>
+                        <td class="spaceBetween">
+                            ${select.outerHTML}
+                            <div class="createBtn">
+                                <button class="modifyBtn" data-action="modify">수정</button>
+                                <button class="deleteBtn" data-action="delete">삭제</button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        `;
+        return div;
+    }
+
+    function createDataInputElement(attributeName) {
+        const div = document.createElement('div');
+        div.innerHTML = `
+            <table>
+                <tbody>
+                    <tr>
+                        <td>${attributeName}</td>
+                        <td class="spaceBetween">
+                            <input type="text">
+                            <div class="createBtn">
+                                <button class="modifyBtn" data-action="modify">수정</button>
+                                <button class="deleteBtn" data-action="delete">삭제</button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        `;
+        return div;
+    }
+
+    function createDateInputElement(attributeName) {
+        const div = document.createElement('div');
+        div.innerHTML = `
+            <table>
+                <tbody>
+                    <tr>
+                        <td>${attributeName}</td>
+                        <td class="spaceBetween">
+                            <input type="date">
+                            <div class="createBtn">
+                                <button class="modifyBtn" data-action="modify">수정</button>
+                                <button class="deleteBtn" data-action="delete">삭제</button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        `;
+        return div;
+    }
+
+    function modifyOption(optionElement) {
+        // 수정 로직 구현
+        console.log('수정 기능 구현 필요');
+    }
+
+    function deleteOption(optionElement) {
+        if (confirm('정말로 이 옵션을 삭제하시겠습니까?')) {
+            optionElement.remove();
+        }
+    }
+});
+
+
+
 
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -117,8 +566,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     selectCagegory();
 
-
-
     // 페이지내 취소 버튼 클릭 시 게시판 페이지로 이동하기
     document.querySelectorAll('.cancleBtn').forEach(cancelBtn => {
         cancelBtn.addEventListener('click', () => {
@@ -126,6 +573,41 @@ document.addEventListener('DOMContentLoaded', () => {
             location.href = 'board.html';
         });
     });
+
+
+
+    // 동적 옵션 정보 수집 함수
+function collectDynamicOptions() {
+    const optionsContainer = document.getElementById('optionsBody');
+    const optionElements = optionsContainer.querySelectorAll('[data-id]');
+    const options = [];
+
+    optionElements.forEach(element => {
+        const type = element.dataset.type;
+        const attributeName = element.querySelector('td:first-child').textContent.trim();
+        let optionData = {
+            type: type,
+            attributeName: attributeName
+        };
+
+        switch (type) {
+            case 'dropdown':
+                const selectElement = element.querySelector('select');
+                optionData.options = Array.from(selectElement.options).map(option => option.value);
+                break;
+            case 'dataInput':
+                // 데이터 입력 필드는 추가 정보가 필요 없을 수 있습니다.
+                break;
+            case 'dateInput':
+                // 날짜 입력 위젯은 추가 정보가 필요 없을 수 있습니다.
+                break;
+        }
+
+        options.push(optionData);
+    });
+
+    return options;
+}
 
 
     // 등록 저장 버튼 클릭 이벤트 핸들러 추가
@@ -143,11 +625,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const boardDescription = document.querySelector(".boardDesc").value.trim();
         const boardType = document.querySelector("input[name='boardType']:checked").value;
         const likeSet = document.querySelector("input[name='likeOption']:checked").value;
-        const options = document.getElementById
+
+
+        // 동적 옵션 정보 수집
+        const dynamicOptions = collectDynamicOptions();
+
         console.log(111111111111111111);
         console.log("선택된 카테고리: ", selectedOption);
         console.log("선택된 카테고리 구분: ", categoryType);
-        console.log(boardName, boardDescription, boardType, likeSet, options);
+        console.log(boardName, boardDescription, boardType, likeSet, dynamicOptions);
         console.log(9999999999999999);
 
         // 요청할 폼 데이터
@@ -156,7 +642,8 @@ document.addEventListener('DOMContentLoaded', () => {
         formData.append('board_desc', boardDescription); // 게시판 설명
         formData.append('board_type', boardType); // 게시판 유형 (L 또는 P)
         formData.append('LikeSet', likeSet); // 승인여부 (Y 또는 N)
-        formData.append('option', options); // 옵션 값
+        
+        formData.append('option', JSON.stringify(dynamicOptions)); // 동적 옵션 정보를 JSON 문자열로 변환하여 추가
 
         const token = localStorage.getItem('accessToken');
 

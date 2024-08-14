@@ -143,8 +143,8 @@
                     </div>
 
 
-
-                    <div class="dynamicOptionContents boardContent">
+                    <!-- 동적 게시판 옵션 기능 -->
+                    <div id="dynamicOptionContainer" class="boardContent">
 
                         <h3>게시판 모듈</h3>
                         <p>원하는 모듈을 클릭하여 추가하실 수 있습니다.</p>
@@ -154,134 +154,12 @@
                             <button><img src="/images/add_circle.svg">데이터 입력 필드</button>
                             <button><img src="/images/add_circle.svg">날짜 입력 위젯</button>
                         </div>
-
-                        <div class="DropOptionContainer boardContent">
-                            <h5>드롭 다운 메뉴</h5>
-                            <div>
-                                <table class="moduleTable">
-                                    <tbody>
-                                        <tr>
-                                            <td>속성명</td>
-                                            <td><input type="text" placeholder="속성명을 입력하세요."></td>
-                                        </tr>
-                                        <tr>
-                                            <td>옵션값</td>
-                                            <td class="d-flex align-items-center"><input type="text"
-                                                    placeholder="옵션값을 입력하세요">
-                                                <button class="addBtn ms-1">추가</button>
-                                            </td>
-                                        </tr>
-                                        <!-- 플러스 버튼 클릭하면 생성되는 부분-->
-                                        <tr>
-                                            <td>옵션값1</td>
-                                            <td> <!-- 위에서 속성 입력한 값 들어가는 부분-->딸기</td>
-                                        </tr>
-                                        <tr>
-                                            <td>옵션값2</td>
-                                            <td> <!-- 위에서 속성 입력한 값 들어가는 부분-->바나나</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                <div class="createBtn">
-                                    <button class="createCancle">취소</button>
-                                    <button class="created">생성</button>
-                                </div>
-                            </div>
-
-                            <!-- 생성 눌렀을 시 나타나는 화면 -->
-                            <div>
-                                <table>
-                                    <tbody>
-                                        <tr>
-                                            <td>과일</td>
-                                            <td class="spapceBetween">
-                                                <select>
-                                                    <option>딸기</option>
-                                                    <option>바나나</option>
-                                                </select>
-                                                <div class="createBtn">
-                                                    <button class="modifyBtn">수정</button>
-                                                    <button class="deleteBtn">삭제</button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
-
-                        <div class="dataOptionContainer boardContent">
-                            <h5>데이터 입력 필드</h5>
-                            <div>
-                                <table class="moduleTable">
-                                    <tbody>
-                                        <tr>
-                                            <td>속성명</td>
-                                            <td><input type="text" placeholder="속성명을 입력하세요."></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                <div class="createBtn">
-                                    <button class="createCancle">취소</button>
-                                    <button class="created">생성</button>
-                                </div>
-                            </div>
-
-                            <!-- 생성 눌렀을 시 나타나는 화면 -->
-                            <div>
-                                <table>
-                                    <tbody>
-                                        <tr>
-                                            <td><!-- 아까 입력받은 속성명 -->생년월일</td>
-                                            <td class="spapceBetween">
-                                                <input type="text">
-                                                <div class="createBtn">
-                                                    <button class="modifyBtn">수정</button>
-                                                    <button class="deleteBtn">삭제</button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        <div class="dateOptionContainer boardContent">
-                            <h5>날짜 입력 위젯</h5>
-                            <div>
-                                <table class="moduleTable">
-                                    <tbody>
-                                        <tr>
-                                            <td>속성명</td>
-                                            <td><input type="text" placeholder="속성명을 입력하세요."></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                <div class="createBtn">
-                                    <button class="createCancle">취소</button>
-                                    <button class="created">생성</button>
-                                </div>
-                            </div>
-                            <!-- 생성 눌렀을 시 나타나는 화면 -->
-                            <div>
-                                <table>
-                                    <tbody>
-                                        <tr>
-                                            <td><!-- 아까 입력받은 속성명 -->시작시간</td>
-                                            <td class="spapceBetween">
-                                                <input type="date">
-                                                <div class="createBtn">
-                                                    <button class="modifyBtn">수정</button>
-                                                    <button class="deleteBtn">삭제</button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                        
+                        <div id="optionsBody">
+                            <!-- 동적 옵션을 담는 body -->
                         </div>
                     </div>
+                    
                     <div class="createSaveBtn">
                         <button class="cancleBtn">취소</button>
                         <button class="saveBtn" id="boardSaveBtn">저장</button>
