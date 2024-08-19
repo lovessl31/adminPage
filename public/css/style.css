@@ -747,6 +747,60 @@ table td {
     border-top: 2px solid #606060;
 }
 
+/* 게시판 목록 */
+.boardTable {
+  width: 100%;
+  border: 1px solid #EBECF0;
+  font-size: 14px;
+}
+
+.boardTable tr {
+  border: 1px solid #EBECF0;
+}
+
+.boardTable td {
+  padding: 10px 8px;
+  border: 1px solid #EBECF0;
+  vertical-align: middle; /* 수직 정렬 중앙 */
+}
+
+.boardTable td:nth-of-type(1) {
+  font-weight: 700;
+  background: #f8f8f8;
+  text-align: center;
+}
+
+.boardForm {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.boardForm input[type="text"] {
+  width: 100%;
+  height: 30px;
+  border: 1px solid #d8d8d8;
+  padding: 0px 10px;
+}
+
+.boardForm input:focus {
+  outline: none;
+}
+
+.boardForm input::placeholder {
+  font-size: 14px;
+  color: #cfcfcf;
+}
+#regisDesc{
+  min-width: 250px;
+  min-height: 100px;
+  max-height: 200px;
+  border-color: #c9c9c9;
+  overflow-y: scroll;
+}
+
+
 /* 게시판 생성 (boardCreate.html) */
 
 .radio-group {
@@ -912,9 +966,9 @@ table td {
   margin-left: 20px;
 }
 
-.boardDesc{
-  width: 100%; /* 부모의 너비에 맞추기 */
-  height: 100px; /* 기본 높이 설정 */
+.boardDesc {
+  width: 100%;
+  height: 100px;
   padding: 10px;
   box-sizing: border-box;
   resize: none;           
@@ -945,11 +999,11 @@ table td {
 .expand-icon {
   position: absolute;  
   top: 0;
-  /* left: 22vw; */
   right: 5px;
   cursor: pointer;
   font-size: 16px; 
 }
+
 .expand-icon img {
   height: 15px;
   width: 15px;
@@ -969,10 +1023,11 @@ table td {
   border: 1px solid #ccc;  
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   z-index: 1000;
-  max-height: 50vh;
-  /* height: auto; */
-  overflow-y: auto;
-  overflow-x: hidden;
+  width: 80%;
+  max-width: 400px;
+  height: 80%;
+  max-height: 400px;
+  overflow: hidden; /* 팝업 자체의 스크롤 제거 */
 }
 
 .bpopup-header {
@@ -982,8 +1037,8 @@ table td {
   background-color: #fff;
   border-bottom: 1px solid #f7f7f7;
   z-index: 1001;
+  padding: 5px 10px;
 }
-
 
 .bpopup.active {  
   display: block;
@@ -998,12 +1053,17 @@ table td {
   color: #ff0000;
 }
 
+.bpopup-content {
+  height: calc(100% - 30px); /* 헤더 높이를 뺀 나머지 */
+  overflow: hidden; /* 내용 영역의 스크롤 제거 */
+}
+
 .bpopup textarea {
-  padding-left: 30px;
-  padding-right: 30px;
-  padding-bottom: 10px;
-  width: calc(100% - 20px);
-  height: calc(100% - 50px);
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+  overflow-y: auto; /* 텍스트 영역에만 세로 스크롤 적용 */
   resize: none;
   border: none;
   outline: none;
