@@ -94,13 +94,17 @@ function loadBoardData(page = 1) {
 
             boards = data;
             console.log(boards);
-            totalPage = response.data.total_page || 1;
+            console.log(response.data);
+            
+            totalPage = response.data.total_page || 1;            
+            totalCount = `모든 게시판(${response.data.total_count})`
             console.log(totalPage);
             console.log(111111);
             renderTable();
             console.log(222222);
 
             document.querySelector('thead input[type="checkbox"]').checked = false;
+            document.getElementById('board_count').textContent = totalCount;
         })
         .catch(error => {
             console.error('Error loading board data:', error.response ? error.response.data : error.message);
