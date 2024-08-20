@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AMDIN - 관리자페이지</title>
+    <link rel="icon" href="./images/favicon.png" type="image/png">
+    <!-- Reset CSS -->
+    <link rel="stylesheet" href="./css/reset.css">
+    <!-- Pretendard Font -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <!-- sweetalert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.10/dist/sweetalert2.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="./css/style.css">
+    <!-- jsTree CSS -->
+    <link rel="stylesheet" href="./css/jstree/themes/default/style.min.css">
+
+    <style>
+      
+        #tree-container {
+            margin-bottom: 20px;
+        }
+        .controls {
+            margin-top: 10px;
+        }
+        .controls button {
+            margin-right: 10px;
+        }
+
+    </style>
+
+</head>
+<body>
+    <div class="wrap">
+        <!-- 헤더 -->
+        <div id="header">
+            <div class="headerWrap">
+                <div class="leftHeader">
+                    <img src="">
+                    <a href="index.html">ADMIN</a>
+                </div>
+                <div class="rightHeader">
+                    <div id="loginButtons">
+                        <ul>
+                            <li><a href="login.html">LOGIN</a></li> <!-- 최고 관리자 로그인 페이지 -->
+                            <!-- 회사관리자 로그인 페이지 -->
+                            <!-- <li><a href="com_login.html">슈퍼</a></li> -->
+                        </ul>
+                    </div>
+                    
+                    <button id="logoutButton" style="display: none;">LOGOUT</button>
+                    <div id="userInfo" style="display: none;"> <!-- 로그인 성공 시 로그인 사용자 정보-->
+                        <!-- <div class="d-flex align-items-center">
+                            <span>guest</span>
+                            <div class="imgBg"></div>
+                        </div> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 사이드네비 -->
+        <div class="sideNav">
+            <ul>
+                <li><a href="company.html">회사관리</a></li>
+                <li><a href="a_user.html">사용자관리</a></li>
+                <li><a href="a_category.html">카테고리관리</a></li>
+                <li><a href="a_board.html">게시판관리</a></li>
+            </ul>
+        </div>
+        <!-- 메인 컨텐츠 -->
+        <div id="content">
+            <h1>Organization Chart</h1>
+    
+            <div style="display: flex;">
+                <!-- 조직도 영역 -->
+                <div id="tree-container" style="width: 50%; border: 1px solid #ccc; padding: 10px;">
+                    <!-- jsTree가 여기에 로드됩니다 -->
+                </div>
+            
+                <!-- 사용자 목록 영역 -->
+                <div id="user-list" style="width: 50%; border: 1px solid #ccc; padding: 10px;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>사용자 이름</th>
+                            </tr>
+                        </thead>
+                        <tbody id="user-table-body">
+                            <!-- 서버에서 가져온 사용자 목록이 여기에 로드됩니다 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 푸터 -->
+        <div id="footer">
+            <div class="footerWrap">
+                <div>
+                    <span>문의사항</span>
+                    <span>wants@withfirst.com</span>
+                </div>
+                <div>
+                    <p>©withfirst All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+        <!-- Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+        <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="./js/script.js"></script>
+    <!-- Sweetalert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <!-- jsTree JS -->
+    <script src="./JS/jstree/jstree.min.js"></script>
+    <script>
+  $(document).ready(function() {
+            // 조직도 데이터 초기화
+            $.getJSON('tree.json', function(data) {
+                $('#tree-container').jstree({
+                    'core': {
+                        'check_callback': true,
+                        'data': data
+                    },
+                    'plugins': ["dnd"],
+                    'dnd': {
+                        'check_while_dragging': true,
+                  
+                        'inside_pos': 'last',
+                        'touch': false,
+                        'large_drop_target': true,
+                        'large_drag_target': true
+                    }
+                });
+
+                // jsTree 노드에서 드래그 시작
+                $('#tree-container').on('dragstart.jstree', function (e, data) {
+                    e.originalEvent.dataTransfer.setData('text/plain', data.node.id);
+                });
+            });
+
+            // 팀이 없는 사용자 목록 로드
+            $.getJSON('nodepartment.json', function(users) {
+                var userTableBody = $('#user-table-body');
+                users.forEach(function(user) {
+                    userTableBody.append('<tr draggable="true" data-user-id="' + user.id + '"><td>' + user.name + '</td></tr>');
+                });
+
+                // 사용자 목록의 각 항목에 드래그 이벤트 설정
+                $('#user-list tr').on('dragstart', function(e) {
+                    e.originalEvent.dataTransfer.setData('text/plain', $(this).data('user-id'));
+                });
+            });
+
+            // jsTree로 외부 드래그된 사용자를 추가
+            $('#tree-container').on('dragover', function(e) {
+                e.preventDefault();
+                e.originalEvent.dataTransfer.dropEffect = 'move';
+            });
+
+            $('#tree-container').on('drop', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                var userId = e.originalEvent.dataTransfer.getData('text/plain');
+                var targetNode = $('#tree-container').jstree('get_node', e.target);
+
+                console.log('Dropped User ID:', userId);
+                console.log('Dropped on Node ID:', targetNode.id);
+
+                // 사용자 정보를 jsTree에 추가
+                var userName = $('#user-list tr[data-user-id="' + userId + '"] td').text();
+                $('#tree-container').jstree().create_node(targetNode, {
+                    "text": userName,
+                    "id": userId,
+                });
+
+                // 사용자 목록에서 드래그된 사용자 제거
+                $('#user-list tr[data-user-id="' + userId + '"]').remove();
+            });
+
+            // 오른쪽 테이블로 노드를 드래그 앤 드롭하여 이동
+            $('#user-list').on('dragover', function(e) {
+                e.preventDefault();
+                e.originalEvent.dataTransfer.dropEffect = 'move';
+            });
+
+            $('#user-list').on('drop', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                var nodeId = e.originalEvent.dataTransfer.getData('text/plain');
+                var node = $('#tree-container').jstree('get_node', nodeId);
+
+                // jsTree에서 노드를 제거하고 테이블에 추가
+                $('#tree-container').jstree('delete_node', node);
+                $('#user-table-body').append('<tr draggable="true" data-user-id="' + node.id + '"><td>' + node.text + '</td></tr>');
+            });
+        });
+    </script>
+    </body>
+    </html>
+    
+</body>
+</html>

@@ -151,6 +151,8 @@ function loadUserData(page = 1) {
             users = data;
             totalPage = response.data.total_page || 1;
 
+            console.log('user',data);
+
             renderUserTable();
             renderPagination();
             document.querySelector('thead input[type="checkbox"]').checked = false;

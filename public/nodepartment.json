@@ -1,0 +1,22 @@
+[
+    {
+        "id": "user_1",
+        "name": "수려니",
+        "position": "개발자"
+    },
+    {
+        "id": "user_2",
+        "name": "너이름머야",
+        "position": "디자이너"
+    },
+    {
+        "id": "user_3",
+        "name": "모올라",
+        "position": "마케터"
+    },
+    {
+        "id": "user_4",
+        "name": "왜",
+        "position": "기획자"
+    }
+]
