@@ -483,19 +483,34 @@ function collectDynamicOptions() {
         })
             .then(response => {
                 console.log('게시판 등록 응답:', response.data);
-                let userResponse = confirm("게시판이 등록 되었습니다 추가로 작업하시겠습니까?");
-                if (userResponse) {
-                    console.log("사용자가 '예'를 선택했습니다.");
-                    location.reload();
-                } else {
-                    console.log("사용자가 '아니오'를 선택했습니다.");
-                    location.href = 'board.html';
-                }
+                // let userResponse = confirm("게시판이 등록 되었습니다 추가로 작업하시겠습니까?");
+                // if (userResponse) {
+                //     console.log("사용자가 '예'를 선택했습니다.");
+                //     location.reload();
+                // } else {
+                //     console.log("사용자가 '아니오'를 선택했습니다.");
+                //     location.href = 'board.html';
+                // }
+                showPopup(5, '게시판 등록', '<p>게시판 등록에 성공하였습니다. 추가로 작업 하시겠습니까?</p>', 'suc', 'select')
 
             })
             .catch(error => {
                 console.error('게시판 등록 오류:', error.response ? error.response.data : error.message);
-                alert('게시판 등록에 실패했습니다.');
+                showPopup(2, '게시판 등록 실패', '<p>게시판 등록에 실패하였습니다.</p>', 'fail')
             });
     });
+
+
+
+    function showPopup(seq, title, content, status, type) { 
+        const popup = new TimedPopup({
+            duration: seq * 1000,
+            title: title,
+            content: content,
+            backgroundColor: status, // suc 만 받음 suc이면 성공메세지 나머진 실패메세지
+            onSelect : type, // select 만 받음 select 면 페이지 이동처리 선택으로 변경
+            onClose: () => console.log('팝업이 닫혔습니다.')
+        });
+        popup.show();
+    }
 })
