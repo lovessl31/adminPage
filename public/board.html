@@ -19,7 +19,6 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="./css/style.css">
 </head>
-
 <body>
     <div class="wrap">
         <!-- 헤더 -->
@@ -86,9 +85,9 @@
                         </div>
                     </div>
 
-                    <table>
+                    <table id="boardTableContainer">
                         <thead>
-                            <tr>
+                            <tr class="board_header">
                                 <th>
                                     <div class="d-flex align-items-center justify-content-center">
                                         <input type="checkbox">
@@ -136,7 +135,7 @@
                             <button id="deleteBtn">삭제</button>
                         </div>
                         <!-- 페이지네이션 영역 -->
-                        <div class="pagination" id="pagination"></div>
+                        <div class="pagination" id="pagination"></div>                                            
                     </div>
                 </div>
             </div>
@@ -214,7 +213,6 @@
             </div>
         </div>
     </div>
-
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-latest.min.js"></script>
@@ -228,12 +226,11 @@
         crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="./js/script.js"></script>
-    <script src="./js/board.js"></script>
+    <script src="./js/TimePopup.js"></script>
+    <script src="./js/board.js"></script>    
     <!-- Sweetalert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-    <script>
-
-    </script>
+    <!-- <script type="module" src="./js/board.js"></script> -->
 </body>
 
 </html>

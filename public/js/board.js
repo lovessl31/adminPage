@@ -1,3 +1,9 @@
+
+
+if(typeof TimedPopup === 'undefined') {
+    console.error('TimedPopup is not defined. Make sure TimedPopup.js is loaded correctly.');
+}
+
 let boards = [];
 let currentPage = 1;
 let itemsPerPage = 10;
@@ -97,7 +103,7 @@ function loadBoardData(page = 1) {
             console.log(response.data);
             
             totalPage = response.data.total_page || 1;            
-            totalCount = `모든 게시판(${response.data.total_count})`
+            totalCount = `모든 게시판(${response.data.total_count || 0})`
             console.log(totalPage);
             console.log(111111);
             renderTable();
@@ -213,8 +219,10 @@ function renderTable() {
             }
         })
             .then(response => {
-                console.log('게시판 정보 수정 응답:', response.data);
-                alert('게시판 정보가 수정되었습니다.');
+                console.log('게시판 정보 수정 응답:', response.data);                
+                let title = "게시판 수정"
+                let body = "<p>게시판 정보가 수정되었습니다.</p>"                
+                showPopup(2, title, body, 'suc')
                 localStorage.setItem('currentPage', currentPage);
                 //페이지 새로 고침
                 location.reload();
@@ -266,6 +274,20 @@ function renderTable() {
     console.log("pagination--------------------------------");
 }
 
+function showPopup(seq, title, content, status, istype) { 
+    const popup = new TimedPopup({
+
+        duration: seq * 1000,
+        title: title,
+        content: content,
+        backgroundColor: status,
+        type : istype,
+        onClose: () => console.log('팝업이 닫혔습니다.')
+    });
+    popup.show();
+}
+
+
 // 삭제 요청 함수
 function deleteBoards(boards) {
     const token = localStorage.getItem('accessToken');
@@ -280,8 +302,8 @@ function deleteBoards(boards) {
         }
     })
         .then(response => {
-            console.log('게시판 삭제 응답:', response.data);
-            alert('삭제되었습니다.');
+            console.log('게시판 삭제 응답:', response.data);                        
+            showPopup(3, '게시판 삭제', "삭제 되었습니다.", 'suc')
             localStorage.setItem('currentPage', currentPage);
             //페이지 새로 고침
             location.reload();
@@ -292,7 +314,7 @@ function deleteBoards(boards) {
                 // 401에러 발생 시 로그아웃 함수 호출
                 window.logout();
             } else {
-                alert('삭제에 실패했습니다.');
+                showPopup(3, '게시판 삭제', "삭제에 실패 하였습니다.")
             }
         });
 }
@@ -350,6 +372,9 @@ function boardPagination() {
     };
     pagination.appendChild(lastPage);
 }
+
+
+
 
 // 게시판 생성 클릭 시 생성 페이지로 이동
 document.getElementById('createBoard').addEventListener('click', function () {
