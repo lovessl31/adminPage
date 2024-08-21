@@ -2,6 +2,7 @@
     {
         "id": "node_1",
         "text": "개발팀",
+        "type": "team",
         "state": { "opened": true },
         "children": [
             {
@@ -24,6 +25,7 @@
             {
                 "id": "node_5",
                 "text": "개발 2팀",
+                "type": "team",
                 "state": { "opened": true },
                 "children": [
                     {
