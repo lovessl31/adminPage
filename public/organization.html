@@ -17,7 +17,11 @@
     <link rel="stylesheet" href="./css/style.css">
     <!-- jsTree CSS -->
     <link rel="stylesheet" href="./css/jstree/themes/default/style.min.css">
-
+    <style>
+        hr {
+            margin-bottom: 15px;
+        }
+    </style>
 </head>
 <body>
     <div class="wrap">
@@ -65,17 +69,59 @@
                     <div class="Owrap">
                         <div class="d-flex justify-content-between align-items-center">
                             <p>위드퍼스트(회사이름)</p>
-                            <button>조직추가</button>
+                            <div>
+                                <button id="addTeam" class="addBtn">조직추가</button>
+                                <button id="deleteNode" class="deleteBtn">삭제</button>
+                            </div>
                         </div>
                         <hr>
+
+                        <div id="tree-container">
+                
+                        </div>
                     </div>
                 </div>
                 <div class="Oinner2">
-    
+                    <div class="Owrap_user">
+                        <div class="d-flex justify-content-between">
+                            <div class="o-detail">
+                                <h5>사용자목록</h5>
+                                <p>해당 사용자를 커서로 끌어 조직도에 추가하실 수 있습니다.</p>
+                            </div>
+                            <div class="searchContent">
+                                <div class="searchInputWrapper d-flex align-items-center">
+                                    <div class="floatImg">
+                                        <img src="./images/search.svg">
+                                    </div>
+                                    <div class="searchInput">
+                                        <input type="text" id="searchInput" placeholder="검색어를 입력해주세요">
+                                        </div>
+                                        <div class="searchBtn"><button id="searchButton">검색</button></div>
+                                    </div>
+                            </div>
+                        </div>
+                        
+                    
+                        <table style="text-align: center;">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>이름</th>
+                                    <th>아이디</th>
+                                    <th>연락처</th>
+                                    <th>회사</th>
+                                    <th>직급</th>
+                                    <th>직책</th>
+                                </tr>
+                            </thead>
+                            <tbody id="userTableBody">
+                            </tbody>
+                        </table>
+                        <div class="pagination mt-4 d-flex justify-content-end" id="pagination"></div>
+                    </div>
+                    
                 </div>
             </div>
-        
-
         </div>
 
         <!-- 푸터 -->
@@ -101,97 +147,12 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="./js/script.js"></script>
-    <!-- Sweetalert2 JS -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <!-- jsTree JS -->
-    <script src="./JS/jstree/jstree.min.js"></script>
+    <script src="./js/jstree/jstree.min.js"></script>
+    <script src="./js/organiztion.js"></script>
     <script>
-  $(document).ready(function() {
-            // 조직도 데이터 초기화
-            $.getJSON('tree.json', function(data) {
-                $('#tree-container').jstree({
-                    'core': {
-                        'check_callback': true,
-                        'data': data
-                    },
-                    'plugins': ["dnd"],
-                    'dnd': {
-                        'check_while_dragging': true,
-                  
-                        'inside_pos': 'last',
-                        'touch': false,
-                        'large_drop_target': true,
-                        'large_drag_target': true
-                    }
-                });
-
-                // jsTree 노드에서 드래그 시작
-                $('#tree-container').on('dragstart.jstree', function (e, data) {
-                    e.originalEvent.dataTransfer.setData('text/plain', data.node.id);
-                });
-            });
-
-            // 팀이 없는 사용자 목록 로드
-            $.getJSON('nodepartment.json', function(users) {
-                var userTableBody = $('#user-table-body');
-                users.forEach(function(user) {
-                    userTableBody.append('<tr draggable="true" data-user-id="' + user.id + '"><td>' + user.name + '</td></tr>');
-                });
-
-                // 사용자 목록의 각 항목에 드래그 이벤트 설정
-                $('#user-list tr').on('dragstart', function(e) {
-                    e.originalEvent.dataTransfer.setData('text/plain', $(this).data('user-id'));
-                });
-            });
-
-            // jsTree로 외부 드래그된 사용자를 추가
-            $('#tree-container').on('dragover', function(e) {
-                e.preventDefault();
-                e.originalEvent.dataTransfer.dropEffect = 'move';
-            });
-
-            $('#tree-container').on('drop', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-
-                var userId = e.originalEvent.dataTransfer.getData('text/plain');
-                var targetNode = $('#tree-container').jstree('get_node', e.target);
-
-                console.log('Dropped User ID:', userId);
-                console.log('Dropped on Node ID:', targetNode.id);
-
-                // 사용자 정보를 jsTree에 추가
-                var userName = $('#user-list tr[data-user-id="' + userId + '"] td').text();
-                $('#tree-container').jstree().create_node(targetNode, {
-                    "text": userName,
-                    "id": userId,
-                });
-
-                // 사용자 목록에서 드래그된 사용자 제거
-                $('#user-list tr[data-user-id="' + userId + '"]').remove();
-            });
-
-            // 오른쪽 테이블로 노드를 드래그 앤 드롭하여 이동
-            $('#user-list').on('dragover', function(e) {
-                e.preventDefault();
-                e.originalEvent.dataTransfer.dropEffect = 'move';
-            });
-
-            $('#user-list').on('drop', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-
-                var nodeId = e.originalEvent.dataTransfer.getData('text/plain');
-                var node = $('#tree-container').jstree('get_node', nodeId);
-
-                // jsTree에서 노드를 제거하고 테이블에 추가
-                $('#tree-container').jstree('delete_node', node);
-                $('#user-table-body').append('<tr draggable="true" data-user-id="' + node.id + '"><td>' + node.text + '</td></tr>');
-            });
-        });
     </script>
     </body>
     </html>
-    
 </body>
 </html>
