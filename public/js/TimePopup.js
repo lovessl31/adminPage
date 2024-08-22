@@ -13,6 +13,9 @@ class TimedPopup {
         this.timerBar = null;
         this.timer = null;
         this.startTime = Date.now();
+        this.isPaused = false;
+        this.remainingTime = this.duration;
+
         console.log('TimedPopup instance created:', options);
     }
 
@@ -31,12 +34,13 @@ class TimedPopup {
         this.saveState();
     }
 
-    createPopup() {
-        if (this.onSelect == 'select') {
+    createPopup() {        
             console.log('Creating select popup');
-            this.popup = document.createElement('div');
+            this.popup = document.createElement('div');            
+            this.popup.style.backgroundColor = this.backgroundColor;      
+
+        if (this.onSelect == 'select') {                              
             this.popup.className = 'timed-popup select-popup';
-            this.popup.style.backgroundColor = this.backgroundColor;
             this.popup.innerHTML = `
             <div class="timer-bar">
                 <div class="timer-progress"></div>
@@ -45,11 +49,10 @@ class TimedPopup {
             <div class="title">${this.title}</div>
             <div class="content">${this.content}</div>
             <div class="button-container">
-                <button class="yes-popBtn underline-btn" style="width: 50px; margin-right: 5px;">예</button>
-                <button class="no-popBtn underline-btn" style="width: 50px; margin-right: 5px;">아니오</button>
+                <button class="yes-popBtn underline-btn" style="width: 50px; margin-right: 5px; margin-bottom: 5px;">예</button>
+                <button class="no-popBtn underline-btn" style="width: 50px; margin-right: 5px; margin-bottom: 5px;">아니오</button>
             </div>
         `;
-
             const closeBtn = this.popup.querySelector('.close');
             closeBtn.addEventListener('click', () => this.close());
 
@@ -60,7 +63,6 @@ class TimedPopup {
                 this.isSelected = true;              
                 location.reload()  
             });
-
             const noBtn = this.popup.querySelector('.no-popBtn');
             noBtn.addEventListener('click', (e) => {                
                 // 세션에서 버블링때문에 잔상이 생겨서 버블링 방지                
@@ -75,10 +77,7 @@ class TimedPopup {
             console.log('Select popup element created:', this.popup);
 
         } else {
-            console.log('createPopup method called');
-            this.popup = document.createElement('div');
-            this.popup.className = 'timed-popup';
-            this.popup.style.backgroundColor = this.backgroundColor;
+            this.popup.className = 'timed-popup';            
             this.popup.innerHTML = `
                 <div class="timer-bar">
                     <div class="timer-progress"></div>
@@ -96,17 +95,40 @@ class TimedPopup {
 
             console.log('Popup element created:', this.popup);
         }
-
+        // 마우스 이벤트 리스너 추가
+        this.popup.addEventListener('mouseenter', () => this.pauseTimer());
+        this.popup.addEventListener('mouseleave', () => this.resumeTimer());
     }
 
+    // startTimer() {
+    //     const animate = () => {
+    //         const elapsed = Date.now() - this.startTime;
+    //         const timeLeft = this.duration - elapsed;
+    //         if (timeLeft <= 0) {
+    //             this.close();
+    //         } else {
+    //             const width = (timeLeft / this.duration) * 100;
+    //             this.popup.querySelector('.timer-progress').style.width = `${width}%`;
+    //             this.timer = requestAnimationFrame(animate);
+    //         }
+    //     };
+    //     this.timer = requestAnimationFrame(animate);
+    // }
     startTimer() {
+        let lastTime = Date.now();
         const animate = () => {
-            const elapsed = Date.now() - this.startTime;
-            const timeLeft = this.duration - elapsed;
-            if (timeLeft <= 0) {
+            const currentTime = Date.now();
+            const deltaTime = currentTime - lastTime;
+            lastTime = currentTime;
+
+            if (!this.isPaused) {
+                this.remainingTime -= deltaTime;
+            }
+
+            if (this.remainingTime <= 0) {
                 this.close();
             } else {
-                const width = (timeLeft / this.duration) * 100;
+                const width = (this.remainingTime / this.duration) * 100;
                 this.popup.querySelector('.timer-progress').style.width = `${width}%`;
                 this.timer = requestAnimationFrame(animate);
             }
@@ -114,9 +136,17 @@ class TimedPopup {
         this.timer = requestAnimationFrame(animate);
     }
 
+    pauseTimer() {
+        this.isPaused = true;
+    }
+
+    resumeTimer() {
+        this.isPaused = false;
+    }
+
     close() {
         console.log('close method called');
-        if (this.popup && this.popup.parentNode) {
+        if (this.popup && this.popup.parentNode) {            
             this.popup.classList.remove('show');
             // 애니메이션이 끝난 후 요소 제거
             setTimeout(() => {
