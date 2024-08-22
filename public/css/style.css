@@ -2281,6 +2281,10 @@ em {
   height: calc(100vh - 60px - 34px - 80px - 32px); 
   overflow-y: auto; /* 컨텐츠가 넘칠 때 스크롤 생성 */
   margin-right: 2%;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .Oinner2 {
@@ -2308,14 +2312,24 @@ em {
 }
 
 .Owrap button {
-    width: 70px;
-    height: 30px;
-    border: none;
-    background: #2F2F37;
-    color: #fff;
-    border-radius: 3px;
-    font-size: 12px;
-    font-weight: 700;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 5px;
+  padding: 5px 8px;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+}
+
+.addBtn {
+  width: 70px;
+  height: 30px;
+  border: none;
+  background: #2F2F37;
+  color: #fff;
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: 700;
 
 }
 
@@ -2342,4 +2356,18 @@ em {
 #userTableBody tr:hover {
   transition: ease-in 0.3s;
   background-color: #fbfcff;
+}
+
+.controls button {
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 5px;
+  padding: 5px 8px;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+}
+
+.jsteam {
+
 }

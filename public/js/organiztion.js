@@ -1,29 +1,3 @@
-$(document).ready(function() {
-    // 조직도 데이터 초기화
-    $.getJSON('tree.json', function(data) {
-        $('#tree-container').jstree({
-            'core': {
-                'check_callback': true,
-                'data': data
-            },
-            'plugins': ["dnd"],
-            'dnd': {
-                'check_while_dragging': true,
-          
-                'inside_pos': 'last',
-                'touch': false,
-                'large_drop_target': true,
-                'large_drag_target': true
-            }
-        });
-
-        // jsTree 노드에서 드래그 시작
-        $('#tree-container').on('dragstart.jstree', function (e, data) {
-            e.originalEvent.dataTransfer.setData('text/plain', data.node.id);
-        });
-    });
-});
-
 let users = []; // 전역 변수로 users 선언
 let currentPage = 1; // 현재 페이지
 let itemsPerPage = 10; // 페이지 당 항목 수 (초기값)
@@ -46,23 +20,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // 데이터 로드 함수 호출
     loadUserData(currentPage);
     
-    // // 검색 버튼 클릭 시와 검색 필드에서 엔터 키 입력 시 검색
-    // document.getElementById('searchButton').addEventListener('click', () => {
-    //     executeSearch();
-    // });
+    // 검색 버튼 클릭 시와 검색 필드에서 엔터 키 입력 시 검색
+    document.getElementById('searchButton').addEventListener('click', () => {
+        executeSearch();
+    });
 
-    // document.getElementById('searchInput').addEventListener('keydown', (event) => {
-    //     if (event.key === 'Enter') {
-    //         event.preventDefault();
-    //         executeSearch();
-    //     }
-    // });
-
-    // // 페이지 당 항목 수 변경
-    // document.getElementById('itemCountSelect').addEventListener('change', (event) => {
-    //     itemsPerPage = parseInt(event.target.value, 10);
-    //     loadUserData(1);
-    // });
+    document.getElementById('searchInput').addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            executeSearch();
+        }
+    });
 
 });
 
@@ -107,8 +75,6 @@ function loadUserData(page = 1) {
             users = data;
             totalPage = response.data.total_page || 1;
 
-            console.log('user',data);
-
             renderUserTable();
             renderPagination();
         })
@@ -137,15 +103,36 @@ function renderUserTable() {
     users.forEach(user => {
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td>${user.user_name}</td>
-            <td>${user.user_id}</td>
+            <td><img src="./images/drag2.svg"></td>
+            <td data-user-name="${user.user_name}">${user.user_name}</td>
+            <td data-user-id="${user.user_id}">${user.user_id}</td>
             <td>${user.phone_number}</td>
             <td>${user.c_name}</td>
             <td>${user.user_rank}</td>
             <td>${user.user_position}</td>
         `;
         tableBody.appendChild(row);
+
+             // 각 행에 클릭 이벤트 추가
+             row.setAttribute('draggable', true);  // 드래그 가능하도록 설정
+             row.addEventListener('dragstart', function(e) {
+                 const userName = this.querySelector('td[data-user-name]').dataset.userName;
+                 const userId = this.querySelector('td[data-user-id]').dataset.userId;
+
+                 const userData = JSON.stringify({ userName, userId });
+     
+                 console.log('Storing user data in dataTransfer:', userData);
+
+                 e.dataTransfer.setData('text/plain', userData);
+             
+
+        console.log('User Name:', userName);
+        console.log('User ID:', userId);
     });
+
+    });
+
+
 
     // addEventListeners();
 }
@@ -203,3 +190,167 @@ function renderPagination() {
     };
     pagination.appendChild(last);
 }
+
+
+$(document).ready(function() {
+    let selectedNodeId = null;
+
+    // 조직도 데이터 초기화
+    $.getJSON('tree.json', function(data) {
+        $('#tree-container').jstree({
+            'core': {
+                'check_callback': true,
+                'data': data
+            },
+            'plugins': ["dnd", "types", "state", "contextmenu"], 
+            'dnd': {
+                'check_while_dragging': true,
+                'inside_pos': 'last',
+                'touch': false,
+                'large_drop_target': true,
+                'large_drag_target': true,
+                'use_html5': true // 드래그 앤 드롭이 HTML5의 기본 동작을 사용하도록 설정
+            },
+            'types': {
+                "team": {
+                    "icon": "./images/team.svg" // 팀 노드에 사용할 아이콘 경로
+                },
+                "member": {
+                    "icon": "./images/user.svg" // 멤버 노드에 사용할 아이콘 경로
+                }
+            },
+            'state': {
+                'key': 'unique_key' // 트리 상태를 저장할 고유 키
+            },
+            'contextmenu': {
+        'items': function(node) {
+            return {
+                "rename": {
+                    "label": "Rename",
+                    "action": function () {
+                        $('#tree-container').jstree('edit', node);
+                    }
+                },
+                "remove": {
+                    "label": "Delete",
+                    "action": function () {
+                        $('#tree-container').jstree('delete_node', node);
+                    }
+                }
+            };
+        }
+    }
+        }).on('loaded.jstree', function() {
+        // type이 'team'인 노드에 'jsteam' 클래스 추가
+        $('#tree-container').jstree(true).get_json('#', { 'flat': true }).forEach(function(node) {
+            if (node.type === 'team') {
+                $('#' + node.id + '_anchor').addClass('jsteam');
+            }
+        });
+    });
+
+
+        // 노드 선택 시 선택된 노드의 ID 저장
+        $('#tree-container').on('select_node.jstree', function(e, data) {
+            selectedNodeId = data.node.id;
+        });
+
+      // 노드 더블 클릭 시 수정 모드로 전환
+      $('#tree-container').on('dblclick', '.jstree-anchor', function(e) {
+        var nodeId = $(this).closest('li').attr('id');
+        $('#tree-container').jstree('edit', nodeId);
+    });
+
+        // 노드 삭제 기능
+        $('#deleteNode').on('click', function() {
+            if (selectedNodeId) {
+                $('#tree-container').jstree('delete_node', selectedNodeId);
+                selectedNodeId = null; // 삭제 후 선택된 노드 ID 초기화
+            } else {
+                alert("삭제할 노드를 선택하세요.");
+            }
+        });
+
+        $('#tree-container').on('dragover', function(e) {
+            e.preventDefault();
+            e.originalEvent.dataTransfer.dropEffect = 'move';
+        });
+
+        $('#tree-container').on('drop', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const data = e.originalEvent.dataTransfer.getData('text/plain');
+            console.log('Data retrieved from dataTransfer:', data);
+
+            try {
+                const droppedData = JSON.parse(data);
+                const userId = droppedData.userId;
+                const userName = droppedData.userName;
+
+                var targetNode = $('#tree-container').jstree('get_node', e.target);
+
+                if (!targetNode || targetNode.type !== "team") {
+                    alert("사용자는 팀 노드에만 추가할 수 있습니다.");
+                    return;
+                }
+
+                // 사용자 정보를 jsTree에 새로운 노드로 추가
+                $('#tree-container').jstree().create_node(targetNode, {
+                    "text": userName,
+                    "id": "user_" + userId,
+                    "type": "member"
+                });
+
+              // 테이블에서 해당 사용자 제거
+                $(`#userTableBody tr`).filter(function() {
+                    return $(this).find('td[data-user-id]').data('user-id') === userId;
+                }).remove();
+
+            } catch (err) {
+                console.error('Failed to parse JSON:', err);
+            }
+        });
+
+        $('#addTeam').on('click', function() {
+            // 선택된 노드를 가져옵니다
+            var selectedNode = $('#tree-container').jstree('get_node', selectedNodeId);
+        
+            // 선택된 노드가 없거나, 선택된 노드가 'team' 타입인 경우에만 조직을 추가
+            if (!selectedNode || selectedNode.type === "team") {
+                // 선택된 노드가 팀 노드일 경우, 자식 노드(팀원)가 있는지 확인
+                if (selectedNode && selectedNode.children.length > 0) {
+                    alert("해당 팀에 팀원이 있어서 조직을 추가할 수 없습니다.");
+                    return; // 조직 추가 중단
+                }
+        
+                var newTeamNode = {
+                    "text": "New Team",
+                    "type": "team",
+                    "id": "team_node_" + (new Date().getTime()),
+                    "state": { "opened": true }
+                };
+        
+                // 선택된 노드가 없으면 최상위 노드로 추가, 그렇지 않으면 선택된 팀 노드 아래에 추가
+                var parentNodeId = selectedNode && selectedNode.type === 'team' ? selectedNodeId : '#';
+        
+                $('#tree-container').jstree().create_node(parentNodeId, newTeamNode, "last", function(new_node) {
+                    $('#tree-container').jstree('edit', new_node);
+                });
+        
+                // 노드 추가 후 선택 해제
+                $('#tree-container').jstree('deselect_all');
+                selectedNodeId = null;
+            } else {
+                alert("조직은 팀 노드에서만 추가할 수 있습니다.");
+            }
+        });
+
+    });
+
+    $(document).on('click', function(event) {
+        if (!$(event.target).closest('#tree-container').length) {
+            $('#tree-container').jstree('deselect_all');
+        }
+    });
+});

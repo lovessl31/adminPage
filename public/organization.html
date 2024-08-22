@@ -17,7 +17,11 @@
     <link rel="stylesheet" href="./css/style.css">
     <!-- jsTree CSS -->
     <link rel="stylesheet" href="./css/jstree/themes/default/style.min.css">
-
+    <style>
+        hr {
+            margin-bottom: 15px;
+        }
+    </style>
 </head>
 <body>
     <div class="wrap">
@@ -65,7 +69,10 @@
                     <div class="Owrap">
                         <div class="d-flex justify-content-between align-items-center">
                             <p>위드퍼스트(회사이름)</p>
-                            <button>조직추가</button>
+                            <div>
+                                <button id="addTeam" class="addBtn">조직추가</button>
+                                <button id="deleteNode" class="deleteBtn">삭제</button>
+                            </div>
                         </div>
                         <hr>
 
@@ -76,13 +83,29 @@
                 </div>
                 <div class="Oinner2">
                     <div class="Owrap_user">
-                        <div class="o-detail">
-                            <h5>사용자목록</h5>
-                            <p>해당 사용자를 커서로 끌어 조직도에 추가하실 수 있습니다.</p>
+                        <div class="d-flex justify-content-between">
+                            <div class="o-detail">
+                                <h5>사용자목록</h5>
+                                <p>해당 사용자를 커서로 끌어 조직도에 추가하실 수 있습니다.</p>
+                            </div>
+                            <div class="searchContent">
+                                <div class="searchInputWrapper d-flex align-items-center">
+                                    <div class="floatImg">
+                                        <img src="./images/search.svg">
+                                    </div>
+                                    <div class="searchInput">
+                                        <input type="text" id="searchInput" placeholder="검색어를 입력해주세요">
+                                        </div>
+                                        <div class="searchBtn"><button id="searchButton">검색</button></div>
+                                    </div>
+                            </div>
                         </div>
+                        
+                    
                         <table style="text-align: center;">
                             <thead>
                                 <tr>
+                                    <th></th>
                                     <th>이름</th>
                                     <th>아이디</th>
                                     <th>연락처</th>
@@ -94,7 +117,7 @@
                             <tbody id="userTableBody">
                             </tbody>
                         </table>
-                        <div class="pagination" id="pagination"></div>
+                        <div class="pagination mt-4 d-flex justify-content-end" id="pagination"></div>
                     </div>
                     
                 </div>

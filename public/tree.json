@@ -2,22 +2,25 @@
     {
         "id": "node_1",
         "text": "개발팀",
-        "type": "team",
+        "type": "team", 
         "state": { "opened": true },
         "children": [
             {
                 "id": "node_2",
                 "text": "개발 1팀",
+                "type": "team",  
                 "state": { "opened": true },
                 "children": [
                     {
                         "id": "node_3",
                         "text": "김철수 (팀장)",
+                        "type": "member",  
                         "children": []
                     },
                     {
                         "id": "node_4",
                         "text": "이영희 (팀원)",
+                        "type": "member",  
                         "children": []
                     }
                 ]
@@ -25,17 +28,19 @@
             {
                 "id": "node_5",
                 "text": "개발 2팀",
-                "type": "team",
+                "type": "team",  
                 "state": { "opened": true },
                 "children": [
                     {
                         "id": "node_6",
                         "text": "박민수 (팀장)",
+                        "type": "member", 
                         "children": []
                     },
                     {
                         "id": "node_7",
                         "text": "최지훈 (팀원)",
+                        "type": "member", 
                         "children": []
                     }
                 ]
