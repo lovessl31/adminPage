@@ -62,8 +62,15 @@ document.addEventListener('DOMContentLoaded', () => {
     function executeSearch() {
         const searchSelect = document.getElementById('searchSelect');
         const searchInput = document.getElementById('searchInput');
+        console.log(111111111111111111);
+        
+        console.log(searchInput);
+        console.log(searchSelect);
+        
         if (searchSelect) {
-            optionType = searchSelect.ariaValueMax;
+            console.log("test:        1",searchSelect.value);
+            
+            optionType = searchSelect.value.trim();
         }
         if (searchInput) {
             optionValue = searchInput.value.trim();
