@@ -93,7 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function loadBoardData(page = 1) {
     currentPage = page;
     const token = localStorage.getItem('accessToken');
-    const url = `http://192.168.0.18:28888/with/boards?option_type=${optionType}&option_value=${optionValue}&per_page=${itemsPerPage}&page=${currentPage}`;
+    const url = `http://safe.withfirst.com:28888/with/boards?option_type=${optionType}&option_value=${optionValue}&per_page=${itemsPerPage}&page=${currentPage}`;
 
     axios.get(url, {
         headers: {
@@ -143,7 +143,7 @@ function renderTable() {
             </div>
         </td>        
         <td>${startIndex + index + 1}</td>
-        <td><a href="/postList.html">${board["게시판 명"]}<img src="./images/link.svg"></a></td>        
+        <td><a href="/postList.html?id=${board['게시판 번호']}">${board["게시판 명"]}<img src="./images/link.svg"></a></td>        
         <td>${board["게시판 타입"]}</td>
         <td>${board["좋아요 유/무"]}</td>
         <td>${board["카테고리 명"]}</td>
@@ -219,7 +219,7 @@ function renderTable() {
         const token = localStorage.getItem('accessToken');
 
         // 수정 PUT 요청 보내기
-        axios.put(`http://192.168.0.18:28888//with/edit_board/${originBoardName}/${boardIdx}`, formData, {
+        axios.put(`http://safe.withfirst.com:28888//with/edit_board/${originBoardName}/${boardIdx}`, formData, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'multipart/form-data' // 폼데이터 전송 시 설정
@@ -301,7 +301,7 @@ function deleteBoards(boards) {
 
     console.log('전송될 데이터:', JSON.stringify(boards));
 
-    axios.delete('http://192.168.0.18:28888/with/del_board', {
+    axios.delete('http://safe.withfirst.com:28888/with/del_board', {
         data: boards,
         headers: {
             'Authorization': `Bearer ${token}`,
