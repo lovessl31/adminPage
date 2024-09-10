@@ -65,25 +65,24 @@
 
                         <div class="write_selectbox">
                             <!-- 게시판 선택 -->
-                            <select class="write_select">
-                                <option disabled selected hidden>게시판 선택</option>
-                                <option>자유게시판</option>
-                                <option>놀로로게시판</option>
-                            </select>
-                            <!-- 말머리 선택 -->
-                            <select class="write_select">
-                                <option disabled selected hidden>말머리 선택</option>
-                                <option>유머</option>
-                                <option>감동</option>
-                            </select>
+                            <div class="write_post_name">게시판명</div>      
+                            <br>                      
                             <!-- 공개/비공개 설정 -->
-                            <!-- <div class="privacy_options">
+                            <div class="privacy_options">
                                 <input type="radio" id="public" name="privacy" value="public" checked>
                                 <label for="public">공개</label>
             
                                 <input type="radio" id="private" name="privacy" value="private">
                                 <label for="private">비공개</label>
-                            </div> -->
+                            </div>
+                            <!-- 공지글 Y/N 설정 -->
+                            <div class="notice_options">
+                                <input type="radio" id="noticeY" name="notice" value="Y" checked>
+                                <label for="noticeY">Y</label>
+            
+                                <input type="radio" id="noticeN" name="notice" value="N">
+                                <label for="noticeN">N</label>
+                            </div>
                         </div>
                         <!-- 제목 입력받는 input창 -->
                         <div class="title_box">
@@ -151,79 +150,6 @@
         </div>
     </div>
     
-     <!-- 팝업 레이어 -->
-     <!-- <div id="popupLayer" class="popup">
-        <div class="popup-content">
-            <div class="popup-title">
-                <div class="d-flex align-items-center">
-                    <h2>게시판관리</h2>
-                    <span>수정</span>
-                </div>
-                <div>
-                    <span class="close">&times;</span>
-                </div>
-            </div>
-
-            <div class="contentPadding">
-
-                <div class="companyForm">
-                    <table class="companyTable">
-                        <tbody>
-                            <tr>
-                                <td>카테고리 선택</td>
-                                <td>
-                                    <select>
-                                        <option>프론트엔드</option>
-                                        <option>백엔드</option>
-                                        <option>디자인/퍼블리싱</option>
-                                    </select>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>게시판명</td>
-                                <td><input type="text" id="representativeName"></td>
-                            </tr>
-                            <tr>
-                                <td>사업자번호</td>
-                                <td><input type="text" id="businessNumber"></td>
-                            </tr>
-                            <tr>
-                                <td>등록일</td>
-                                <td id="registrationDate"></td>
-                            </tr>
-                            <tr>
-                                <td>첨부파일</td>
-                                <td class="buttons">
-                                    <div class="file-input-wrapper">
-                                        <input type="text" class="file-input" id="fileInput">
-                                        <button class="attachBtn">첨부</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>카테고리 관리</td>
-                                <td class="buttons"><button class="moveBtn">이동</button></td>
-                            </tr>
-                            <tr>
-                                <td>게시판 관리</td>
-                                <td class="buttons"><button class="moveBtn">이동</button></td>
-                            </tr>
-                            <tr>
-                                <td>승인</td>
-                                <td class="buttons"><button class="approveBtn">승인</button></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="saveBtnWrap noMarginTop">
-                    <button class="cancleBtn">취소</button>
-                    <button class="saveBtn">저장</button>
-                </div>
-            </div>
-        </div>
-    </div> -->
-
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-latest.min.js"></script>
@@ -235,31 +161,20 @@
     <script src="./js/script.js"></script>
     <!-- Sweetalert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <!-- 썸머노트 부분 -->
     <script src="/js/summernote/summernote-lite.js"></script>
     <script src="/js/summernote/lang/summernote-ko-KR.js"></script>
     <script>
-        // $(document).ready(function() {
-        //     //여기 아래 부분
-        //     $('#summernote').summernote({
-        //         height: 300,                 // 에디터 높이
-        //         minHeight: null,             // 최소 높이
-        //         maxHeight: null,             // 최대 높이
-        //         focus: true,                  // 에디터 로딩후 포커스를 맞출지 여부
-        //         lang: "ko-KR",					// 한글 설정
-        //         placeholder: '최대 2048자까지 쓸 수 있습니다'	//placeholder 설정
-                
-        //     });
-            
-        // });
-
-        $(document).ready(function () {
-            //여기 아래 부분
+        // 썸머 노트 에디터 코드 (공식문서, 구글링 보고 이해하며 작성함 단순 복붙 x)
+        $(document).ready(function () {            
             $('#summernote').summernote({
-                height: 500,                 // 에디터 높이
-                minHeight: 350,             // 최소 높이
-                maxHeight: 642,             // 최대 높이
-                focus: true,                  // 에디터 로딩후 포커스를 맞출지 여부
-                lang: "ko-KR",					// 한글 설정
+                // 기본 옵션 설정
+                height: 500,                // 에디터 높이
+                minHeight: 350,             // 에디터 최소 높이
+                maxHeight: 642,             // 에디터 최대 높이
+                focus: true,                // 에디터 로딩후 포커스를 맞출지 여부
+                lang: "ko-KR",				// 한글 설정
+                // 커스텀 옵션 설정
                 toolbar: [
                     // [groupName, [list of button]]
                     ['fontname', ['fontname']],
@@ -282,44 +197,44 @@
             window.location.href = 'boardCreate.html';
         });
        
-       // JSON 파일에서 데이터 불러오기
-       function loadUserData() {
-        axios.get('./')
-            .then(response => {
-                const users = response.data;
-                const tableBody = document.getElementById('userTableBody');
-                users.forEach(user => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>
-                            <div class="d-flex align-items-center justify-content-center">
-                                <input type="checkbox">
-                            </div>
-                        </td>
-                        <td class="userInfo">
-                            <span class="userImage"></span>
-                            ${user.name}
-                        </td>
-                        <td>${user.contact}</td>
-                        <td>${user.email}</td>
-                        <td>${user.company}</td>
-                        <td>${user.department}</td>
-                        <td>${user.position}</td>
-                        <td class="buttons center-align">
-                            <button class="modifyBtn">수정</button>
-                            <button class="deleteBtn">삭제</button>
-                        </td>
-                    `;
-                    tableBody.appendChild(row);
-                });
-            })
-            .catch(error => {
-                console.error('Error loading user data:', error);
-            });
-    }
+    //    // JSON 파일에서 데이터 불러오기
+    //    function loadUserData() {
+    //     axios.get('./')
+    //         .then(response => {
+    //             const users = response.data;
+    //             const tableBody = document.getElementById('userTableBody');
+    //             users.forEach(user => {
+    //                 const row = document.createElement('tr');
+    //                 row.innerHTML = `
+    //                     <td>
+    //                         <div class="d-flex align-items-center justify-content-center">
+    //                             <input type="checkbox">
+    //                         </div>
+    //                     </td>
+    //                     <td class="userInfo">
+    //                         <span class="userImage"></span>
+    //                         ${user.name}
+    //                     </td>
+    //                     <td>${user.contact}</td>
+    //                     <td>${user.email}</td>
+    //                     <td>${user.company}</td>
+    //                     <td>${user.department}</td>
+    //                     <td>${user.position}</td>
+    //                     <td class="buttons center-align">
+    //                         <button class="modifyBtn">수정</button>
+    //                         <button class="deleteBtn">삭제</button>
+    //                     </td>
+    //                 `;
+    //                 tableBody.appendChild(row);
+    //             });
+    //         })
+    //         .catch(error => {
+    //             console.error('Error loading user data:', error);
+    //         });
+    // }
 
-    // 페이지 로드 시 가상 데이터 로드
-    document.addEventListener('DOMContentLoaded', loadUserData);
+    // // 페이지 로드 시 가상 데이터 로드
+    // document.addEventListener('DOMContentLoaded', loadUserData);
 
     </script>
 </body>
