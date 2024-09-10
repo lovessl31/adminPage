@@ -152,7 +152,7 @@ function renderTable() {
         <td class="buttons center-align">
             <button class="modifyBtn boardModify" data-id="${board['게시판 번호']}">수정</button>
             <button class="deleteBtn" data-board-idx="${board["게시판 번호"]}" data-board-name="${board["게시판 명"]}">삭제</button>
-            <button class="moveBtn">이동</button>
+            <button class="moveBtn" data-id="${board["게시판 번호"]}">이동</button>
         </td>
         `;
         console.log(0);
@@ -160,8 +160,21 @@ function renderTable() {
         tableBody.appendChild(row);
         console.log(tableBody);
 
-        console.log(12);
+        console.log(12);        
     });
+
+    
+    // 게시판 이동 이벤트
+    document.querySelectorAll('.moveBtn').forEach(button => {        
+        button.addEventListener('click', function() {
+            const boardId = this.getAttribute('data-id');
+            const board = boards.find(v => v["게시판 번호"] == boardId)
+            console.log(boardId);
+            console.log(board);                        
+            window.location.href = `/postList.html?id=${boardId}`;
+        });
+    });
+
 
     // 동적으로 생성된 팝업에 기존 데이터 맵핑
     document.querySelectorAll('.boardModify').forEach(button => {
