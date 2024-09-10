@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         console.log('전송될 데이터:', JSON.stringify(companies));
 
-        axios.delete('http://192.168.0.18:28888/with/del_com', {
+        axios.delete('http://safe.withfirst.com:28888/with/del_com', {
             data: companies,
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -135,7 +135,7 @@ function getCookieValue(name) {
 function fetchCompanyData(page = 1) {
     currentPage = page; // 매개 변수로 전달된 page 값 currentPage 변수에 저장
     const token = getCookieValue('refreshToken');
-    const url = `http://192.168.0.18:28888/with/com-info?option_type=${optionType}&option_value=${optionValue}&per_page=${itemsPerPage}&page=${currentPage}`;
+    const url = `http://safe.withfirst.com:28888/with/com-info?option_type=${optionType}&option_value=${optionValue}&per_page=${itemsPerPage}&page=${currentPage}`;
 
     axios.get(url, {
         headers: {
@@ -214,7 +214,7 @@ function renderTable() {
             const fileIdx = this.getAttribute('data-f-idx'); // f_idx 값 가져오기
             const token = getCookieValue('accessToken');
 
-            const url = `http://192.168.0.18:28888/file/download/${fileIdx}`;
+            const url = `http://safe.withfirst.com:28888/file/download/${fileIdx}`;
 
             axios.get(url, {
                 headers: {
@@ -292,7 +292,7 @@ function renderTable() {
 
         console.log('전송될 데이터:', JSON.stringify(company));
 
-        axios.delete('http://192.168.0.18:28888/with/del_com', {
+        axios.delete('http://safe.withfirst.com:28888/with/del_com', {
             data: company,
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -331,7 +331,7 @@ function renderTable() {
             const token = getCookieValue('refreshToken');
 
             //서버에 POST 요청
-            axios.post(`http://192.168.0.18:28888/with/com-change/${com_id}`, {}, {
+            axios.post(`http://safe.withfirst.com:28888/with/com-change/${com_id}`, {}, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 },
@@ -376,7 +376,7 @@ function renderTable() {
             const token = getCookieValue('refreshToken');
 
             //서버에 POST 요청
-            axios.post(`http://192.168.0.18:28888/with/com-change/${com_id}`, {}, {
+            axios.post(`http://safe.withfirst.com:28888/with/com-change/${com_id}`, {}, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 },
@@ -419,7 +419,7 @@ function renderTable() {
             const token = getCookieValue('refreshToken');
 
             //서버에 POST 요청
-            axios.post(`http://192.168.0.18:28888/with/com-change/${com_id}`, {}, {
+            axios.post(`http://safe.withfirst.com:28888/with/com-change/${com_id}`, {}, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 },
@@ -457,7 +457,7 @@ function renderTable() {
             const token = getCookieValue('refreshToken');
 
             // 서버에 PUT 요청
-            axios.put(`http://192.168.0.18:28888/with/com-approved/${comIdx}/${comId}`, {}, {
+            axios.put(`http://safe.withfirst.com:28888/with/com-approved/${comIdx}/${comId}`, {}, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -551,7 +551,7 @@ document.getElementById('modifySaveBtn').addEventListener('click', function () {
     const token = getCookieValue('refreshToken');
 
     // 수정 PUT 요청 보내기
-    axios.put(`http://192.168.0.18:28888//with/com-change/${cId}`, formData, {
+    axios.put(`http://safe.withfirst.com:28888//with/com-change/${cId}`, formData, {
         headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'multipart/form-data' // 폼데이터 전송 시 설정
@@ -598,7 +598,7 @@ document.getElementById('registerSaveBtn').addEventListener('click', () => {
     const token = getCookieValue('accessToken'); // 쿠키에서 토큰 가져오기
 
     // 서버에 POST 요청 보내기
-    axios.post('http://192.168.0.18:28888/with/com-info', formData, {
+    axios.post('http://safe.withfirst.com:28888/with/com-info', formData, {
         headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'multipart/form-data'

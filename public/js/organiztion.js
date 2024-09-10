@@ -58,7 +58,7 @@ function handleError(error, defaultMessage = 'An error occurred') {
 function loadUserData(page = 1) {
     currentPage = page;
     localStorage.setItem('currentPage', currentPage); // 현재 페이지 저장
-    const url = `http://192.168.0.18:28888/with/users-view-org?option_type=${optionType}&option_value=${optionValue}&per_page=${itemsPerPage}&page=${currentPage}`;
+    const url = `http://safe.withfirst.com:28888/with/users-view-org?option_type=${optionType}&option_value=${optionValue}&per_page=${itemsPerPage}&page=${currentPage}`;
 
     makeRequest('get', url)
         .then(response => {
@@ -205,7 +205,7 @@ $(document).ready(function() {
     const token = localStorage.getItem('accessToken');
 
     $.ajax({
-        url: 'http://192.168.0.18:28888/with/view-org',
+        url: 'http://safe.withfirst.com:28888/with/view-org',
         method: 'GET',
         headers: {
             'Authorization': `Bearer ${token}`,
@@ -314,7 +314,7 @@ $(document).ready(function() {
 
                     // 서버에 삭제 요청 보내기
                     $.ajax({
-                        url: 'http://192.168.0.18:28888/with/del-org', // 서버의 삭제 API URL
+                        url: 'http://safe.withfirst.com:28888/with/del-org', // 서버의 삭제 API URL
                         method: 'DELETE',
                         headers: {
                             'Authorization': `Bearer ${token}`
@@ -373,7 +373,7 @@ $(document).ready(function() {
                     const token = localStorage.getItem('accessToken');
 
                     $.ajax({
-                        url: 'http://192.168.0.18:28888/with/users-add-org',
+                        url: 'http://safe.withfirst.com:28888/with/users-add-org',
                         method: 'POST',
                         headers: {
                             'Authorization': `Bearer ${token}`
@@ -466,7 +466,7 @@ $(document).ready(function() {
                 }
                 
                 $.ajax({
-                    url: 'http://192.168.0.18:28888/with/add-org',
+                    url: 'http://safe.withfirst.com:28888/with/add-org',
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`

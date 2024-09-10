@@ -94,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 회사 리스트 로드 함수
     function loadCompanyList() {
-        makeRequest('get', 'http://192.168.0.18:28888/with/com_list')
+        makeRequest('get', 'http://safe.withfirst.com:28888/with/com_list')
             .then(response => {
                 const companies = response.data.data;
                 const selectElement = document.getElementById('addCompanySelect');
@@ -143,7 +143,7 @@ function getCookieValue(name) {
 function loadUserData(page = 1) {
     currentPage = page;
     localStorage.setItem('currentPage', currentPage); // 현재 페이지 저장
-    const url = `http://192.168.0.18:28888/with/users?option_type=${optionType}&option_value=${optionValue}&per_page=${itemsPerPage}&page=${currentPage}`;
+    const url = `http://safe.withfirst.com:28888/with/users?option_type=${optionType}&option_value=${optionValue}&per_page=${itemsPerPage}&page=${currentPage}`;
 
     makeRequest('get', url)
         .then(response => {
@@ -241,7 +241,7 @@ function approveUser() {
     const userId = this.getAttribute('data-u-id');
 
     // 서버에 post 요청
-    makeRequest('post', `http://192.168.0.18:28888/with/user/${userIdx}/${userId}`)
+    makeRequest('post', `http://safe.withfirst.com:28888/with/user/${userIdx}/${userId}`)
         .then(response => {
             console.log(response.data);
             alert('승인되었습니다.');
@@ -253,7 +253,7 @@ function approveUser() {
 
 // 삭제 요청 함수
 function deleteUsers(users) {
-    makeRequest('delete', 'http://192.168.0.18:28888/with/del_user', users)
+    makeRequest('delete', 'http://safe.withfirst.com:28888/with/del_user', users)
         .then(response => {
             console.log('삭제 응답:', response.data);
             alert('삭제되었습니다.');
@@ -264,7 +264,7 @@ function deleteUsers(users) {
 
 // 개별 삭제 요청 함수
 function deleteUser(user) {
-    makeRequest('delete', 'http://192.168.0.18:28888/with/user_del', user)
+    makeRequest('delete', 'http://safe.withfirst.com:28888/with/user_del', user)
         .then(response => {
             console.log('사용자 삭제 응답:', response.data);
             alert('삭제되었습니다.');
@@ -358,7 +358,7 @@ function addUserData() {
 
     logFormData(formData); // FormData 내용 로그 출력
 
-    axios.post('http://192.168.0.18:28888/with/signup', formData, {
+    axios.post('http://safe.withfirst.com:28888/with/signup', formData, {
         headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'multipart/form-data'
@@ -417,7 +417,7 @@ function updateUserData() {
     };
 
      // 서버에 수정된 사용자 데이터 전송
-     axios.put(`http://192.168.0.18:28888/with/user/${userIdx}/${userId}`, userData, {
+     axios.put(`http://safe.withfirst.com:28888/with/user/${userIdx}/${userId}`, userData, {
         headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
