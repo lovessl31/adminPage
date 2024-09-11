@@ -197,6 +197,7 @@ function renderTable() {
         <td class="buttons"><button class="userBtn moveBtn" data-com-idx="${company.com_idx}" data-c-id="${company.c_id}">이동</button></td>
         <td class="buttons"><button class="categoryBtn moveBtn" data-com-idx="${company.com_idx}" data-c-id="${company.c_id}">이동</button></td>
         <td class="buttons"><button class="boardBtn moveBtn" data-com-idx="${company.com_idx}" data-c-id="${company.c_id}">이동</button></td>
+        <td class="buttons"><button class="teamBtn moveBtn" data-com-idx="${company.com_idx}" data-c-id="${company.c_id}">이동</button></td>
         <td class="buttons">${approveButton}</td>
         <td class="buttons center-align">
             <button class="modifyBtn comModify" data-id="${company.com_idx}">수정</button>
@@ -448,6 +449,49 @@ function renderTable() {
                 });
         });
     });
+
+    // 동적으로 생성된 조직도관리 이동 버튼에 이벤트 리스너 추가
+    document.querySelectorAll('.teamBtn').forEach(button => {
+        button.addEventListener('click', function () {
+                const com_id = this.getAttribute('data-c-id');
+                const comIdx = this.getAttribute('data-com-idx');
+                console.log('comIdx:', comIdx); // 추가된 로그
+                console.log('com_id:', com_id); // 추가된 로그
+    
+                // 로컬 스토리지에 저장
+                localStorage.setItem('com_idx', comIdx);
+                const token = getCookieValue('refreshToken');
+    
+                //서버에 POST 요청
+                axios.post(`http://safe.withfirst.com:28888/with/com-change/${com_id}`, {}, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    withCredentials: true, // 크레덴셜 포함
+                })
+                    .then(response => {
+                        console.log('서버에서 받은 성공 데이터:', response.data);
+                        localStorage.setItem('accessToken', response.data.data.accessToken);
+                        localStorage.setItem('refreshToken', response.data.data.refreshToken);
+    
+                        // 로컬 스토리지에서 accessToken 가져와서 콘솔에 출력
+                        const accessToken = localStorage.getItem('accessToken');
+                        console.log('Stored accessToken:', accessToken);
+    
+                        //해당 회사의 카테고리 관리 페이지로 이동
+                        window.location.href = `organization.html?=${comIdx}`;
+                    })
+                    .catch(error => {
+                        if (error.response && error.response.status === 401) {
+                            // 401 에러 발생 시 로그아웃 함수 호출
+                            window.logout();
+                        } else {
+                            // 기타 에러 처리
+                            alert('요청 중 오류가 발생했습니다.');
+                        }
+                    });
+            });
+        });
 
     // 동적으로 생성된 승인 버튼에 이벤트 리스너 추가
     document.querySelectorAll('.approveBtn').forEach(button => {
