@@ -18,7 +18,7 @@ async function sendCredentials() {
     try {
         const response = await axios({
             method: 'post',
-            url: 'http://192.168.0.18:28888/with/login',
+            url: 'http://safe.withfirst.com:28888/with/login',
             data: formData,
             withCredentials: true // 서버가 설정한 쿠키를 자동으로 포함합니다.
         });

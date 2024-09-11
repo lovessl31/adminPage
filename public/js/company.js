@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         console.log('전송될 데이터:', JSON.stringify(companies));
 
-        axios.delete('http://192.168.0.18:28888/with/del_com', {
+        axios.delete('http://safe.withfirst.com:28888/with/del_com', {
             data: companies,
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -135,7 +135,7 @@ function getCookieValue(name) {
 function fetchCompanyData(page = 1) {
     currentPage = page; // 매개 변수로 전달된 page 값 currentPage 변수에 저장
     const token = getCookieValue('refreshToken');
-    const url = `http://192.168.0.18:28888/with/com-info?option_type=${optionType}&option_value=${optionValue}&per_page=${itemsPerPage}&page=${currentPage}`;
+    const url = `http://safe.withfirst.com:28888/with/com-info?option_type=${optionType}&option_value=${optionValue}&per_page=${itemsPerPage}&page=${currentPage}`;
 
     axios.get(url, {
         headers: {
@@ -197,6 +197,7 @@ function renderTable() {
         <td class="buttons"><button class="userBtn moveBtn" data-com-idx="${company.com_idx}" data-c-id="${company.c_id}">이동</button></td>
         <td class="buttons"><button class="categoryBtn moveBtn" data-com-idx="${company.com_idx}" data-c-id="${company.c_id}">이동</button></td>
         <td class="buttons"><button class="boardBtn moveBtn" data-com-idx="${company.com_idx}" data-c-id="${company.c_id}">이동</button></td>
+        <td class="buttons"><button class="teamBtn moveBtn" data-com-idx="${company.com_idx}" data-c-id="${company.c_id}">이동</button></td>
         <td class="buttons">${approveButton}</td>
         <td class="buttons center-align">
             <button class="modifyBtn comModify" data-id="${company.com_idx}">수정</button>
@@ -214,7 +215,7 @@ function renderTable() {
             const fileIdx = this.getAttribute('data-f-idx'); // f_idx 값 가져오기
             const token = getCookieValue('accessToken');
 
-            const url = `http://192.168.0.18:28888/file/download/${fileIdx}`;
+            const url = `http://safe.withfirst.com:28888/file/download/${fileIdx}`;
 
             axios.get(url, {
                 headers: {
@@ -292,7 +293,7 @@ function renderTable() {
 
         console.log('전송될 데이터:', JSON.stringify(company));
 
-        axios.delete('http://192.168.0.18:28888/with/del_com', {
+        axios.delete('http://safe.withfirst.com:28888/with/del_com', {
             data: company,
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -331,7 +332,7 @@ function renderTable() {
             const token = getCookieValue('refreshToken');
 
             //서버에 POST 요청
-            axios.post(`http://192.168.0.18:28888/with/com-change/${com_id}`, {}, {
+            axios.post(`http://safe.withfirst.com:28888/with/com-change/${com_id}`, {}, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 },
@@ -376,7 +377,7 @@ function renderTable() {
             const token = getCookieValue('refreshToken');
 
             //서버에 POST 요청
-            axios.post(`http://192.168.0.18:28888/with/com-change/${com_id}`, {}, {
+            axios.post(`http://safe.withfirst.com:28888/with/com-change/${com_id}`, {}, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 },
@@ -419,7 +420,7 @@ function renderTable() {
             const token = getCookieValue('refreshToken');
 
             //서버에 POST 요청
-            axios.post(`http://192.168.0.18:28888/with/com-change/${com_id}`, {}, {
+            axios.post(`http://safe.withfirst.com:28888/with/com-change/${com_id}`, {}, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 },
@@ -449,6 +450,49 @@ function renderTable() {
         });
     });
 
+    // 동적으로 생성된 조직도관리 이동 버튼에 이벤트 리스너 추가
+    document.querySelectorAll('.teamBtn').forEach(button => {
+        button.addEventListener('click', function () {
+                const com_id = this.getAttribute('data-c-id');
+                const comIdx = this.getAttribute('data-com-idx');
+                console.log('comIdx:', comIdx); // 추가된 로그
+                console.log('com_id:', com_id); // 추가된 로그
+    
+                // 로컬 스토리지에 저장
+                localStorage.setItem('com_idx', comIdx);
+                const token = getCookieValue('refreshToken');
+    
+                //서버에 POST 요청
+                axios.post(`http://safe.withfirst.com:28888/with/com-change/${com_id}`, {}, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    withCredentials: true, // 크레덴셜 포함
+                })
+                    .then(response => {
+                        console.log('서버에서 받은 성공 데이터:', response.data);
+                        localStorage.setItem('accessToken', response.data.data.accessToken);
+                        localStorage.setItem('refreshToken', response.data.data.refreshToken);
+    
+                        // 로컬 스토리지에서 accessToken 가져와서 콘솔에 출력
+                        const accessToken = localStorage.getItem('accessToken');
+                        console.log('Stored accessToken:', accessToken);
+    
+                        //해당 회사의 카테고리 관리 페이지로 이동
+                        window.location.href = `organization.html?=${comIdx}`;
+                    })
+                    .catch(error => {
+                        if (error.response && error.response.status === 401) {
+                            // 401 에러 발생 시 로그아웃 함수 호출
+                            window.logout();
+                        } else {
+                            // 기타 에러 처리
+                            alert('요청 중 오류가 발생했습니다.');
+                        }
+                    });
+            });
+        });
+
     // 동적으로 생성된 승인 버튼에 이벤트 리스너 추가
     document.querySelectorAll('.approveBtn').forEach(button => {
         button.addEventListener('click', function () {
@@ -457,7 +501,7 @@ function renderTable() {
             const token = getCookieValue('refreshToken');
 
             // 서버에 PUT 요청
-            axios.put(`http://192.168.0.18:28888/with/com-approved/${comIdx}/${comId}`, {}, {
+            axios.put(`http://safe.withfirst.com:28888/with/com-approved/${comIdx}/${comId}`, {}, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -551,7 +595,7 @@ document.getElementById('modifySaveBtn').addEventListener('click', function () {
     const token = getCookieValue('refreshToken');
 
     // 수정 PUT 요청 보내기
-    axios.put(`http://192.168.0.18:28888//with/com-change/${cId}`, formData, {
+    axios.put(`http://safe.withfirst.com:28888//with/com-change/${cId}`, formData, {
         headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'multipart/form-data' // 폼데이터 전송 시 설정
@@ -598,7 +642,7 @@ document.getElementById('registerSaveBtn').addEventListener('click', () => {
     const token = getCookieValue('accessToken'); // 쿠키에서 토큰 가져오기
 
     // 서버에 POST 요청 보내기
-    axios.post('http://192.168.0.18:28888/with/com-info', formData, {
+    axios.post('http://safe.withfirst.com:28888/with/com-info', formData, {
         headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'multipart/form-data'

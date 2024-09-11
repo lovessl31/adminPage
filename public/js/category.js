@@ -21,7 +21,7 @@ function updateCategory(category, initialName) {
     const token = localStorage.getItem('accessToken');
     
     // 요청 URL 확인
-    const url = `http://192.168.0.18:28888/with/cate/${isCategory}/${cate_idx}`;
+    const url = `http://safe.withfirst.com:28888/with/cate/${isCategory}/${cate_idx}`;
     console.log('Request URL:', url);
     // JSON 객체 내용을 콘솔에 출력
     console.log('---- JSON 데이터로 보내는 키랑 값 ----');
@@ -196,7 +196,7 @@ function renderCategories(categories) {
 function cateGetData() {
     const token = localStorage.getItem('accessToken');
     
-    return axios.get('http://192.168.0.18:28888/with/cateList', {
+    return axios.get('http://safe.withfirst.com:28888/with/cateList', {
         headers: {
             'Authorization': `Bearer ${token}`
         }
@@ -266,7 +266,7 @@ function addTopCategory() {
     formData.append('cate_name', newCategory.cate_name);
     
     // 서버에 새로운 카테고리 추가 요청
-    axios.post(`http://192.168.0.18:28888/with/addCate/${isCategory}`, formData, {
+    axios.post(`http://safe.withfirst.com:28888/with/addCate/${isCategory}`, formData, {
         headers: {
             'Content-Type': 'multipart/form-data',
             'Authorization': `Bearer ${token}`
@@ -362,7 +362,7 @@ function addSubCategory(parentLi, parentCategory, depth) {
     formData.append('s_depth', newSubCategory.s_depth);
 
     // 서버에 새로운 하위 카테고리 추가 요청
-    axios.post(`http://192.168.0.18:28888/with/addCate/${isCategory}`, formData, {
+    axios.post(`http://safe.withfirst.com:28888/with/addCate/${isCategory}`, formData, {
         headers: {
             'Content-Type': 'multipart/form-data',
             'Authorization': `Bearer ${token}`
@@ -409,7 +409,7 @@ function deleteCategory(li, category, parentCategory) {
     const token = localStorage.getItem('accessToken');
     
     // URL에 파라미터 추가
-    const url = `http://192.168.0.18:28888/with/cate/${isCategory}/${cate_idx}/${cate_name}`;
+    const url = `http://safe.withfirst.com:28888/with/cate/${isCategory}/${cate_idx}/${cate_name}`;
     
     // 서버에 삭제 요청
     axios.delete(url, {
