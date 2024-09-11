@@ -3,13 +3,15 @@
 if(typeof TimedPopup === 'undefined') {
     console.error('TimedPopup is not defined. Make sure TimedPopup.js is loaded correctly.');
 }
-
+const defaultUrl = "http://safe.withfirst.com:28888"
 let boards = [];
 let currentPage = 1;
 let itemsPerPage = 10;
 let totalPage = 1;
 let optionType = "all";
 let optionValue = "";
+
+
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -93,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function loadBoardData(page = 1) {
     currentPage = page;
     const token = localStorage.getItem('accessToken');
-    const url = `http://safe.withfirst.com:28888/with/boards?option_type=${optionType}&option_value=${optionValue}&per_page=${itemsPerPage}&page=${currentPage}`;
+    const url = `${defaultUrl}/with/boards?option_type=${optionType}&option_value=${optionValue}&per_page=${itemsPerPage}&page=${currentPage}`;
 
     axios.get(url, {
         headers: {
@@ -149,10 +151,10 @@ function renderTable() {
         <td>${board["카테고리 명"]}</td>
         <td>${board["카테고리 유형"]}</td>
         <td>${board["게시판 생성일"] ? board["게시판 생성일"].split(' ')[0] : ''}</td>
-        <td class="buttons center-align">
-            <button class="modifyBtn boardModify" data-id="${board['게시판 번호']}">수정</button>
-            <button class="deleteBtn" data-board-idx="${board["게시판 번호"]}" data-board-name="${board["게시판 명"]}">삭제</button>
+        <td class="buttons center-align">                      
             <button class="moveBtn" data-id="${board["게시판 번호"]}">이동</button>
+            <button class="modifyBtn boardModify" data-id="${board['게시판 번호']}">수정</button>  
+            <button class="deleteBtn" data-board-idx="${board["게시판 번호"]}" data-board-name="${board["게시판 명"]}">삭제</button>
         </td>
         `;
         console.log(0);
@@ -232,7 +234,7 @@ function renderTable() {
         const token = localStorage.getItem('accessToken');
 
         // 수정 PUT 요청 보내기
-        axios.put(`http://safe.withfirst.com:28888//with/edit_board/${originBoardName}/${boardIdx}`, formData, {
+        axios.put(`${defaultUrl}/with/edit_board/${originBoardName}/${boardIdx}`, formData, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'multipart/form-data' // 폼데이터 전송 시 설정
@@ -314,7 +316,7 @@ function deleteBoards(boards) {
 
     console.log('전송될 데이터:', JSON.stringify(boards));
 
-    axios.delete('http://safe.withfirst.com:28888/with/del_board', {
+    axios.delete(`${defaultUrl}/with/del_board`, {
         data: boards,
         headers: {
             'Authorization': `Bearer ${token}`,
