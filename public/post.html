@@ -295,50 +295,47 @@
     <script src="./js/script.js"></script>
     <!-- Sweetalert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script src="/js/post.js"></script>
     <script>
 
-        document.getElementById('createBoard').addEventListener('click', function() {
-            window.location.href = 'boardCreate.html';
-        });
-       
-       // JSON 파일에서 데이터 불러오기
-       function loadUserData() {
-        axios.get('./')
-            .then(response => {
-                const users = response.data;
-                const tableBody = document.getElementById('userTableBody');
-                users.forEach(user => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>
-                            <div class="d-flex align-items-center justify-content-center">
-                                <input type="checkbox">
-                            </div>
-                        </td>
-                        <td class="userInfo">
-                            <span class="userImage"></span>
-                            ${user.name}
-                        </td>
-                        <td>${user.contact}</td>
-                        <td>${user.email}</td>
-                        <td>${user.company}</td>
-                        <td>${user.department}</td>
-                        <td>${user.position}</td>
-                        <td class="buttons center-align">
-                            <button class="modifyBtn">수정</button>
-                            <button class="deleteBtn">삭제</button>
-                        </td>
-                    `;
-                    tableBody.appendChild(row);
-                });
-            })
-            .catch(error => {
-                console.error('Error loading user data:', error);
-            });
-    }
+    //    // JSON 파일에서 데이터 불러오기
+    //    function loadUserData() {
+    //     axios.get('./')
+    //         .then(response => {
+    //             const users = response.data;
+    //             const tableBody = document.getElementById('userTableBody');
+    //             users.forEach(user => {
+    //                 const row = document.createElement('tr');
+    //                 row.innerHTML = `
+    //                     <td>
+    //                         <div class="d-flex align-items-center justify-content-center">
+    //                             <input type="checkbox">
+    //                         </div>
+    //                     </td>
+    //                     <td class="userInfo">
+    //                         <span class="userImage"></span>
+    //                         ${user.name}
+    //                     </td>
+    //                     <td>${user.contact}</td>
+    //                     <td>${user.email}</td>
+    //                     <td>${user.company}</td>
+    //                     <td>${user.department}</td>
+    //                     <td>${user.position}</td>
+    //                     <td class="buttons center-align">
+    //                         <button class="modifyBtn">수정</button>
+    //                         <button class="deleteBtn">삭제</button>
+    //                     </td>
+    //                 `;
+    //                 tableBody.appendChild(row);
+    //             });
+    //         })
+    //         .catch(error => {
+    //             console.error('Error loading user data:', error);
+    //         });
+    // }
 
-    // 페이지 로드 시 가상 데이터 로드
-    document.addEventListener('DOMContentLoaded', loadUserData);
+    // // 페이지 로드 시 가상 데이터 로드
+    // document.addEventListener('DOMContentLoaded', loadUserData);
 
     </script>
 </body>

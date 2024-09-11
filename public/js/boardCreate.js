@@ -1,5 +1,5 @@
 // 게시판 생성 기능 JS
-
+const defaultUrl = "http://safe.withfirst.com:28888"
 // 게시판 설명 툴팁
 document.addEventListener('DOMContentLoaded', () => {
     const textarea = document.getElementById('boardDesc');
@@ -362,7 +362,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     // 생성 가능 카테고리 출력
     function selectCagegory() {
-        makeRequest('get', 'http://192.168.0.18:28888/with/openCategory')
+        makeRequest('get', `${defaultUrl}/with/openCategory`)
             .then(response => {
                 const categorys = response.data.data;
                 const selectElement = document.getElementById('selectCategory');
@@ -475,7 +475,7 @@ function collectDynamicOptions() {
         const token = localStorage.getItem('accessToken');
 
         // 서버에 POST 요청 보내기
-        axios.post(`http://192.168.0.18:28888/with/addBoard/${categoryType}/${selectedOptionValue}`, formData, {
+        axios.post(`${defaultUrl}/with/addBoard/${categoryType}/${selectedOptionValue}`, formData, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'multipart/form-data'

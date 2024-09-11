@@ -3,6 +3,7 @@ let currentPage = 1;
 let itemsPerPage = 10;
 let totalPage = 1;
 let keyword = "";
+const defaultUrl = "http://safe.withfirst.com:28888"
 const urlParams = new URLSearchParams(window.location.search);
 const postId = urlParams.get('id');
 
@@ -28,7 +29,7 @@ function loadPostData(page = 1) {
     currentPage = page;
     const token = localStorage.getItem('accessToken');
     // const url = `http://safe.withfirst.com:28888/with/postList?option_type=${optionType}&option_value=${optionValue}&per_page=${itemsPerPage}&page=${currentPage}`;
-    const url = `http://safe.withfirst.com:28888/with/postList/${postId}?keyword=${keyword}&per_page=${itemsPerPage}&page=${currentPage}`;
+    const url = `${defaultUrl}/with/postList/${postId}?keyword=${keyword}&per_page=${itemsPerPage}&page=${currentPage}`;
     axios.get(url, {
         headers: {
             'Authorization': `Bearer ${token}`
@@ -92,17 +93,15 @@ function renderTable() {
                 <button class="deleteBtn" data-post-idx="${post["게시글 번호"]}" data-post-name="${post["게시글 명"]}">삭제</button>
                 <button class="moveBtn" data-id="${post["게시글 번호"]}">이동</button>
             </td>  `
-
-
         row.innerHTML = `                             
             <td>
                 <div class="d-flex align-items-center justify-content-center">
-                    <input type="checkbox" data-post-idx="${post['게시글 번호']}" data-post-name="${post['게시글 명']}">
+                    <input type="checkbox" data-post-idx="${post['post_idx']}" data-post-name="${post['p_title']}">
                 </div>
             </td>
-            <td>1</td>
+            <td>${startIndex + index + 1}</td>
             <td style="text-align: left;"><a href="post.html">
-                디자인 관련 질문 있습니다. 확인부탁드려요!
+                ${post['p_title']}
             </a>
             <!-- 게시글에 그림이 있으면 나타나는 아이콘 -->
             <span class="pic">
@@ -110,16 +109,17 @@ function renderTable() {
             </span>
             <!-- 게시글에 댓글이 있으면 나타나는 댓글 개수 -->
             <span class="cmt_bold">
-                <a link>[2]</a>
+                <a link>${post['comment_count']}</a>
             </span>
             </td>
-            <td>송수련</td>
-            <td>18:06</td>
-            <td>105</td>
-            <td>3</td>
+            <td>${post['user_name']}</td>
+            <td>${post['created_date'] ? post["created_date"].split(' ')[0] : ''}</td>
+            <td>${post['p_view']}</td>
+            <td>${post['like_count']}</td>
             <td class="buttons center-align">
-                <button class="modifyBtn" id="postModify">수정</button>
-                <button class="deleteBtn">삭제</button>
+                <button class="moveBtn" data-post-idx="${post["post_idx"]}">이동</button>
+                <button class="modifyBtn" id="postModify" data-id="${post['post_idx']}">수정</button>
+                <button class="deleteBtn" data-post-idx="${post["post_idx"]}" data-post-name="${post["p_title"]}">삭제</button>
             </td>        
         `;
         console.log(0);
@@ -134,11 +134,11 @@ function renderTable() {
     // 게시글 이동 이벤트
     document.querySelectorAll('.moveBtn').forEach(button => {
         button.addEventListener('click', function () {
-            const postId = this.getAttribute('data-id');
-            const post = posts.find(v => v["게시글 번호"] == postId)
+            const postId = this.getAttribute('data-post-idx');
+            const post = posts.find(v => v["post_idx"] == postId)
             console.log(postId);
             console.log(post);
-            window.location.href = `/postList.html?id=${postId}`;
+            window.location.href = `/post.html?id=${postId}`;
         });
     });
 
@@ -199,7 +199,7 @@ function renderTable() {
         const token = localStorage.getItem('accessToken');
 
         // 수정 PUT 요청 보내기
-        axios.put(`http://safe.withfirst.com:28888//with/edit_post/${originpostName}/${postIdx}`, formData, {
+        axios.put(`${defaultUrl}//with/edit_post/${originpostName}/${postIdx}`, formData, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'multipart/form-data' // 폼데이터 전송 시 설정
@@ -281,7 +281,7 @@ function deleteposts(posts) {
 
     console.log('전송될 데이터:', JSON.stringify(posts));
 
-    axios.delete('http://safe.withfirst.com:28888/with/del_post', {
+    axios.delete(`${defaultUrl}/with/del_post`, {
         data: posts,
         headers: {
             'Authorization': `Bearer ${token}`,
