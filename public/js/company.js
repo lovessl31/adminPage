@@ -347,6 +347,8 @@ function renderTable() {
                     const accessToken = localStorage.getItem('accessToken');
                     console.log('Stored accessToken:', accessToken);
 
+                    localStorage.setItem('accessId', response.data.data.accessId);
+
                     //해당 회사의 카테고리 관리 페이지로 이동
                     window.location.href = `user.html?=${comIdx}`;
                 })
