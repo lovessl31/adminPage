@@ -1086,7 +1086,7 @@ $(function() {
                     "id" : newNodeId,
                     "text": newTeamName,
                     "type": "team",
-                    "state": { "opened": false }, // 기본적으로 열림 상태로 추가
+                    "state": { "opened": true }, // 기본적으로 열림 상태로 추가
                     "children": [],
                 };
 

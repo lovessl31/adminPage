@@ -4,6 +4,7 @@ const defaultUrl = "http://safe.withfirst.com:28888"
 let detail_post = []
 let detail_conmments = []
 
+
 document.addEventListener('DOMContentLoaded', () => {
     console.log(
         `postId: ${postId}` // id URL 파라미터 출력
@@ -13,8 +14,6 @@ document.addEventListener('DOMContentLoaded', () => {
     loadPostData();
     loadCommentData();
 })
-
-
 
 function loadPostData() {
     const token = localStorage.getItem('accessToken');    
@@ -57,3 +56,5 @@ function loadCommentData() {
             console.error('Error loading post data:', error.response ? error.response.data : error.message);
         });
 }
+
+
