@@ -161,11 +161,14 @@
     <script src="./js/script.js"></script>
     <!-- Sweetalert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <!-- 팝업 -->
+    <script src="./js/TimePopup.js"></script>
     <!-- 썸머노트 부분 -->
     <script src="/js/summernote/summernote-lite.js"></script>
     <script src="/js/summernote/lang/summernote-ko-KR.js"></script>
+    <script src="/js/postWrite.js"></script>
     <script>
-        // 썸머 노트 에디터 코드 (공식문서, 구글링 보고 이해하며 작성함 단순 복붙 x)
+        // 썸머 노트 에디터 코드 (공식문서, 구글링 보고 작성함 단순 복붙 x)
         $(document).ready(function () {            
             $('#summernote').summernote({
                 // 기본 옵션 설정
@@ -188,54 +191,10 @@
                     ['view', ['fullscreen', 'help']]
                 ],
                 fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New', '맑은 고딕', '궁서', '굴림체', '굴림', '돋움체', '바탕체'],
-                fontSizes: ['8', '9', '10', '11', '12', '14', '16', '18', '20', '22', '24', '28', '30', '36', '50', '72']
+                fontSizes: ['8', '9', '10', '11', '12', '14', '16', '18', '20', '22', '24', '28', '30', '36', '50','64', '72', '96', '144'],                
             });
         });
-
-
-        document.getElementById('createBoard').addEventListener('click', function() {
-            window.location.href = 'boardCreate.html';
-        });
-       
-    //    // JSON 파일에서 데이터 불러오기
-    //    function loadUserData() {
-    //     axios.get('./')
-    //         .then(response => {
-    //             const users = response.data;
-    //             const tableBody = document.getElementById('userTableBody');
-    //             users.forEach(user => {
-    //                 const row = document.createElement('tr');
-    //                 row.innerHTML = `
-    //                     <td>
-    //                         <div class="d-flex align-items-center justify-content-center">
-    //                             <input type="checkbox">
-    //                         </div>
-    //                     </td>
-    //                     <td class="userInfo">
-    //                         <span class="userImage"></span>
-    //                         ${user.name}
-    //                     </td>
-    //                     <td>${user.contact}</td>
-    //                     <td>${user.email}</td>
-    //                     <td>${user.company}</td>
-    //                     <td>${user.department}</td>
-    //                     <td>${user.position}</td>
-    //                     <td class="buttons center-align">
-    //                         <button class="modifyBtn">수정</button>
-    //                         <button class="deleteBtn">삭제</button>
-    //                     </td>
-    //                 `;
-    //                 tableBody.appendChild(row);
-    //             });
-    //         })
-    //         .catch(error => {
-    //             console.error('Error loading user data:', error);
-    //         });
-    // }
-
-    // // 페이지 로드 시 가상 데이터 로드
-    // document.addEventListener('DOMContentLoaded', loadUserData);
-
+                
     </script>
 </body>
 </html>
