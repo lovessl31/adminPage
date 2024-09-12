@@ -2,24 +2,88 @@ let posts = [];
 let currentPage = 1;
 let itemsPerPage = 10;
 let totalPage = 1;
-let keyword = "";
+let optionType = "all";
+let optionValue = "";
 const defaultUrl = "http://safe.withfirst.com:28888"
 const urlParams = new URLSearchParams(window.location.search);
 const postId = urlParams.get('id');
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log(
-        `postId: ${postId}` // id URL 파라미터 출력
-    );
+    
 
-    // Axios를 사용하여 해당 게시글의 글 목록을 가져옵니다
-    // axios.get(`/api/posts?postId=${postId}`)
-    //     .then(response => {
-    //         // 글 목록 표시 로직
-    //     });
+    // 전체 선택 기능
+    document.querySelector('thead input[type="checkbox"]').addEventListener('change', function () {
+        const isChecked = this.checked;
+        const checkboxes = document.querySelectorAll('tbody input[type="checkbox"');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = isChecked;
+        });
+    });
+
+    // 다중 삭제
+    document.getElementById('deleteBtn').addEventListener('click', () => {
+        const selectedPosts = Array.from(document.querySelectorAll('tbody input[type="checkbox"]:checked'))
+            .map(checkbox => ({
+                post_idx: checkbox.getAttribute('data-post-idx'),
+                user_idx: checkbox.getAttribute('data-user-id')
+            }));
+
+        console.log('selectedPosts :: :', selectedPosts);
+        if (selectedPosts.length > 0) {
+            deleteposts(selectedPosts);            
+        } else {
+            alert('삭제할 게시판을 선택해주세요.');
+        }
+    });
+
+    // localStorage에서 현재 페이지 번호 가져오기
+    const savedPage = localStorage.getItem('currentPage');
+    if (savedPage) {
+        currentPage = parseInt(savedPage, 10);
+        localStorage.removeItem('currentPage'); // 저장된 페이지 번호 삭제
+    } else {
+        currentPage = 1; // 기본 페이지를 1로 설정
+    }
+
+    // 검색 버튼 클릭 시와 검색 필드에서 엔터 키 입력 시
+    document.getElementById('searchButton').addEventListener('click', () => {
+        executeSearch();
+    });
+
+    document.getElementById('searchInput').addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            executeSearch();
+        }
+    });
+
+    function executeSearch() {
+        const searchSelect = document.getElementById('searchSelect');
+        const searchInput = document.getElementById('searchInput');
+        console.log(111111111111111111);
+        
+        console.log(searchInput);
+        console.log(searchSelect);
+        
+        if (searchSelect) {
+            console.log("test:        1",searchSelect.value);
+            
+            optionType = searchSelect.value.trim();
+        }
+        if (searchInput) {
+            optionValue = searchInput.value.trim();
+        }
+        // 검색 조건이 바뀔 때 마다 페이지를 1로 설정하고 데이터 로드하기
+        loadPostData(1);
+    }
+
+    // 페이지 당 항목 수를 변경
+    document.getElementById('itemCountSelect').addEventListener('change', (event) => {
+        itemsPerPage = parseInt(event.target.value, 10);
+        loadBoardData(1);
+    });
 
 
-    // 데이터 로드 함수 호출
     loadPostData(currentPage);
 })
 
@@ -27,9 +91,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function loadPostData(page = 1) {
     currentPage = page;
-    const token = localStorage.getItem('accessToken');
-    // const url = `http://safe.withfirst.com:28888/with/postList?option_type=${optionType}&option_value=${optionValue}&per_page=${itemsPerPage}&page=${currentPage}`;
-    const url = `${defaultUrl}/with/postList/${postId}?keyword=${keyword}&per_page=${itemsPerPage}&page=${currentPage}`;
+    const token = localStorage.getItem('accessToken');    
+    const url = `${defaultUrl}/with/postList/${postId}?option_type=${optionType}&option_value=${optionValue}&per_page=${itemsPerPage}&page=${currentPage}`;
     axios.get(url, {
         headers: {
             'Authorization': `Bearer ${token}`
@@ -44,18 +107,17 @@ function loadPostData(page = 1) {
             console.log(posts);
             console.log(response.data);
 
-            totalPage = response.data.total_page || 1;
+            totalPage = response.data.total_pages || 1;
             totalCount = `모든 게시글(${response.data.total_count || 0})`
             console.log(totalPage);
-            console.log(111111);
-            renderTable();
-            console.log(222222);
-
+            console.log("count:", totalCount);                        
+            renderTable();            
             document.querySelector('thead input[type="checkbox"]').checked = false;
-            document.getElementById('post_count').textContent = totalCount;
+            document.getElementById('post_counting').innerHTML = totalCount;
         })
         .catch(error => {
-            console.error('Error loading post data:', error.response ? error.response.data : error.message);
+            // console.error('Error loading post data:', error.response ? error.response.data : error.message);
+            console.error('Error loading post data:', error);
         });
 }
 
@@ -74,42 +136,24 @@ function renderTable() {
     posts.forEach((post, index) => {
         console.log("테이블 렌더링post :", post);
 
-        const row = document.createElement('tr');
-
-        test = `<td>
-                <div class="d-flex align-items-center justify-content-center">
-                    <input type="checkbox" data-post-idx="${post['post_idx']}" data-post-name="${post['p_title']}">
-                </div>
-            </td>        
-            <td>${startIndex + index + 1}</td>
-            <td><a href="/postList.html?id=${post['게시글 번호']}">${post["게시글 명"]}<img src="./images/link.svg"></a></td>        
-            <td>${post["게시글 타입"]}</td>
-            <td>${post["좋아요 유/무"]}</td>
-            <td>${post["카테고리 명"]}</td>
-            <td>${post["카테고리 유형"]}</td>
-            <td>${post["게시글 생성일"] ? post["게시글 생성일"].split(' ')[0] : ''}</td>
-            <td class="buttons center-align">
-                <button class="modifyBtn postModify" data-id="${post['게시글 번호']}">수정</button>
-                <button class="deleteBtn" data-post-idx="${post["게시글 번호"]}" data-post-name="${post["게시글 명"]}">삭제</button>
-                <button class="moveBtn" data-id="${post["게시글 번호"]}">이동</button>
-            </td>  `
+        const row = document.createElement('tr');        
         row.innerHTML = `                             
             <td>
                 <div class="d-flex align-items-center justify-content-center">
-                    <input type="checkbox" data-post-idx="${post['post_idx']}" data-post-name="${post['p_title']}">
+                    <input type="checkbox" data-post-idx="${post['post_idx']}" data-user-id="${post["user_idx"]}">
                 </div>
             </td>
             <td>${startIndex + index + 1}</td>
-            <td style="text-align: left;"><a href="post.html">
+            <td style="text-align: left;"><a href="post.html?id=${post['post_idx']}">
                 ${post['p_title']}
             </a>
             <!-- 게시글에 그림이 있으면 나타나는 아이콘 -->
             <span class="pic">
-                <img src="/images/pic.png">
+                ${post.thumbnail.length ? `<img src="/images/pic.png" />` : ''}                
             </span>
             <!-- 게시글에 댓글이 있으면 나타나는 댓글 개수 -->
             <span class="cmt_bold">
-                <a link>${post['comment_count']}</a>
+                <a link>${post['comment_count'] > 0 ? `[${post['comment_count']}]` : ''}</a>
             </span>
             </td>
             <td>${post['user_name']}</td>
@@ -119,7 +163,7 @@ function renderTable() {
             <td class="buttons center-align">
                 <button class="moveBtn" data-post-idx="${post["post_idx"]}">이동</button>
                 <button class="modifyBtn" id="postModify" data-id="${post['post_idx']}">수정</button>
-                <button class="deleteBtn" data-post-idx="${post["post_idx"]}" data-post-name="${post["p_title"]}">삭제</button>
+                <button class="deleteBtn" data-post-idx="${post["post_idx"]}" data-user-id="${post["user_idx"]}">삭제</button>
             </td>        
         `;
         console.log(0);
@@ -143,104 +187,15 @@ function renderTable() {
     });
 
 
-    // 동적으로 생성된 팝업에 기존 데이터 맵핑
-    document.querySelectorAll('.postModify').forEach(button => {
+    // 게시글 수정 페이지로 이동
+    document.querySelectorAll('.modifyBtn').forEach(button => {
         button.addEventListener('click', function () {
             const postId = this.getAttribute('data-id'); // 클릭 시 해당 게시글 idx 저장            
-            const post = posts.find(v => v["게시글 번호"] == postId); // 해당 idx 일치하는 게시글 객체 저장
+            const post = posts.find(v => v["post_idx"] == postId); // 해당 idx 일치하는 게시글 객체 저장
             console.log("수정 post", post);
-
-            // 해당 회사 객체로 팝업에 데이터 채우기
-            document.getElementById('regisName').value = post['게시글 명'];
-
-            // 게시글 타입, 좋아요 라디오 버튼 설정
-            const postTypeRadios = document.getElementsByName('postType');
-            postTypeRadios.forEach(v => {
-                v.checked = v.value === post["게시글 타입"];
-            });
-            const likeFeatureRadios = document.getElementsByName('likeFeature');
-            likeFeatureRadios.forEach(v => {
-                v.checked = v.value === post["좋아요 유/무"];
-            });
-
-            document.getElementById('regisDate').textContent = post["게시글 생성일"].split(' ')[0];
-            document.getElementById('regisDesc').value = post["게시글 설명"];
-            // document.getElementById('regisOption').value = post.options
-
-            // 저장 버튼에 post_idx와 post_name data 속성으로 추가
-            document.getElementById('modifySaveBtn').setAttribute('data-post-idx', post['게시글 번호']);
-            document.getElementById('modifySaveBtn').setAttribute('data-origin-name', post['게시글 명']);
-            document.getElementById('modifyPopup').style.display = 'flex';
+            window.location.href = `/write.html?id=${postId}`;            
         });
     });
-
-
-    // 팝업 내 저장 버튼 클릭시 실행 될 이벤트 핸들러 
-    document.getElementById('modifySaveBtn').addEventListener('click', function () {
-        // 입력 필드에서 값 가져오기
-        const postName = document.getElementById('regisName').value.trim();
-        const postType = document.querySelector('input[name="postType"]:checked').value;
-        const postLike = document.querySelector('input[name="likeFeature"]:checked').value;
-        const postDesc = document.getElementById('regisDesc').value.trim();
-
-        const originpostName = this.getAttribute('data-origin-name'); // 저장된 게시글 명 가져옴
-        const postIdx = this.getAttribute('data-post-idx'); // 저장된 게시글 번호 가져옴
-        // const regisDynamicOption = document.getElementById('regisOption').value.trim(); // 게시글 옵션 가져오기
-
-        // 요청할 폼 데이터
-        const formData = new FormData();
-        formData.append('post_name', postName);
-        formData.append('post_type', postType);
-        formData.append('LikeSet', postLike);
-        formData.append('post_desc', postDesc);
-
-
-
-        const token = localStorage.getItem('accessToken');
-
-        // 수정 PUT 요청 보내기
-        axios.put(`${defaultUrl}//with/edit_post/${originpostName}/${postIdx}`, formData, {
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'multipart/form-data' // 폼데이터 전송 시 설정
-            }
-        })
-            .then(response => {
-                console.log('게시글 정보 수정 응답:', response.data);
-                let title = "게시글 수정"
-                let body = "<p>게시글 정보가 수정되었습니다.</p>"
-                showPopup(2, title, body, 'suc')
-                localStorage.setItem('currentPage', currentPage);
-                //페이지 새로 고침
-                location.reload();
-            })
-            .catch(error => {
-                console.error('게시글 정보 수정 오류:', error.response ? error.response.data : error.message);
-
-                if (error.response && error.response.status === 401) {
-                    // 401 에러 발생 시 로그아웃 함수 호출
-                    window.logout();
-                } else {
-                    // 기타 에러 처리
-                    alert('게시글 수정에 실패했습니다.');
-                }
-            });
-    });
-    // 팝업 내 취소 버튼 클릭 시 실행 될 이벤트 핸들러
-    document.querySelectorAll('.cancleBtn').forEach(cancelBtn => {
-        cancelBtn.addEventListener('click', () => {
-            cancelBtn.closest('.popup').style.display = 'none';
-        });
-    });
-    // 팝업 내 닫기 버튼 클릭 시 팝업 닫기
-    document.querySelectorAll('.popup .close').forEach(closeBtn => {
-        closeBtn.addEventListener('click', () => {
-            closeBtn.closest('.popup').style.display = 'none';
-        });
-    });
-
-
-
 
     // 동적으로 생성된 이동
 
@@ -249,10 +204,10 @@ function renderTable() {
     document.querySelectorAll('.deleteBtn').forEach(button => {
         button.addEventListener('click', function () {
             const post_idx = this.getAttribute('data-post-idx');
-            const post_name = this.getAttribute('data-post-name');
-            console.log("게시글 삭제 버튼 동작 이벤트 테스트", post_idx, post_name);
+            const user_idx = this.getAttribute('data-user-id');
+            console.log("게시글 삭제 버튼 동작 이벤트 테스트", post_idx, user_idx);
 
-            deleteposts([{ post_idx: post_idx, post_name: post_name }]);
+            deleteposts([{ post_idx: post_idx, user_idx: user_idx }]);
         })
     });
     console.log(2);
@@ -280,7 +235,7 @@ function deleteposts(posts) {
     const token = localStorage.getItem('accessToken');
 
     console.log('전송될 데이터:', JSON.stringify(posts));
-
+    
     axios.delete(`${defaultUrl}/with/del_post`, {
         data: posts,
         headers: {
@@ -317,7 +272,7 @@ function postPagination() {
     firstPage.innerHTML = `<a class="page-link" href="#"><<</a>`;
     firstPage.onclick = (event) => {
         event.preventDefault();
-        loadpostData(1);
+        loadPostData(1);
     };
     pagination.appendChild(firstPage);
 
@@ -341,7 +296,7 @@ function postPagination() {
         pageButton.textContent = i;
         pageButton.onclick = (event) => {
             event.preventDefault();
-            loadpostData(i);
+            loadPostData(i);
         };
 
 
@@ -355,15 +310,7 @@ function postPagination() {
     lastPage.innerHTML = `<a class="page-link" href="#">>></a>`;
     lastPage.onclick = (event) => {
         event.preventDefault();
-        loadpostData(totalPage);
+        loadPostData(totalPage);
     };
     pagination.appendChild(lastPage);
 }
-
-
-
-
-// 게시글 생성 클릭 시 생성 페이지로 이동
-document.getElementById('createpost').addEventListener('click', function () {
-    window.location.href = 'postCreate.html';
-});

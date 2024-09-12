@@ -58,14 +58,14 @@
             <h4>자유게시판</h4> <!-- 클릭한 게시판 이름 -->
             <div class="contentInner">
                <div class="contentWrap">
-                <p>모든 게시글(256)</p> <!-- 괄호 안 총 게시글 데이터 -->
+                <p id="post_counting">모든 게시글(256)</p> <!-- 괄호 안 총 게시글 데이터 -->
 
                 <div class="searchContent">
                     <div class="searchWrap">
-                        <select class="searchSelect">
-                            <option>전체</option>
-                            <option>제목</option>
-                            <option>작성자</option>
+                        <select class="searchSelect" id="searchSelect">
+                            <option value="all">전체</option>
+                            <option value="title">제목</option>
+                            <option value="user">작성자</option>
                         </select>
                         <div class="divider"></div> <!-- 구분선 추가 -->
                         <div class="searchInputWrapper d-flex align-items-center">
@@ -73,9 +73,9 @@
                                 <img src="./images/search.svg">
                             </div>
                             <div class="searchInput">
-                                <input type="text" placeholder="검색어를 입력해주세요">
+                                <input type="text" id="searchInput" placeholder="검색어를 입력해주세요">
                             </div>
-                            <div class="searchBtn"><button>검색</button></div>
+                            <div class="searchBtn"><button id="searchButton">검색</button></div>
                         </div>
                     </div>
                     <div class="d-flex align-items-center">
@@ -112,7 +112,7 @@
                         </tr>
                     </thead>
                     <tbody id="postTableBody">
-                        <tr>
+                        <!-- <tr>
                             <td>
                                 <div class="d-flex align-items-center justify-content-center">
                                     <input type="checkbox">
@@ -121,16 +121,15 @@
                             <td>1</td>
                             <td style="text-align: left;"><a href="post.html">
                                 디자인 관련 질문 있습니다. 확인부탁드려요!
-                            </a>
-                            <!-- 게시글에 그림이 있으면 나타나는 아이콘 -->
+                            </a>                            
                             <span class="pic">
                                 <img src="/images/pic.png">
-                            </span>
-                            <!-- 게시글에 댓글이 있으면 나타나는 댓글 개수 -->
+                            </span>                            
                             <span class="cmt_bold">
                                 <a link>[2]</a>
                             </span>
-                        </td>
+                            </td>
+
                             <td>송수련</td>
                             <td>18:06</td>
                             <td>105</td>
@@ -139,7 +138,7 @@
                                 <button class="modifyBtn" id="boardModify">수정</button>
                                 <button class="deleteBtn">삭제</button>
                             </td>
-                        </tr>
+                        </tr> -->
                     </tbody>
                 </table>
 
@@ -153,18 +152,9 @@
                             <option value="50">50개</option>
                             <option value="100">100개</option>
                         </select>
-                        <button>삭제</button>
+                        <button id="deleteBtn">삭제</button>
                     </div>
-                    <div class="pagination" id="pagination">
-                        <a href="#">&laquo;</a>
-                        <a href="#" class="active">1</a>
-                        <a href="#">2</a>
-                        <a href="#">3</a>
-                        <a href="#">4</a>
-                        <a href="#">5</a>
-                        <a href="#">6</a>
-                        <a href="#">&raquo;</a>
-                    </div>
+                    <div class="pagination" id="pagination"></div>  
                 </div>
                </div>
             </div>
@@ -195,53 +185,7 @@
     <script src="./js/script.js"></script>
     <!-- Sweetalert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-
+    <script src="./js/TimePopup.js"></script>
     <script src="/js/postList.js"></script>
-    <script>
-
-        document.getElementById('createBoard').addEventListener('click', function() {
-            window.location.href = 'boardCreate.html';
-        });
-       
-       // JSON 파일에서 데이터 불러오기
-       function loadUserData() {
-        axios.get('./')
-            .then(response => {
-                const users = response.data;
-                const tableBody = document.getElementById('userTableBody');
-                users.forEach(user => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>
-                            <div class="d-flex align-items-center justify-content-center">
-                                <input type="checkbox">
-                            </div>
-                        </td>
-                        <td class="userInfo">
-                            <span class="userImage"></span>
-                            ${user.name}
-                        </td>
-                        <td>${user.contact}</td>
-                        <td>${user.email}</td>
-                        <td>${user.company}</td>
-                        <td>${user.department}</td>
-                        <td>${user.position}</td>
-                        <td class="buttons center-align">
-                            <button class="modifyBtn">수정</button>
-                            <button class="deleteBtn">삭제</button>
-                        </td>
-                    `;
-                    tableBody.appendChild(row);
-                });
-            })
-            .catch(error => {
-                console.error('Error loading user data:', error);
-            });
-    }
-
-    // 페이지 로드 시 가상 데이터 로드
-    document.addEventListener('DOMContentLoaded', loadUserData);
-
-    </script>
 </body>
 </html>
