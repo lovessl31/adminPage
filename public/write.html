@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,9 +9,11 @@
     <!-- Reset CSS -->
     <link rel="stylesheet" href="./css/reset.css">
     <!-- Pretendard Font -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css">
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css">
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <!-- sweetalert2 CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.10/dist/sweetalert2.min.css">
     <!-- Custom CSS -->
@@ -18,6 +21,94 @@
 
     <link rel="stylesheet" href="/css/summernote/summernote-lite.css">
 </head>
+
+<style>
+    
+.file_attach_btn {
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+
+.file_attach_btn button {
+border: 1px solid #EEEEEE;
+background: #fff;
+color: #6F6F6F;
+width: 65px;
+height: 35px;
+border-radius: 5px;
+font-size: 14px;
+transition: ease 0.2s;
+}
+
+.file_attach_btn button:hover {
+background: #e8eff5;
+}
+
+.total_volume {
+color: #b3b3b3;
+letter-spacing: -0.2px;
+font-size: 14px;
+}
+
+.total_volume em {
+font-weight: bold;
+color: #1C9DEA;
+}
+
+.file_wrap {
+height: 115px;
+overflow-y: auto;
+border: 1px solid #d8d8d8;
+border-radius: 8px;
+margin: 15px 0px;
+}
+
+.file_wrap table {
+width: 100%;
+
+}
+
+.file_wrap table thead {
+font-size: 12px;
+border-bottom: 1px solid #d8d8d8;
+}
+
+.file_wrap table thead th {
+padding: 7px 5px;
+background: #f5f5f5;
+}
+
+.file_wrap table tbody td {
+font-size: 14px;
+padding: 6px 5px;
+}
+
+.file_wrap table tbody td span{
+padding-right: 6px;
+}
+
+.file_wrap table tbody button {
+border: none;
+background: transparent;
+}
+
+
+.text-right {
+text-align: right;
+}
+
+.col-1 {
+width: 25px;
+vertical-align: middle;
+}
+
+.col-1 button {
+margin-left: 5px;
+}
+
+</style>
+
 <body>
     <div class="wrap">
         <!-- 헤더 -->
@@ -30,18 +121,12 @@
                 <div class="rightHeader">
                     <div id="loginButtons">
                         <ul>
-                            <li><a href="login.html">LOGIN</a></li> <!-- 최고 관리자 로그인 페이지 -->
-                            <!-- 회사관리자 로그인 페이지 -->
-                            <!-- <li><a href="com_login.html">슈퍼</a></li> -->
+                            <li><a href="login.html">LOGIN</a></li> <!-- 로그인 페이지 -->
                         </ul>
                     </div>
-                    
+
                     <button id="logoutButton" style="display: none;">LOGOUT</button>
                     <div id="userInfo" style="display: none;"> <!-- 로그인 성공 시 로그인 사용자 정보-->
-                        <!-- <div class="d-flex align-items-center">
-                            <span>guest</span>
-                            <div class="imgBg"></div>
-                        </div> -->
                     </div>
                 </div>
             </div>
@@ -57,82 +142,117 @@
         </div>
         <!-- 메인 컨텐츠 -->
         <div id="content">
-            <h4>글쓰기</h4>
+            <h4 class="contentTitle">글쓰기</h4>
             <div class="contentInner">
-               <div class="contentWrap">
-                <div class="row">
-                    <div class="col-12">
+                <div class="contentWrap">
+                    <div class="row">
+                        <div class="col-12">
 
-                        <div class="write_selectbox">
-                            <!-- 게시판 선택 -->
-                            <div class="write_post_name">게시판명</div>      
-                            <br>                      
-                            <!-- 공개/비공개 설정 -->
-                            <div class="privacy_options">
-                                <input type="radio" id="public" name="privacy" value="public" checked>
-                                <label for="public">공개</label>
-            
-                                <input type="radio" id="private" name="privacy" value="private">
-                                <label for="private">비공개</label>
-                            </div>
-                            <!-- 공지글 Y/N 설정 -->
-                            <div class="notice_options">
-                                <input type="radio" id="noticeY" name="notice" value="Y" checked>
-                                <label for="noticeY">Y</label>
-            
-                                <input type="radio" id="noticeN" name="notice" value="N">
-                                <label for="noticeN">N</label>
-                            </div>
-                        </div>
-                        <!-- 제목 입력받는 input창 -->
-                        <div class="title_box">
-                            <input type="text" placeholder="제목을 입력하세요">
-                        </div>
-                        <!-- 에디터 -->
+                            <div class="write_selectbox">
+                                <!-- 게시판 선택 -->
+                                <div class="write_post_name">게시판명</div>
+                                <br>
+                                <!-- 공개/비공개 설정 -->
+                                <div class="privacy_options">
+                                    <input type="radio" id="public" name="privacy" value="public" checked>
+                                    <label for="public">공개</label>
 
-                        <form class="write_edit" method="post">
-                            <textarea id="summernote" name="editordata"></textarea>
-                        </form>
-<!--                           
+                                    <input type="radio" id="private" name="privacy" value="private">
+                                    <label for="private">비공개</label>
+                                </div>
+                                <!-- 공지글 Y/N 설정 -->
+                                <div class="notice_options">
+                                    <input type="radio" id="noticeY" name="notice" value="Y" checked>
+                                    <label for="noticeY">Y</label>
+
+                                    <input type="radio" id="noticeN" name="notice" value="N">
+                                    <label for="noticeN">N</label>
+                                </div>
+                            </div>
+                            <!-- 제목 입력받는 input창 -->
+                            <div class="title_box">
+                                <input type="text" placeholder="제목을 입력하세요">
+                            </div>
+                            <!-- 에디터 -->
+                            
+                        
+                        <!-- 첨부파일 -->
+                        <div class="file_attach_wrap">
+                            <div class="file_attach_btn">
+                                <div>
+                                <input type="file" id="fileInput" multiple style="display: none;" />
+                                <button id="fileBtn">파일첨부</button>
+                                <button id="deleteAllBtn" style="display: none;">전체삭제</button>
+                                </div>
+                                <p class="total_volume">첨부파일 <em>0</em>개 (0.0KB)</p>
+                            </div>
+                    
+                            <div class="file_wrap">
+                                <table>
+                                <thead>
+                                    <th class="col-1"></th>
+                                    <th>파일명</th>
+                                    <th class="text-right">용량</th>
+                                    <th></th>
+                                </thead>
+                                <tbody id="fileList">
+                                    
+                                    <!-- <tr>
+                                    <td class="col-1"><button>x</button></td>
+                                    <td><span>아이콘</span>새폴더.zip</td>
+                                    <td class="text-right">270.86KB</td>
+                                    <td></td>
+                                    </tr>
+                                    <tr>
+                                    <td class="col-1"><button>x</button></td>
+                                    <td><span>아이콘</span>제작 관리 정산 비용.xls</td>
+                                    <td class="text-right">270.86KB</td>
+                                    <td></td>
+                                    </tr>
+                                    <tr>
+                                    <td class="col-1"><button>x</button></td>
+                                    <td><span>아이콘</span>위드챗 로고 디자인.ai</td>
+                                    <td class="text-right">270.86KB</td>
+                                    <td></td>
+                                    </tr>
+                                    <tr>
+                                    <td class="col-1"><button>x</button></td>
+                                    <td><span>아이콘</span>두번째.zip</td>
+                                    <td class="text-right">270.86KB</td>
+                                    <td></td>
+                                    </tr> -->
+                        
+                                </tbody>
+                                </table>
+                            </div>
+                            </div>
+                        
+
+
+
+
+                            <form class="write_edit" method="post">
+                                <textarea id="summernote" name="editordata"></textarea>
+                            </form>
+                            <!--                           
                         <div >
                             
                         </div> -->
 
-                        <!-- 게시글 등록 시 생성했던 모듈 나타나는 부분 (아래는 예시) -->
-                        <div class="module-wrap">
-                            <div class="row module">
-                                <div class="col-1 font-weight">상태</div>
-                                <div class="col-4">
-                                    <input type="text">
-                                </div>
+                            <!-- 동적 옵션 -->
+                            <div class="module-wrap">
+                                <!-- 동적 옵션 나타는 곳 -->
                             </div>
-                            <div class="row module">
-                                <div class="col-1 font-weight">과일</div>
-                                <div class="col-4">
-                                    <select>
-                                        <option>딸기</option>
-                                        <option>바나나</option>
-                                        <option>포도</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="row module">
-                                <div class="col-1 font-weight">시작시간</div>
-                                <div class="col-4"><input type="date"></div>
-                            </div>
-                            <div class="row module">
-                                <div class="col-1 font-weight">마감시간</div>
-                                <div class="col-4"><input type="date"></div>
-                            </div>
-                        </div>
 
 
-                        <div class="regiBtn"> 
-                            <button>등록</button>
+                            <div class="regiBtn">
+                                <button>등록</button>
+                            </div>
+
+                            
                         </div>
                     </div>
                 </div>
-               </div>
             </div>
         </div>
 
@@ -149,14 +269,18 @@
             </div>
         </div>
     </div>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-latest.min.js"></script>
     <!-- Popper.js -->
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
+        integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p"
+        crossorigin="anonymous"></script>
     <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"
+        integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF"
+        crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="./js/script.js"></script>
     <!-- Sweetalert2 JS -->
@@ -166,35 +290,7 @@
     <!-- 썸머노트 부분 -->
     <script src="/js/summernote/summernote-lite.js"></script>
     <script src="/js/summernote/lang/summernote-ko-KR.js"></script>
-    <script src="/js/postWrite.js"></script>
-    <script>
-        // 썸머 노트 에디터 코드 (공식문서, 구글링 보고 작성함 단순 복붙 x)
-        $(document).ready(function () {            
-            $('#summernote').summernote({
-                // 기본 옵션 설정
-                height: 500,                // 에디터 높이
-                minHeight: 350,             // 에디터 최소 높이
-                maxHeight: 642,             // 에디터 최대 높이
-                focus: true,                // 에디터 로딩후 포커스를 맞출지 여부
-                lang: "ko-KR",				// 한글 설정
-                // 커스텀 옵션 설정
-                toolbar: [
-                    // [groupName, [list of button]]
-                    ['fontname', ['fontname']],
-                    ['fontsize', ['fontsize']],
-                    ['style', ['bold', 'italic', 'underline', 'strikethrough', 'clear']],
-                    ['color', ['forecolor', 'color']],
-                    ['table', ['table']],
-                    ['para', ['ul', 'ol', 'paragraph']],
-                    ['height', ['height']],
-                    ['insert', ['picture', 'link', 'video']],
-                    ['view', ['fullscreen', 'help']]
-                ],
-                fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New', '맑은 고딕', '궁서', '굴림체', '굴림', '돋움체', '바탕체'],
-                fontSizes: ['8', '9', '10', '11', '12', '14', '16', '18', '20', '22', '24', '28', '30', '36', '50','64', '72', '96', '144'],                
-            });
-        });
-                
-    </script>
+    <script src="/js/postWrite.js"></script>        
 </body>
+
 </html>

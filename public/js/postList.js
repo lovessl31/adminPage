@@ -4,9 +4,12 @@ let itemsPerPage = 10;
 let totalPage = 1;
 let optionType = "all";
 let optionValue = "";
+let board_name = "";
+
 const defaultUrl = "http://safe.withfirst.com:28888"
 const urlParams = new URLSearchParams(window.location.search);
-const postId = urlParams.get('id');
+const boardId = urlParams.get('id');
+const boardName = urlParams.get('name');
 
 document.addEventListener('DOMContentLoaded', () => {
     
@@ -32,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (selectedPosts.length > 0) {
             deleteposts(selectedPosts);            
         } else {
-            alert('삭제할 게시판을 선택해주세요.');
+            showPopup(2, "게시판 선택", "삭제할 게시판을 선택해주세요.")            
         }
     });
 
@@ -59,14 +62,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function executeSearch() {
         const searchSelect = document.getElementById('searchSelect');
-        const searchInput = document.getElementById('searchInput');
-        console.log(111111111111111111);
-        
-        console.log(searchInput);
-        console.log(searchSelect);
-        
+        const searchInput = document.getElementById('searchInput');        
+                
         if (searchSelect) {
-            console.log("test:        1",searchSelect.value);
+            console.log("test:1",searchSelect.value);
             
             optionType = searchSelect.value.trim();
         }
@@ -83,8 +82,17 @@ document.addEventListener('DOMContentLoaded', () => {
         loadBoardData(1);
     });
 
-
-    loadPostData(currentPage);
+    // 글쓰기 이동처리
+    document.querySelector('.writeBtn').addEventListener('click', (event) => {
+        event.preventDefault();                            
+        if (boardId) {            
+            document.location.href = `write.html?id=${boardId}&mode=create`;
+        } else {            
+            console.log("ID가 URL에 없습니다.");            
+            showPopup(2, '페이지 전환', "페이지 전환에 실패 하였습니다.")
+        }
+    });    
+    loadPostData(currentPage);      
 })
 
 
@@ -92,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function loadPostData(page = 1) {
     currentPage = page;
     const token = localStorage.getItem('accessToken');    
-    const url = `${defaultUrl}/with/postList/${postId}?option_type=${optionType}&option_value=${optionValue}&per_page=${itemsPerPage}&page=${currentPage}`;
+    const url = `${defaultUrl}/with/postList/${boardId}?option_type=${optionType}&option_value=${optionValue}&per_page=${itemsPerPage}&page=${currentPage}`;
     axios.get(url, {
         headers: {
             'Authorization': `Bearer ${token}`
@@ -109,6 +117,10 @@ function loadPostData(page = 1) {
 
             totalPage = response.data.total_pages || 1;
             totalCount = `모든 게시글(${response.data.total_count || 0})`
+            
+            let board_title = document.querySelector(".contentTitle")                    
+            boardName.length > 0 ? board_title.innerHTML = boardName : "게시판"   
+
             console.log(totalPage);
             console.log("count:", totalCount);                        
             renderTable();            
@@ -157,7 +169,33 @@ function renderTable() {
             </span>
             </td>
             <td>${post['user_name']}</td>
-            <td>${post['created_date'] ? post["created_date"].split(' ')[0] : ''}</td>
+            <td>
+            <!--오늘 날짜는 시 분으로 표현 , 전날 날짜는 년월일로 표현 -->
+                ${post['created_date'] ? 
+                    (() => {
+                    const createdDate = new Date(post["created_date"]);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    
+                    if (createdDate >= today) {
+                        // 오늘 날짜인 경우 HH:mm 형식으로 표시
+                        return createdDate.toLocaleTimeString('ko-KR', { 
+                        hour: '2-digit', 
+                        minute: '2-digit',                         
+                        hour12: false 
+                        });
+                    } else {
+                        // 이전 날짜인 경우 년-월-일 표시
+                        return createdDate.toLocaleDateString('ko-KR', { 
+                        year: 'numeric', 
+                        month: '2-digit', 
+                        day: '2-digit' 
+                        });
+                    }
+                    })() 
+                    : ''
+                }
+            </td>
             <td>${post['p_view']}</td>
             <td>${post['like_count']}</td>
             <td class="buttons center-align">
@@ -165,13 +203,9 @@ function renderTable() {
                 <button class="modifyBtn" id="postModify" data-id="${post['post_idx']}">수정</button>
                 <button class="deleteBtn" data-post-idx="${post["post_idx"]}" data-user-id="${post["user_idx"]}">삭제</button>
             </td>        
-        `;
-        console.log(0);
-        // if post[""]
-        tableBody.appendChild(row);
-        console.log(tableBody);
-
-        console.log(12);
+        `;        
+        tableBody.appendChild(row);        
+        console.log(tableBody);                            
     });
 
 
@@ -193,12 +227,10 @@ function renderTable() {
             const postId = this.getAttribute('data-id'); // 클릭 시 해당 게시글 idx 저장            
             const post = posts.find(v => v["post_idx"] == postId); // 해당 idx 일치하는 게시글 객체 저장
             console.log("수정 post", post);
-            window.location.href = `/write.html?id=${postId}`;            
+            window.location.href = `/write.html?id=${postId}&mode=edit`;            
         });
     });
-
-    // 동적으로 생성된 이동
-
+    
     // 동적으로 생성된 개별 삭제
     console.log(1);
     document.querySelectorAll('.deleteBtn').forEach(button => {
@@ -210,7 +242,6 @@ function renderTable() {
             deleteposts([{ post_idx: post_idx, user_idx: user_idx }]);
         })
     });
-    console.log(2);
     // 페이지 네이션
     postPagination()
     console.log("pagination--------------------------------");

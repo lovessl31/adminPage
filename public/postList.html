@@ -55,7 +55,7 @@
         </div>
         <!-- 메인 컨텐츠 -->
         <div id="content">
-            <h4>자유게시판</h4> <!-- 클릭한 게시판 이름 -->
+            <h4 class="contentTitle"></h4> <!-- 클릭한 게시판 이름 -->
             <div class="contentInner">
                <div class="contentWrap">
                 <p id="post_counting">모든 게시글(256)</p> <!-- 괄호 안 총 게시글 데이터 -->
@@ -80,16 +80,15 @@
                     </div>
                     <div class="d-flex align-items-center">
                         <div class="sort_form">
-                            <!-- 리스트 형식일 경우 -->
-                            <a href="albumList.html"><button><img src="/images/album.svg"></button></a>
-                            <a href="postList.html"><button><img src="/images/list_selected.svg"></button></a>
-
+                            <!-- 리스트 형식일 경우 -->                            
+                            <button class="albumBtn"><a href="albumList.html"><img src="/images/album.svg"></a></button>
+                            <button class="listBtn"><a href="postList.html"><img src="/images/list_selected.svg"></a></button>
                             <!-- 앨범형식일 경우 -->
                             <!-- <a href="#"><button><img src="/images/album_selected.svg"></button></a>
                             <a href="#"><button><img src="/images/list.svg"></button></a> -->
 
                         </div>
-                        <a href="write.html"><button>글쓰기</button></a>
+                        <button class="writeBtn" style="color: aliceblue;">글쓰기</button>
                     </div>
                 </div>
 

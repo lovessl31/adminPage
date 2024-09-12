@@ -2108,7 +2108,6 @@ em {
 .module {
   display: flex;
   align-items: center;
-  gap: 40px;
 }
 
 .module-wrap {

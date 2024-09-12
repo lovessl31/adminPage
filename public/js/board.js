@@ -145,7 +145,7 @@ function renderTable() {
             </div>
         </td>        
         <td>${startIndex + index + 1}</td>
-        <td><a href="/postList.html?id=${board['게시판 번호']}">${board["게시판 명"]}<img src="./images/link.svg"></a></td>        
+        <td><a href="/postList.html?id=${board['게시판 번호']}&name=${board["게시판 명"]}">${board["게시판 명"]}<img src="./images/link.svg"></a></td>        
         <td>${board["게시판 타입"]}</td>
         <td>${board["좋아요 유/무"]}</td>
         <td>${board["카테고리 명"]}</td>
@@ -153,7 +153,7 @@ function renderTable() {
         <td>${board["게시판 생성일"] ? board["게시판 생성일"].split(' ')[0] : ''}</td>
         <td class="buttons center-align">                      
             <button class="moveBtn" data-id="${board["게시판 번호"]}">이동</button>
-            <button class="modifyBtn boardModify" data-id="${board['게시판 번호']}">수정</button>  
+            <button class="modifyBtn boardModify" data-id="${board['게시판 번호']}" data-board-name="${board["게시판 명"]}">수정</button>  
             <button class="deleteBtn" data-board-idx="${board["게시판 번호"]}" data-board-name="${board["게시판 명"]}">삭제</button>
         </td>
         `;
@@ -171,9 +171,8 @@ function renderTable() {
         button.addEventListener('click', function() {
             const boardId = this.getAttribute('data-id');
             const board = boards.find(v => v["게시판 번호"] == boardId)
-            console.log(boardId);
-            console.log(board);                        
-            window.location.href = `/postList.html?id=${boardId}`;
+            const boardName = board['게시판 명'];                      
+            window.location.href = `/postList.html?id=${boardId}&name=${boardName}`;
         });
     });
 
