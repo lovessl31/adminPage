@@ -60,7 +60,7 @@
                <div class="postContentWrap">
                 <div class="post-header">
                     <p></p><!-- 클릭한 게시판 명 -->
-                    <button>목록</button>
+                    <button class="postListBtn">목록</button>
                 </div>
 
                 <hr>
@@ -75,8 +75,8 @@
                             <span>댓글 3</span>
                         </div>
                         <div class="modify-drop">
-                            <button class="confirmDeleteBtn" @click="toggleDrowdown"><img src="/images/confrimpic.png"></button>
-                            <ul v-show="isVisible" class="drop_content">
+                            <button class="confirmDeleteBtn"><img src="/images/confrimpic.png"></button>
+                            <ul class="drop_content">
                                 <li><button>수정</button></li>
                                 <li><button>삭제</button></li>
                             </ul>
@@ -108,8 +108,8 @@
                     <!-- 게시글에 첨부된 첨부파일 -->
                     <div class="attach-content">
                         <div class="d-flex align-items-center">
-                            <button>
-                                <img src="/images/attach-dropdown.png">
+                          <button class="toggle-file-wrap">
+                                <img id="toggle-icon" src="/images/attach-dropright.png">
                                 <!-- 첨부파일 닫혀있을경우 -->
                                 <!-- <img src="/images/attach-dropright.png"> -->
                             </button>
@@ -117,20 +117,20 @@
                             <p>첨부파일 <span class="fileCount">2</span>개<span class="total-c">(134.5KB)</span></p>
                         </div>
                         <div class="file-wrap">
-                            <div class="file-item">
+                            <!-- <div class="file-item">
                                 <p>객원 에디터 개인정보 처리방침.hwp <span>63.50KB</span></p>
                                 <button><img src="/images/download.svg"></button>
                             </div>
                             <div class="file-item">
                                 <p>객원 에디터 계약서 (3).hwp <span>63.50KB</span></p>
                                 <button><img src="/images/download.svg"></button>
-                            </div>
+                            </div> -->
                         </div>
                     </div>
 
                     <div class="post_content my-5">
                         <!-- 사용자가 에디터에 입력한 게시글 내용 -->
-                         <p>객원 에디터 계약서 수정본입니다.</p>
+                         <p></p>
                     </div>
 
                     <!-- 내가 좋아요 눌렀을 때 -->
@@ -159,7 +159,7 @@
                 
                 <div class="cmt_content_wrap">
                     <div class="cmt_section"></div>
-                    <div class="cmt_title"><h5>댓글</h5></div>
+                    <div class="cmt_title"><h5>댓글</h5><span></span></div>
               
                     <!-- 댓글이 10개 이상인 경우 나타나는 영역 -->
                     <!-- <div class="all_cmt">
@@ -276,7 +276,7 @@
                 <div class="cmt_write">
                   <!-- 멘션 부분은 기본적으로 숨김 처리 -->
                   <div class="reply_mention" style="display: none;">
-                    <button class="re_btn_wrap"></button>
+                    <button class="re_btn_wrap"><img src="/images/close_black.svg"></button>
                     <p id="mentionText"></p>
                   </div>
               
@@ -318,7 +318,7 @@
                   <div class="cmt_bottom">
                     <input type="file" id="fileInputComment" multiple style="display:none">
                     <button class="cmt_pic_wrap" id="fileButton">
-                        <img src="/images/clip.png">
+                        <img src="/images/pic.svg">
                     </button>
                     <div class="cmt_reg">
                       <span>0/600</span>
@@ -349,8 +349,8 @@
                 <div class="post-footer">
                     <a href="write.html"><button class="writeBtn">글쓰기</button></a>
                     <div>
-                        <button>목록</button>
-                        <button>TOP</button>
+                        <button class="postListBtn">목록</button>
+                        <button id="goTop">TOP</button>
                     </div>
                 </div>
 

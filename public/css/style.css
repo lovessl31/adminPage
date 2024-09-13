@@ -1325,7 +1325,8 @@ table td {
 }
 
 .drop_content {
-  display: flex;
+  display: none;
+  /* display: flex; */
   gap: 4px;
   flex-direction: column;
   align-items: center;
@@ -1342,6 +1343,10 @@ table td {
   right: 0;
   box-shadow: 2px 2px 5px 1px rgba(0, 0, 0, 0.2);
   z-index: 1;
+}
+
+.drop_content.show {
+  display: flex;
 }
 
 .drop_content li {
@@ -1399,6 +1404,7 @@ hr {
 }
 
 .file-wrap {
+  display: none;
   width: 35%;
   border: 1px solid #EBECF0;
   border-radius: 15px;
@@ -1606,7 +1612,7 @@ textarea {
   list-style: none;
   padding: 0;
 }
-
+/* 
 .cmt_item {
   padding: 30px 0;
   border-top: 1px solid #dddddd;
@@ -1620,7 +1626,7 @@ textarea {
   border-bottom: 1px solid #dddddd;
   position: relative;
   list-style: none;
-}
+} */
 
 
 .reply_writer {

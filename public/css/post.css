@@ -2,13 +2,19 @@ ul, ol {
     list-style: none;
   }
 
+  .file_wrap {
+    display: none;
+  }
+
+  .file-wrap.show {
+    display: block; /* 클릭 시 보이도록 설정 */
+}
+
 .file-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
-
-
 
 .attach_area {
     box-sizing: border-box;
@@ -125,7 +131,7 @@ ul, ol {
   }
 
   .cmt_imgbox {
-    border-radius: 4px;
+    border-radius: 14px;
     width: 150px;
     height: 150px;
     overflow: hidden;
@@ -208,8 +214,7 @@ ul, ol {
 }
 
 .mcmt_pic_wrap {
-    width: 17px;
-    height: 17px;
+   
     display: flex;
     align-items: center;
 
@@ -1003,7 +1008,6 @@ html,body,button {
 
 /* 댓글 */
 
-
 .deleted_comment, .deleted_reply {
     margin-left: 0 !important;
 }
@@ -1015,7 +1019,7 @@ html,body,button {
 
 .cmt_item {
     display: flex;
-    border-bottom: 1px solid #F4F4F4;
+    border-bottom: 1px solid #f0f0f0;
     padding: 20px 15px;
     align-items: flex-start;
 }
@@ -1027,11 +1031,22 @@ html,body,button {
     margin-top: 20px;
 }
 
-.cmt_title {
-    font-weight: 600;
-    padding: 10px 8px;
-    border-bottom: 1px solid #F8F8F8;
+.cmt_title  {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    border-bottom: 1px solid #e9e9e9;
 }
+.cmt_title h5 {
+    padding: 15px 5px;
+    font-size: 16px;
+}
+
+.cmt_title span {
+    font-weight: 800;
+    font-size: 14px;
+}
+
 
 .cmt_user_img {
     width: 35px;
@@ -1056,6 +1071,7 @@ html,body,button {
 }
 
 .cmt_tit_info h5{
+    font-size: 15px;
     margin-bottom: 3px;
 }
 
@@ -1069,7 +1085,7 @@ html,body,button {
 }
 
 .reply_img_wrap {
-    padding: 10px;
+    padding-right: 10px;
 }
 
 .all_cmt {
@@ -1255,7 +1271,7 @@ html,body,button {
     justify-content: space-between;
     align-items: center;
     padding: 5px 10px 10px 10px;
-    // border-top: 1px solid #EDEDED;
+
 }
 
 .cmt_pic_wrap {
@@ -1361,17 +1377,6 @@ html,body,button {
     padding: 5px 10px 10px 10px;
     
 }
-
-.cmt_pic_wrap {
-    width: 16px;
-    height: 16px;
-    display: flex;
-    align-items: center;
-
-    border: none;
-    background: transparent;
-}
-
 
 
 .cmt_pic_wrap img {

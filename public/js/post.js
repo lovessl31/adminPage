@@ -16,6 +16,7 @@ let selectedUserId = null;
 
 let fileDeleted = false; // 파일이 삭제되었는지 여부를 관리
 
+let boardId, boardName; 
 
 
 localStorage.setItem('postIdx', postId); // postIdx 값을 로컬 스토리지에 저장
@@ -23,12 +24,10 @@ localStorage.setItem('postIdx', postId); // postIdx 값을 로컬 스토리지�
 
 document.addEventListener('DOMContentLoaded', (event) => {
 
-
-
     const accessToken = localStorage.getItem('accessToken'); // 로컬 스토리지에서 accessToken 가져오기
 
     const urlParams = new URLSearchParams(window.location.search);
-const postId = urlParams.get('id');
+    const postId = urlParams.get('id');
 
     console.log(
         `postId: ${postId}` // id URL 파라미터 출력
@@ -55,6 +54,34 @@ const postId = urlParams.get('id');
       .catch(error => {
           console.error('댓글 데이터 가져오기 에러:', error);
       });
+
+      const backBtns = document.querySelectorAll('.postListBtn');
+
+      // 각 버튼에 대해 클릭 이벤트 리스너 추가
+      backBtns.forEach(button => {
+        button.addEventListener('click', ()=> {
+            window.location.href = `/postList.html?id=${boardId}&name=${boardName}`;
+        });
+      });
+
+      const top = document.querySelector('#goTop');
+      const content = document.querySelector('.postContentInner');
+
+      top.addEventListener('click', ()=> {
+        content.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
+
+    // 게시글 수정 삭제 메뉴 토글
+    const toggletBtn = document.querySelector('.confirmDeleteBtn');
+    const dropContent = document.querySelector('.drop_content');
+
+    toggletBtn.addEventListener('click',()=> {
+        dropContent.classList.toggle('show');
+    });
+
 });
 
 function loadPostData() {
@@ -69,6 +96,11 @@ function loadPostData() {
             const data = response.data.data;
             detail_post = data;
             console.log('게시글 데이터:', detail_post);
+
+            // boardId와 boardName에 데이터 저장
+            boardId = detail_post.board_idx;
+            boardName = detail_post.board_name;
+
             renderPosts(detail_post);
         })
         .catch(error => {
@@ -100,6 +132,13 @@ function loadComments(postIdx) {
 
 function renderPosts(postData) {
 
+    // 댓글 총 개수
+    const cmtCount = document.querySelector('.cmt_title span');
+    console.log('선택됫어? 이거 댓글 총개수 넣을 p', cmtCount);
+    cmtCount.textContent = postData.comment_count;
+
+    console.log('데이터 받은 댓글총개수 몇개', postData.comment_count);
+    
     const boardTtitle = document.querySelector('.post-header p');
     boardTtitle.textContent = postData.board_name;
 
@@ -141,6 +180,8 @@ function renderPosts(postData) {
     // 파일 첨부 뿌리기
     const fieAttachElement = document.querySelector('.attach-content');
     const fileWrap = document.querySelector('.file-wrap');
+    const toggleButton = document.querySelector('.toggle-file-wrap');
+
     fileWrap.innerHTML = '';
 
     if(postData.files && postData.files.length >0 ) {
@@ -164,6 +205,7 @@ function renderPosts(postData) {
         // 파일 개수와 총 용량 표시
         const fileCount = document.querySelector('.fileCount');
         const fileSize = document.querySelector('.total-c');
+     
 
         if (fileCount) {
             fileCount.textContent = `${totalFiles}`
@@ -176,6 +218,25 @@ function renderPosts(postData) {
         // 파일이 없으면 file섹션 숨김
         fieAttachElement.style.display = 'none';
     }
+
+    toggleButton.addEventListener('click', () => {
+        const toggleIcon = document.getElementById('toggle-icon');
+
+        fileWrap.classList.toggle('show');
+
+        // 파일 목록 보이면 "열림" 이미지, 숨겨지면 "닫힘" 이미지로 변경
+        if (fileWrap.classList.contains('show')) {
+            toggleIcon.src = '/images/attach-dropdown.png'; // 열림 상태의 이미지
+        } else {
+            toggleIcon.src = '/images/attach-dropright.png'; // 닫힘 상태의 이미지
+        }
+    });
+
+
+
+
+
+
 
     // 게시글 내용 렌더링
     const post_content = document.querySelector('.post_content');
@@ -241,6 +302,7 @@ function renderPosts(postData) {
 
 // 댓글 관련 함수
 function renderComments(comments) {
+
     const commentsWrap = document.querySelector('.cmt_wrap');
     commentsWrap.innerHTML = ''; // 기존 댓글 초기화
 
@@ -694,7 +756,7 @@ function showEditForm(commentContent, commentIdx, userId, existingFile) {
             <div class="attach_area"></div> <!-- 파일 미리보기 영역 -->
             <div class="modify_cmt_bottom">
                 <input type="file" id="modify_cmt_input" multiple style="display:none">
-                <button class="mcmt_pic_wrap" id="m_fileButton"><img src="/images/clip.png"></button>
+                <button class="mcmt_pic_wrap" id="m_fileButton"><img src="/images/pic.svg"></button>
                 <div class="cmt_reg">
                     <span>0/600</span>
                     <button id="submitModify">수정</button>
@@ -979,18 +1041,25 @@ document.addEventListener('DOMContentLoaded', () => {
             addComment(); // 일반 댓글 작성
         }
         resetReplyState(); // 상태 초기화
+        cmtTextarea.value = ''; // 댓글 입력창 초기화
 
-        console.log('isreply멀까나 맞춰봐 뭐게',isReply);
     });
 
       // 댓글/대댓글 상태 초기화
       function resetReplyState() {
         isReply = false;
         parentComment = null;
-        cmtTextarea.value = ''; // 텍스트 입력 초기화
-        fileInputComment.value = ''; // 파일 입력 초기화
+
+        cmtTextarea.value = ''; // 댓글 입력창 초기화
+        fileInputComment.value = ''; // 파일 입력창 초기화
         document.querySelector('.attach_area').style.display = 'none'; // 파일 첨부 창 숨기기
-        hideReplyWrite();  // 답댓글 창 숨기기
+        hideReplyWrite(); // 답댓글 창 숨기기
+
+        // 글자 수 카운트 초기화 (각 댓글 입력창과 대응하는 글자 수 카운트 초기화)
+        charCountSpanList.forEach(span => {
+            span.textContent = `0/${maxChars}`; // 글자 수 초기화
+        });
+
     }
     
     // 상위 댓글 등록 함수
