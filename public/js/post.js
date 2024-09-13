@@ -643,16 +643,21 @@ function showEditForm(commentContent, commentIdx, userId, existingFile) {
     // 기존 파일 정보를 제대로 가져왔는지 확인
     const file = Array.isArray(existingFile) ? existingFile[0] : existingFile;
 
-    const accessId = localStorage.getItem('accessId');
-     // 서버에서 받은 파일 경로를 `/file/view` 경로로 수정하여 이미지를 보여줍니다.
-    const fileViewUrl = `http://safe.withfirst.com:28888/file/imageView/${file.f_idx}?accessId=${accessId}`;
-    
+
+
+      // 파일이 없거나 f_idx가 없는 경우 처리
+      let fileViewUrl = '';
+      if (file && file.f_idx) {
+          const accessId = localStorage.getItem('accessId');
+          fileViewUrl = `http://safe.withfirst.com:28888/file/imageView/${file.f_idx}?accessId=${accessId}`;
+      }
+
     console.log('기존파일 파일파일', file);
 
     
     // 기존 파일이 있으면 파일 UI를 표시
     let fileUI = '';
-    if (file) {
+    if (file && file.f_idx) {
         const isImage = ['jpg', 'jpeg', 'png', 'gif', 'bmp'].includes(file.f_ext.toLowerCase());
         if (isImage) {
             fileUI = `

@@ -323,6 +323,7 @@ $(function() {
          // 트리 데이터 로드
         loadTreeData();
 
+
           // 노드 더블 클릭 시 편집 모드로 전환
     $('#tree-container').on('dblclick', '.jstree-anchor', function(e) {
         var nodeId = $(this).closest('li').attr('id');
