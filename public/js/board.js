@@ -126,6 +126,11 @@ function loadBoardData(page = 1) {
         });
 }
 
+function updateMove(bidx){
+
+	location.href="boardUpdate.html?bidx="+bidx;
+}
+
 // 테이블 랜더링
 function renderTable() {
     const tableBody = document.getElementById('boardTableBody');
@@ -153,7 +158,7 @@ function renderTable() {
         <td>${board["게시판 생성일"] ? board["게시판 생성일"].split(' ')[0] : ''}</td>
         <td class="buttons center-align">                      
             <button class="moveBtn" data-id="${board["게시판 번호"]}">이동</button>
-            <button class="modifyBtn boardModify" data-id="${board['게시판 번호']}" data-board-name="${board["게시판 명"]}">수정</button>  
+            <button class="modifyBtn" onclick="updateMove(${board['게시판 번호']})">수정</button>  
             <button class="deleteBtn" data-board-idx="${board["게시판 번호"]}" data-board-name="${board["게시판 명"]}">삭제</button>
         </td>
         `;
@@ -314,7 +319,8 @@ function deleteBoards(boards) {
     const token = localStorage.getItem('accessToken');
 
     console.log('전송될 데이터:', JSON.stringify(boards));
-
+	console.log("del@@@@@@@@@@@@@@");
+	console.log(boards);
     axios.delete(`${defaultUrl}/with/del_board`, {
         data: boards,
         headers: {
@@ -324,8 +330,8 @@ function deleteBoards(boards) {
     })
         .then(response => {
             console.log('게시판 삭제 응답:', response.data);                        
-            showPopup(3, '게시판 삭제', "삭제 되었습니다.", 'suc')
-            localStorage.setItem('currentPage', currentPage);
+            //showPopup(3, '게시판 삭제', "삭제 되었습니다.", 'suc')
+            //localStorage.setItem('currentPage', currentPage);
             //페이지 새로 고침
             location.reload();
         })
@@ -333,7 +339,7 @@ function deleteBoards(boards) {
             console.error('게시판 삭제 오류:', error.response ? error.response.data : error.message);
             if (error.response && error.response.status === 401) {
                 // 401에러 발생 시 로그아웃 함수 호출
-                window.logout();
+                //window.logout();
             } else {
                 showPopup(3, '게시판 삭제', "삭제에 실패 하였습니다.")
             }

@@ -82,11 +82,15 @@
         </div>
         <!-- 메인 컨텐츠 -->
         <div id="content">
-            <h4>게시판 생성</h4>
+            <h4>게시판 수정</h4>
             <div class="contentInner">
                 <div class="boardWrap">
                     <div class="boardContent">
                         <h5>게시판 타이틀</h5>
+                        <input type="hidden" id="group_idx">
+                        <input type="hidden" id="board_idx">
+                        <input type="hidden" id="asis_cate_idx">
+                       
                         <table>
                             <tbody>
                                 <tr>
@@ -229,7 +233,7 @@
     <!-- Sweetalert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <script src="./js/TimePopup.js"></script>
-    <script src="./js/boardCreate.js"></script>
+    <script src="./js/boardUpdate.js"></script>
 </body>
 
 </html>

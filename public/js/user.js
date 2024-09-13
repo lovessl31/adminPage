@@ -31,8 +31,8 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('deleteBtn').addEventListener('click', () => {
         const selectedUsers = Array.from(document.querySelectorAll('tbody input[type="checkbox"]:checked'))
         .map(checkbox => ({
-            userIdx: checkbox.getAttribute('data-u-idx'),
-            userId: checkbox.getAttribute('data-u-id')
+            user_idx: checkbox.getAttribute('data-u-idx'),
+            user_id: checkbox.getAttribute('data-u-id')
         }));
         if (selectedUsers.length > 0) {
             deleteUsers(selectedUsers);
@@ -114,6 +114,8 @@ document.addEventListener('DOMContentLoaded', () => {
 // 공통 요청 함수
 function makeRequest(method, url, data = {}) {
     const token = localStorage.getItem('accessToken');
+    console.log("makeR");
+    console.log(data);
     return axios({
         method: method,
         url: url,
@@ -204,7 +206,7 @@ function renderUserTable() {
             <td class="buttons">${approveButton}</td>
             <td class="buttons center-align">
                 <button class="modifyBtn"  data-u-id="${user.user_id}" data-u-idx="${user.user_idx}">수정</button>
-                <button class="deleteBtn" data-u-id="${user.user_id}" data-u-idx="${user.user_idx}">삭제</button>
+                <button class="" onclick="javascript:deleteUser('${user.user_idx}', '${user.user_id}')">삭제</button>
             </td>
         `;
         tableBody.appendChild(row);
@@ -225,7 +227,7 @@ function addEventListeners() {
         button.addEventListener('click', function() {
             const userIdx = this.getAttribute('data-u-idx');
             const userId = this.getAttribute('data-u-id');
-            deleteUser([{ user_idx: userIdx, user_id: userId }]);
+            deleteUser(userIdx, userId);
         });
     });
 
@@ -253,21 +255,23 @@ function approveUser() {
 
 // 삭제 요청 함수
 function deleteUsers(users) {
-    makeRequest('delete', 'http://safe.withfirst.com:28888/with/del_user', users)
-        .then(response => {
-            console.log('삭제 응답:', response.data);
-            alert('삭제되었습니다.');
-            location.reload();
-        })
-        .catch(error => handleError(error, '삭제에 실패했습니다.'));
+	console.log("############## delete ########");
+	console.log(users);
+	for(let i=0; i<users.length; i++){
+		
+		deleteUser(users[i].user_idx,users[i].user_id);
+		
+	}
+
 }
 
 // 개별 삭제 요청 함수
-function deleteUser(user) {
+function deleteUser(user_idx, user_id) {
+	let user= {"user_idx":user_idx, "user_id":user_id};
     makeRequest('delete', 'http://safe.withfirst.com:28888/with/user_del', user)
         .then(response => {
             console.log('사용자 삭제 응답:', response.data);
-            alert('삭제되었습니다.');
+            //alert('삭제되었습니다.');
             loadUserData(currentPage); // 데이터를 다시 불러와서 갱신
         })
         .catch(error => {

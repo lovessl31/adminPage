@@ -94,37 +94,47 @@
 	        // 패스 배리어블 헤더 식별자에 필요한 셀렉트 옵션 데이터를 가져옴
 	        const categoryElement = document.getElementById('selectCategory')
 	        const selectedOption = categoryElement.options[categoryElement.selectedIndex];
-	        const selectedOptionValue = selectedOption.value;
 	        const categoryType = selectedOption.getAttribute('data-category-type');
+	        
+	        const selectedOptionValue =  $('#asis_cate_idx').val();
+	        
 	        // 폼 데이터 
 	        const boardName = document.querySelector(".boardName").value.trim();
 	        const boardDescription = document.querySelector(".boardDesc").value.trim();
 	        const boardType = document.querySelector("input[name='boardType']:checked").value;
 	        const likeSet = document.querySelector("input[name='likeOption']:checked").value;
 	
-	
+			
 	        // 동적 옵션 정보 수집
 	        const dynamicOptions = collectDynamicOptions();
-	
 	        console.log(111111111111111111);
 	        console.log("선택된 카테고리: ", selectedOption);
 	        console.log("선택된 카테고리 구분: ", categoryType);
 	        console.log(boardName, boardDescription, boardType, likeSet, dynamicOptions);
 	        console.log(9999999999999999);
 	
+			board_idx=$("#board_idx").val();
+			group_idx=$("#group_idx").val();
+			
 	        // 요청할 폼 데이터
 	        const formData = new FormData();
 	        formData.append('board_name', boardName); // 게시판 이름
 	        formData.append('board_desc', boardDescription); // 게시판 설명
 	        formData.append('board_type', boardType); // 게시판 유형 (L 또는 P)
+	        formData.append('group_idx', group_idx);
+	        formData.append('board_idx', board_idx);
 	        formData.append('LikeSet', likeSet); // 승인여부 (Y 또는 N)
+	        
+	        
+	        let cate_idx=$('#selectCategory').val();
+	        formData.append('new_cate_idx', cate_idx); 
 	        
 	        formData.append('option', JSON.stringify(dynamicOptions)); // 동적 옵션 정보를 JSON 문자열로 변환하여 추가
 	
 	        const token = localStorage.getItem('accessToken');
 			
 	        // 서버에 POST 요청 보내기
-	        axios.post(`${defaultUrl}/with/addBoard/${categoryType}/${selectedOptionValue}`, formData, {
+	        axios.post(`${defaultUrl}/with/updateBoard/${categoryType}/${selectedOptionValue}`, formData, {
 	            headers: {
 	                'Authorization': `Bearer ${token}`,
 	                'Content-Type': 'multipart/form-data'
@@ -140,15 +150,18 @@
 	                //     console.log("사용자가 '아니오'를 선택했습니다.");
 	                //     location.href = 'board.html';
 	                // }
-	                showPopup(5, '게시판 등록', '<p>게시판 등록에 성공하였습니다. 추가로 작업 하시겠습니까?</p>', 'suc', 'select')
+	                //showPopup(5, '게시판 수정', '<p>게시판 수정에 성공하였습니다. 추가로 작업 하시겠습니까?</p>', 'suc', 'select')
 	
 	            })
 	            .catch(error => {
-	                console.error('게시판 등록 오류:', error.response ? error.response.data : error.message);
-	                showPopup(2, '게시판 등록 실패', '<p>게시판 등록에 실패하였습니다.</p>', 'fail')
+	                console.error('게시판 수정 오류:', error.response ? error.response.data : error.message);
+	                //showPopup(2, '게시판 수정 실패', '<p>게시판 수정에 실패하였습니다.</p>', 'fail')
 	            });
 	    });
-	   
+
+
+
+		//카테고리 목록 가져오기 및 게시판 정보 가져오기	   
 		selectCagegory();
 	
 	});
@@ -161,24 +174,27 @@
 	//드랍다운 옵션 추가
 	function createDropDown(){
 		dropDownCnt=dropDownCnt+1;
-		let html=createDropdownContent(dropDownCnt);
+		
+		let html=createDropdownContent(dropDownCnt,"create","","");
 		$("#optionsBody").append(html);
 	}
 
-    function createDropdownContent(dropDownCnt,item, name) {
-
-		if(!name){ 
-			name='';
-		}
+	//dropDownCnt는 dropDown 갯수, gubun은 수정,삭제 구분, name은 input value 세팅
+    function createDropdownContent(dropDownCnt,gubun,name,ol_idx,sort_num) {
+	
+		
 	    let html = '';  // 결과 HTML을 저장할 변수	
-	    html += `<div id="dropdown_box_${dropDownCnt}"><h5>드롭다운 메뉴</h5>`;
+	    html += `<div data-type="${gubun}" id="dropdown_box_${dropDownCnt}"><h5>드롭다운 메뉴</h5>`;
 	    html += `<table class="moduleTable">`;
 	    html += `    <tbody>`;
 	    html += `        <tr>`;
 	    html += `            <td>속성명</td>`;
-	    html += `            <td><input type="text"  data-type='dropdown' value="${name}" placeholder="속성명을 입력하세요." class="attributeName"></td>`;
+	    html += `            <td><input type="text"  data-type='dropdown' data-ol_idx="${ol_idx}" value="${name}" placeholder="속성명을 입력하세요." class="attributeName"></td>`;
 	    html += `        </tr>`;
-
+	   	html += `        <tr>`;
+	    html += `            <td>출력순번</td>`;
+	    html += `            <td><input type="text"  data-type='dropdown' value="${sort_num}" placeholder="순번을 정해주세요." class="sortNum"></td>`;
+	    html += `        </tr>`;
 	    html += `        <tr>`;
 	    html += `            <td>옵션값</td>`;
 	    html += `            <td class="d-flex align-items-center">`;
@@ -190,8 +206,9 @@
 	    html += `</table>`;
 	    html += `<div class="option-list" id="select_option_${dropDownCnt}"></div>`;
 	    html += `<div class="createBtn">`;
+	    if(gubun=="create"){
 	    html += `    <button class="createCancle" onclick="javascript:removeOptionBox('dropdown_box_${dropDownCnt}');" data-action="cancel">취소</button>`;
-	    
+	    }
 	    html += `</div></div>`;
 	
 	    return html;  // 생성된 HTML을 리턴
@@ -204,55 +221,64 @@
 	// data input 추가	
 	function createDataInput(){
 		dataInputCnt=dataInputCnt+1;
-		let html=createDataInputContent(dataInputCnt);
+		let html=createDataInputContent(dataInputCnt,"create","","");
 		$("#optionsBody").append(html);
 	}
 	
-    function createDataInputContent(item) {
+    function createDataInputContent(dataInputCnt,gubun,name,ol_idx,sort_num) {
     
     	
 		let html = '';  // 결과 HTML을 저장할 변수
-		html += `<div id="data_input_box_${dataInputCnt}"><h5>데이터 입력 필드</h5>`;
+		html += `<div data-type="${gubun}" id="data_input_box_${dataInputCnt}"><h5>데이터 입력 필드</h5>`;
 		html += `<table class="moduleTable">`;
 		html += `    <tbody>`;
 		html += `        <tr>`;
 		html += `            <td>속성명</td>`;
-		html += `            <td><input type="text" data-type='dataInput' value="" placeholder="속성명을 입력하세요." class="attributeName"></td>`;
+		html += `            <td><input type="text" data-type='dataInput' data-ol_idx="${ol_idx}"  value="${name}" placeholder="속성명을 입력하세요." class="attributeName"></td>`;
 		html += `        </tr>`;
-
+		html += `        <tr>`;
+	    html += `            <td>출력순번</td>`;
+	    html += `            <td><input type="text" data-type='dataInput' value="${sort_num}" placeholder="순번을 정해주세요." class="sortNum"></td>`;
+	    html += `        </tr>`;
 		html += `    </tbody>`;
 		html += `</table>`;
 		html += `<div class="createBtn">`;
+		if(gubun=="create"){
 		html += `    <button class="createCancle" onclick="javascript:removeOptionBox('data_input_box_${dataInputCnt}');" data-action="cancel">취소</button>`;
-		
+		}
 		html += `</div></div>`;
 	
 		return html;  // 생성된 HTML을 리턴
     }
     
     
-    function createDateInput(){
+    function createDateInput(gubun,name){
 		dateInputCnt=dateInputCnt+1;
-		let html=createDateInputContent(dateInputCnt);
+		let html=createDateInputContent(dateInputCnt,"create","","");
 		$("#optionsBody").append(html);
 	}
 
-    function createDateInputContent(id) {
+    function createDateInputContent(dateInputCnt,gubun,name,ol_idx,sort_num) {
 
 		let html = '';  // 결과 HTML을 저장할 변수
 	
-		html += `<div id="date_input_box_${dateInputCnt}"><h5>날짜 입력 위젯</h5>`;
+		html += `<div data-type="${gubun}" id="date_input_box_${dateInputCnt}"><h5>날짜 입력 위젯</h5>`;
 		html += `<table class="moduleTable">`;
 		html += `    <tbody>`;
 		html += `        <tr>`;
 		html += `            <td>속성명</td>`;
-		html += `            <td><input type="text" data-type='dateInput' placeholder="속성명을 입력하세요." class="attributeName"></td>`;
+		html += `            <td><input type="text" data-type='dateInput' data-ol_idx="${ol_idx}" value="${name}" placeholder="속성명을 입력하세요." class="attributeName"></td>`;
 		html += `        </tr>`;
-
+		html += `        <tr>`;
+	    html += `            <td>출력순번</td>`;
+	    html += `            <td><input type="text" data-type='dateInput'  value="${sort_num}" placeholder="순번을 정해주세요."  class="sortNum"></td>`;
+	    html += `        </tr>`;
 		html += `    </tbody>`;
 		html += `</table>`;
 		html += `<div class="createBtn">`;
+		if(gubun=="create"){
 		html += `    <button class="createCancle" onclick="javascript:removeOptionBox('date_input_box_${dateInputCnt}');" data-action="cancel">취소</button>`;	
+		}
 		html += `</div></div>`;
 	
 		return html;  // 생성된 HTML을 리턴
@@ -269,15 +295,25 @@
 	    $("#optionsBody").children().each(function() {
 	        let optionData = {
 	            type: $(this).find('input').data('type'),                 // input의 data-type 속성 값
+	            gubun: $(this).data('type'),
+	            ol_idx:$(this).find('input').data('ol_idx'),
 	            attributeName: $(this).find('.attributeName').val(),       // 속성명 input의 값
 	            sortNum: $(this).find('.sortNum').val(),                  // 순번 input의 값
 	            options: []                                                // 옵션 리스트 텍스트 수집
 	        };
-	
+			console.log(optionData);
+			alert(optionData.sortNum);
 	        // 옵션 리스트가 있는 경우에만 수집
 	        $(this).find('.option-list .chip').each(function() {
 	            let optionText = $(this).text().trim().replace('×', '');  // chip 텍스트에서 '×' 제거
-	            optionData.options.push(optionText);
+	            let ov_idx=$(this).attr("data-ov_idx");
+	            
+	            if(optionData.gubun=="create"){
+	            	optionData.options.push(optionText.trim());
+	            } else {
+	            	optionData.options.push({"ol_value":optionText.trim(),"ov_idx":ov_idx});
+	            }
+	            
 	        });
 	
 	        optionDataList.push(optionData);
@@ -296,15 +332,15 @@
     	
         let optionValue = $("#select_label_"+idx).val();       
         if (!optionValue) return;
-  		addChip(optionValue,idx)
+  		addChip(optionValue,idx,'')
         $("#select_label_"+idx).val('');
     }
 
    
-     // Chip 추가 함수
-	function addChip(value,idx) {
+     // Chip 추가 함수(텍스트, dropDownIdx, ov_idx)
+	function addChip(value,idx,ov_idx) {
 		const chip = $(`
-                <div class="chip">
+                <div class="chip" data-ov_idx="${ov_idx}">
                 	<span class="chip-text">${value}</span>
                     <span class="close">&times;</span>
                 </div>
@@ -403,8 +439,8 @@
                	
                	
                	//게시판 정보 가져오기
-			    //let bidx=params.get("bidx");
-			    //getBoardInfo(bidx);
+			    let bidx=params.get("bidx");
+			    getBoardInfo(bidx);
 			    
             
             })
@@ -448,12 +484,17 @@
 				console.log(item);
 				
 				//게시판 정보 세팅
-				$('#selectCategory').val(item.data.category_idx);
+				
+				
+				$("#selectCategory").val(item.data.category_idx);
+				$("#asis_cate_idx").val(item.data.category_idx);
 				$(".boardName").val(item.data.board_name);
 				$("#boardDesc").val(item.data.board_desc);
 				$('input[name="boardType"][value="'+item.data.board_type+'"]').prop('checked', true);
 				$('input[name="likeOption"][value="'+item.data.like_set+'"]').prop('checked', true);
 				
+				$("#board_idx").val(item.data.board_idx);
+				$("#group_idx").val(item.data.group_idx);
 				
 				let createdElement;
 				
@@ -464,23 +505,27 @@
 					switch (type) {
 			            case 'dropdown':
 			            	option_list=[];
-			            	for(let t=0; t<opt.ol_value.length; t ++){
-			            		option_list.push(opt.ol_value[t].ol_value);
-			            	}          	
-							createdElement = createDropdownElement(opt.ol_name, option_list) 
+               	  	
+							createdElement = createDropdownContent(dropDownCnt, "update", opt.ol_name, opt.ol_idx, opt.sort_num) 
 					        $("#optionsBody").append(createdElement)
+					        
+					        for(let t=0; t<opt.ol_value.length; t ++){
+			            		option_list.push(opt.ol_value[t].ol_value);
+			            		addChip(opt.ol_value[t].ol_value, dropDownCnt, opt.ol_value[t].ov_idx);
+			            	}  
 			                break;
 			            case 'dataInput':
-			                createdElement = createDataInputElement(opt.ol_name);
+			                createdElement = createDataInputContent(dataInputCnt, "update", opt.ol_name, opt.ol_idx, opt.sort_num);
 			                $("#optionsBody").append(createdElement)
 			                break;
 			            case 'dateInput':
-			                createdElement = createDateInputElement(opt.ol_name);
+			            	
+			                createdElement = createDateInputContent(dateInputCnt, "update", opt.ol_name, opt.ol_idx, opt.sort_num);
 			                $("#optionsBody").append(createdElement)
 			                break;
 			        }				       
 					
-				} 
+				}
 	
 				
 			}
