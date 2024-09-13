@@ -27,6 +27,10 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function initializeSummernote() {
+    const $summernote = $('#summernote');
+    $summernote.show();       
+
+
     $('#summernote').summernote({
         height: 500,
         minHeight: 350,
@@ -47,6 +51,8 @@ function initializeSummernote() {
         fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New', '맑은 고딕', '궁서', '굴림체', '굴림', '돋움체', '바탕체'],
         fontSizes: ['8', '9', '10', '11', '12', '14', '16', '18', '20', '22', '24', '28', '30', '36', '50', '64', '72', '96', '144'],
         callbacks: {
+
+
             onImageUpload: function (files) {
                 console.log(files);                
                 for (let i = 0; i < files.length; i++) {
@@ -65,8 +71,68 @@ function initializeSummernote() {
                 }
             }
         }
+
+        // 	//여기 부분이 이미지를 첨부하는 부분
+        //     onImageUpload : function(files) {
+        //         console.log(files);                                             
+        //         for (let i = 0; i < files.length; i++) {
+        //                         uploadImage(files[i], this);
+        //                     }
+        //     },
+        //     onPaste: function (e) {
+        //         var clipboardData = e.originalEvent.clipboardData;
+        //         if (clipboardData && clipboardData.items && clipboardData.items.length) {
+        //             var item = clipboardData.items[0];
+        //             if (item.kind === 'file' && item.type.indexOf('image/') !== -1) {
+        //                 e.preventDefault();
+        //             }
+        //         }
+        //     }
+        // }
+        
     });
 }
+
+
+// $('#summernote').on('summernote.image.upload', function(we, files) {
+//         for (let i = 0; i < files.length; i++) {
+//             uploadImage(files[i], this);
+//         }
+//     });
+
+    function uploadImage(file, editor) {
+        const token = localStorage.getItem('accessToken');
+        const accessId = localStorage.getItem('accessId');
+        const url = `${defaultUrl}/file/upload?accessId=${accessId}`;
+		data = new FormData();
+		data.append("file", file);
+        console.log(data);
+		$.ajax({
+			data : data,
+			type : "POST",
+			url : url,
+			contentType : false,
+			processData : false,
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function(response) {
+                console.log(response.data);
+                
+                if (response.data.data.url) {
+                    let imgNode = document.createElement('img');
+                    imgNode.src = response.data.data.url;
+                    $(editor).summernote('insertNode', imgNode);
+                    console.log('Image inserted successfully');
+                } else {
+                    console.error('Image upload failed: No URL in response');
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.error('Image upload failed:', textStatus, errorThrown);
+            }
+        });
+    }
 
 
 
@@ -77,37 +143,72 @@ function initializeForm() {
     registerButton.addEventListener('click', handleFormSubmission);
 }
 
-function uploadImage(file, editor) {
-    console.log("editoreditoreditoreditoreditoreditoreditoreditoreditoreditoreditoreditoreditor");    
-    console.log(editor);
-    console.log("editoreditoreditoreditoreditoreditoreditoreditoreditoreditoreditoreditoreditor");
-    const formData = new FormData();
-    formData.append('file', file);
+// function uploadImage(file, editor) {
+//     console.log("editoreditoreditoreditoreditoreditoreditoreditoreditoreditoreditoreditoreditor");    
+//     console.log(editor);
+//     console.log("editoreditoreditoreditoreditoreditoreditoreditoreditoreditoreditoreditoreditor");
+//     const formData = new FormData();
+//     formData.append('file', file);
 
-    const token = localStorage.getItem('accessToken');
-    const url = `${defaultUrl}/file/upload`;
+//     const token = localStorage.getItem('accessToken');
+//     const accessId = localStorage.getItem('accessId');
+//     const url = `${defaultUrl}/file/upload?accessId=${accessId}`;
 
-    axios.post(url, formData, {
-        headers: {
-            'Content-Type': 'multipart/form-data',
-            'Authorization': `Bearer ${token}`
-        }
-    })
-    .then(response => {
-        if (response.data.result === 'success') {
-            const imageUrl = response.data.data.url;
-            $(editor).summernote('insertImage', imageUrl);
-            state.uploadedFileIds.push(response.data.data.file_id);
-        } else {
-            throw new Error('Upload failed');
-        }
-    })
-    .catch(error => {
-        console.error('Error uploading image:', error);
-        showPopup(2, "Error uploading", "이미지 업로드에 실패했습니다.");
-    });
-}
+//     axios.post(url, formData, {
+//         headers: {
+//             'Content-Type': 'multipart/form-data',
+//             'Authorization': `Bearer ${token}`
+//         }
+//     })
+//     .then(response => {
+//         const imageUrl = response.data.data.url;
 
+//         $('#summernote').summernote('insertImage', imageUrl);
+//         // $(editor).summernote('insertImage', imageUrl);
+//         state.uploadedFileIds.push(response.data.data.file_id);
+        
+        
+//         // if (response.data.result === 'success') {
+//         //     const imageUrl = response.data.data.url;
+//         //     $(editor).summernote('editor.insertImage', imageUrl);
+//         //     state.uploadedFileIds.push(response.data.data.file_id);
+//         // } else {
+//         //     throw new Error('Upload failed');
+//         // }
+//     })
+//     .catch(error => {
+//         console.error('Error uploading image:', error);
+//         showPopup(2, "Error uploading", "이미지 업로드에 실패했습니다.");
+//     });
+// }
+
+/**
+	* 이미지 파일 업로드
+	*/
+	// function uploadImage(file, editor) {
+    //     const token = localStorage.getItem('accessToken');
+    //     const accessId = localStorage.getItem('accessId');
+    //     const url = `${defaultUrl}/file/upload?accessId=${accessId}`;
+	// 	data = new FormData();
+	// 	data.append("file", file);
+    //     console.log(data);
+	// 	$.ajax({
+	// 		data : data,
+	// 		type : "POST",
+	// 		url : url,
+	// 		contentType : false,
+	// 		processData : false,
+    //         headers: {
+    //             'Authorization': `Bearer ${token}`
+    //         },
+	// 		success : function(data) {
+    //             console.log(111111111111111111);                                                        
+    //         	//항상 업로드된 파일의 url이 있어야 한다.
+    //             let Insert_url = data.data.url
+	// 			$(editor).summernote('insertImage', Insert_url);
+	// 		}
+	// 	});
+	// }
 
 
 function handleFormSubmission(e) {
@@ -133,16 +234,60 @@ function handleFormSubmission(e) {
         return;
     }
 
-    const postData = {
-        title, content, privacy, isNotice, dynamicOptions
-    };
+    // FormData 객체 생성
+    const formData = new FormData();
 
-    console.log(postData);
-    // TODO: 서버로 postData 전송 로직 구현
+    // 텍스트 데이터 추가
+    formData.append('p_title', title);
+    formData.append('p_content', content);
+    formData.append('p_seq', privacy);
+    formData.append('p_notice', isNotice);
+    
+    // 동적 옵션 추가
+    Object.keys(dynamicOptions).forEach(key => {
+        formData.append(key, dynamicOptions[key]);
+    });
+
+    // 첨부파일 추가
+    state.filesArray.forEach((file) => {
+        formData.append(`file`, file);
+    });
+
+    // 업로드된 이미지 파일 ID 추가 (Summernote에서 업로드한 이미지)
+    formData.append('uploadedFileIds', JSON.stringify(state.uploadedFileIds));
+
+    // AJAX 요청
+    const token = localStorage.getItem('accessToken');
+
+    console.log(123456789);    
+    // console.log(formData);
+    console.log(...formData.entries());
+    console.log(123456789);
+
+    $.ajax({
+        url: `${defaultUrl}/with/post/add/${Id}`,
+        method: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        headers: {
+            'Authorization': `Bearer ${token}`
+        },
+        success: function(response) {
+            console.log('successfully:', response);
+            showPopup(1, "Success", "게시글이 성공적으로 등록되었습니다.", 'suc');
+            // 성공 후 추가 작업 (예: 페이지 리디렉션)
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            console.error('Form submission failed:', textStatus, errorThrown);
+            showPopup(2, "Error", "게시글 등록에 실패했습니다. 다시 시도해 주세요.");
+        }
+    });
+    
 }
 
 
-
+// 옵션값 불러오기
 function loadPostWriteData(boardId) {
     const token = localStorage.getItem('accessToken');
     const url = `${defaultUrl}/with/post/add/${boardId}`;
