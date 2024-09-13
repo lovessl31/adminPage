@@ -273,7 +273,7 @@ function renderComments(comments) {
                          <i class="file_name"></i>
                          <span class="file_size"></span>
                      </div>
-                     <button id="file_down">다운</button>
+                     <button id="file_down"><img src="/images/download.svg"></button>
                  </div>
              </div>
              <div class="more_btn_wrap">
@@ -302,33 +302,71 @@ function renderComments(comments) {
                 if (isImage) {
                     // 이미지인 경우 이미지 박스에 표시
                     const imgBox = commentElement.querySelector('.cmt_imgbox');
-                    const imgLink = imgBox.querySelector('.cmt_img_link');
-                    const imgTag = imgBox.querySelector('.image');
-                    imgLink.target = "_blank";  // 새 창에서 이미지 열기
 
-                    
-                    const accessId = localStorage.getItem('accessId');
-                    const fileViewUrl = `http://safe.withfirst.com:28888/file/imageView/${file.f_idx}?accessId=${accessId}`;
-
-                    imgTag.src = fileViewUrl; // 이미지 경로 설정
-                    imgBox.style.display = 'block'; // 이미지 박스를 보이게 함
-                    imgLink.href = fileViewUrl; // 이미지 클릭 시 원본 이미지로 이동
-
+                    if (imgBox) {  // imgBox가 존재할 때만 실행
+                        const imgLink = imgBox.querySelector('.cmt_img_link');
+                        const imgTag = imgBox.querySelector('.image');
+        
+                        if (imgLink && imgTag) {  // imgLink와 imgTag가 존재할 때만 실행
+                            imgLink.target = "_blank";  // 새 창에서 이미지 열기
+        
+                            const accessId = localStorage.getItem('accessId');
+                            const fileViewUrl = `http://safe.withfirst.com:28888/file/imageView/${file.f_idx}?accessId=${accessId}`;
+        
+                            imgTag.src = fileViewUrl; // 이미지 경로 설정
+                            imgBox.style.display = 'block'; // 이미지 박스를 보이게 함
+                            imgLink.href = fileViewUrl; // 이미지 클릭 시 원본 이미지로 이동
+                        }
+                    }
+        
                 } else {
                     // 그 외 파일(첨부파일) 처리
                     const fileBox = commentElement.querySelector('.cmt_filebox');
-                    const fileNameElement = fileBox.querySelector('.file_name');
-                    const fileSizeElement = fileBox.querySelector('.file_size');
-                    const fileDownloadButton = fileBox.querySelector('#file_down');
+                    
+                    if (fileBox) {  // fileBox가 존재할 때만 실행
+                        const fileNameElement = fileBox.querySelector('.file_name');
+                        const fileSizeElement = fileBox.querySelector('.file_size');
+                        const fileDownloadButton = fileBox.querySelector('#file_down');
+        
+                        if (fileNameElement && fileSizeElement && fileDownloadButton) {  // 각각의 요소가 존재할 때만 실행
+                            fileNameElement.textContent = file.o_f_name; // 파일명
+                            fileSizeElement.textContent = `(${file.f_size})`; // 파일 사이즈
+                            fileBox.style.display = 'flex'; // 파일 박스를 보이게 함
+        
+                            // 다운로드 버튼 클릭 시 파일 다운로드 처리
+                            fileDownloadButton.addEventListener('click', () => {
 
-                    fileNameElement.textContent = file.o_f_name; // 파일명
-                    fileSizeElement.textContent = `(${file.f_size})`; // 파일 사이즈
-                    fileBox.style.display = 'flex'; // 파일 박스를 보이게 함
 
-                    // 다운로드 버튼 클릭 시 파일 다운로드 처리
-                    fileDownloadButton.addEventListener('click', () => {
-                        window.open(`${file.domain}/${file.s_f_name}.${file.f_ext}`, '_blank'); // 파일 URL로 이동
-                    });
+                        // 로그로 확인
+                        console.log(`Downloading file: ${file.o_f_name}, ID: ${file.f_idx}`);
+
+                                const token = localStorage.getItem('accessToken');
+
+console.log('토큰:', token);
+
+
+                                axios.get(`http://safe.withfirst.com:28888/file/download/${file.f_idx}`, {
+                                    headers: {
+                                        'Authorization': `Bearer ${token}`  // Authorization 헤더에 accessToken 추가
+                                    },
+                                    responseType: 'blob'  // 서버로부터의 응답을 blob 형식으로 처리 (파일 다운로드)
+                                })
+                                .then(response => {
+                                   // 파일 다운로드 처리
+                                    const url = window.URL.createObjectURL(new Blob([response.data]));
+                                    const link = document.createElement('a');
+                                    link.href = url;
+                                    link.setAttribute('download', file.o_f_name);
+                                    document.body.appendChild(link);
+                                    link.click();
+                                    document.body.removeChild(link);
+                                })
+                                .catch(error => {
+                                    console.error('파일 다운로드 중 오류 발생:', error);
+                                });
+                            });
+                        }
+                    }
                 }
             });
         }
@@ -439,8 +477,6 @@ function renderReplyComments(replyComments) {
             console.error('reply_img_wrap 요소를 찾을 수 없습니다.');
         }
 
-        const fileViewUrl = `http://safe.withfirst.com:28888/file/imageView/${file.f_idx}`;
-
         // 첨부파일 처리
         if (reply.첨부파일 && reply.첨부파일.length > 0) {
             reply.첨부파일.forEach(file => {
@@ -451,9 +487,13 @@ function renderReplyComments(replyComments) {
                     const imgLink = imgBox.querySelector('.cmt_img_link');
                     const imgTag = imgBox.querySelector('.image');
 
-                    imgTag.src = `${file.domain}/${file.s_f_name}.${file.f_ext}`;
+                    const accessId = localStorage.getItem('accessId');
+                    const fileViewUrl = `http://safe.withfirst.com:28888/file/imageView/${file.f_idx}?accessId=${accessId}`;
+
+                    imgTag.src = fileViewUrl;
                     imgBox.style.display = 'block';
-                    imgLink.href = `${file.domain}/${file.s_f_name}.${file.f_ext}`;
+                    imgLink.href = fileViewUrl;
+
                 } else {
                     const fileBox = replyElement.querySelector('.cmt_filebox');
                     const fileNameElement = fileBox.querySelector('.file_name');
