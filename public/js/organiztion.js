@@ -66,6 +66,28 @@ function loadTreeData(callback) {
         success: function(response) {
             console.log('조직도 데이터를 성공적으로 로드했습니다:', response.data); // 트리 데이터를 성공적으로 로드했는지 확인
 
+            // 로드 시 조직도에 회사명 업데이트
+            // const companyName = document.querySelector('.Owrap div p');
+            // const com_name =localStorage.getItem('com_name');
+            // companyName.textContent = com_name;
+
+             // type이 'team'인 경우, 이름 옆에 count 값을 추가하는 함수
+             function addMemberCount(nodes) {
+                nodes.forEach(node => {
+                    if (node.type === 'team' && node.count !== undefined) {
+                        // count 부분을 별도의 span으로 감싸서 클래스 추가
+                        node.text = `${node.text} <span class="member-count">(${node.count})</span>`;
+                    }
+                    // 자식 노드가 있을 경우 재귀적으로 처리
+                    if (node.children && node.children.length > 0) {
+                        addMemberCount(node.children);
+                    }
+                });
+            }
+            // count 값을 각 팀 노드에 추가
+            addMemberCount(response.data);
+
+
             $('#tree-container').jstree({
                 'core': {
                     'check_callback': true,
@@ -82,10 +104,19 @@ function loadTreeData(callback) {
                 },
                 'types': {
                     "team": {
-                        "icon": "./images/team.svg" // 팀 노드에 사용할 아이콘 경로
+                        "icon": "./images/team.svg", // 팀 노드에 사용할 아이콘 경로
+                        'li_attr': {
+                            'class': 'team_node' // li 태그에 클래스 추가
+                        },
+                        'a_attr': {
+                            'class': 'team_node_link' // a 태그에 클래스 추가
+                        }
                     },
                     "member": {
-                        "icon": "./images/user.svg" // 멤버 노드에 사용할 아이콘 경로
+                        "icon": "./images/user.svg", // 멤버 노드에 사용할 아이콘 경로
+                        'a_attr': {
+                            'class': 'member_node_link' // a 태그에 클래스 추가
+                        }
                     }
                 },
                 'state': {
@@ -115,6 +146,7 @@ function loadTreeData(callback) {
         }
     });
 }
+
 
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -316,6 +348,7 @@ function renderPagination() {
     pagination.appendChild(last);
 }
 
+
 $(function() {
         let selectedNodeId = null;
         const token = localStorage.getItem('accessToken');
@@ -324,36 +357,124 @@ $(function() {
         loadTreeData();
 
 
-          // 노드 더블 클릭 시 편집 모드로 전환
-    $('#tree-container').on('dblclick', '.jstree-anchor', function(e) {
-        var nodeId = $(this).closest('li').attr('id');
-        var tree = $('#tree-container').jstree(true);
+    // jstree의 rename_node 이벤트를 사용하여 수정이 완료된 후 서버로 요청
+    // $('#tree-container').on('rename_node.jstree', function(e, data) {
+    //     const nodeId = data.node.id; // 수정된 노드의 ID
+    //     const newName = data.text; // 수정된 조직명
+    //     const state = data.node.state.opened; // 열린 상태
+    //     let org_p_idx = data.node.parent; // 부모 조직 ID
+    //     let org_g_idx = getRootNodeId(data.node); // 루트 조직 ID
 
-        // 해당 노드를 편집 모드로 전환
-        tree.edit(nodeId);
+    //     // 최상위 루트인 경우 org_p_idx와 org_g_idx를 자기 ID로 설정
+    //     if (org_p_idx === "#") {
+    //         org_p_idx = nodeId; // 부모 ID를 자기 ID로
+    //         org_g_idx = nodeId; // 루트 ID도 자기 ID로
+    //     }
+
+    //     console.log('Node renamed. Sending update request:', {
+    //         nodeId, newName, state, org_p_idx, org_g_idx
+    //     });
+
+    //     // 서버로 수정 요청 보내기
+    //     updateTeamNameOnServer(nodeId, newName, state, org_p_idx, org_g_idx);
+    // });
+
+    let editingNodeId = null; // 편집 중인 노드의 ID를 저장
+    let isEditing = false; // 편집 중 여부를 체크하는 플래그
+
+    // 수정 버튼 클릭 시 노드 편집 모드로 전환
+    $('#modifyNode').on('click', function() {
+        if (selectedNodeId) {
+            const node = $('#tree-container').jstree('get_node', selectedNodeId);
+    
+            // 노드 타입이 team인지 확인
+            if (node.type === 'team') {
+                $('#tree-container').jstree('edit', node); // 선택된 노드를 편집 모드로 전환
+    
+                 // 편집 중인 노드의 ID 저장
+                 editingNodeId = selectedNodeId;
+                 isEditing = true; // 편집 중임을 표시
+                // 버튼 상태 변경
+                $('#modifyNode').hide();
+                $('#confirmNode').show();
+                $('#cancleNode').show();
+            } else {
+                alert('팀 노드만 수정 가능합니다.');
+            }
+        } else {
+            alert('수정할 노드를 선택하세요');
+        }
     });
 
-    // jstree의 rename_node 이벤트를 사용하여 수정이 완료된 후 서버로 요청
-    $('#tree-container').on('rename_node.jstree', function(e, data) {
-        const nodeId = data.node.id; // 수정된 노드의 ID
-        const newName = data.text; // 수정된 조직명
-        const state = data.node.state.opened; // 열린 상태
-        let org_p_idx = data.node.parent; // 부모 조직 ID
-        let org_g_idx = getRootNodeId(data.node); // 루트 조직 ID
+    // 확인 버튼 클릭 시 서버에 수정 요청
+    $('#confirmNode').on('click', function() {
+        if (editingNodeId && isEditing)  {
+        // 편집 완료 후 텍스트 가져오기
+        const editingNode = $('#tree-container').jstree('get_node', editingNodeId);
+        const newName = $('#tree-container').jstree('get_text', editingNodeId); // 수정된 조직명
 
-        // 최상위 루트인 경우 org_p_idx와 org_g_idx를 자기 ID로 설정
+        console.log('수정된 노드:', editingNode);
+        console.log('수정된 조직명:', newName);
+
+        // 필요한 데이터 추출
+        const fullNodeId = editingNode.id; // 예시로 "2_4" 형식의 ID
+        const nodeId = parseInt(fullNodeId.split('_')[0], 10); // "2_4"에서 앞부분 "2"를 추출하여 숫자로 변환추출하고 정수로 변환
+        const state = editingNode.state.opened; // 열린 상태 확인
+        // org_p_idx와 org_g_idx
+        let org_p_idx = parseInt(editingNode.parent, 10); // 부모 조직 ID를 숫자로 변환
+        let org_g_idx = parseInt(getRootNodeId(editingNode), 10); // 루트 조직 ID를 숫자로 변환
+
+        // 최상위 루트인 경우 처리
         if (org_p_idx === "#") {
-            org_p_idx = nodeId; // 부모 ID를 자기 ID로
-            org_g_idx = nodeId; // 루트 ID도 자기 ID로
+            org_p_idx = nodeId; // 부모 ID를 자기 ID로 설정
+            org_g_idx = nodeId; // 루트 ID도 자기 ID로 설정
         }
 
-        console.log('Node renamed. Sending update request:', {
+        console.log('Sending update request:', {
             nodeId, newName, state, org_p_idx, org_g_idx
         });
+        
 
         // 서버로 수정 요청 보내기
         updateTeamNameOnServer(nodeId, newName, state, org_p_idx, org_g_idx);
+
+        // 편집 모드 종료
+        isEditing = false;
+        // 버튼 상태 초기화
+        $('#confirmNode').hide();
+        $('#cancleNode').hide();
+        $('#modifyNode').show();
+        editingNodeId = null; // 편집 중인 노드 ID 초기화
+        } 
     });
+
+    $('#cancleNode').on('click', function() {
+        if (editingNodeId && isEditing) {
+            $('#tree-container').jstree('cancel_node', editingNodeId); // 편집 취소
+            isEditing = false;
+            editingNodeId = null; // 편집 중인 노드 ID 초기화
+            // 버튼 상태 초기화
+            $('#confirmNode').hide();
+            $('#modifyNode').show();
+        }
+    });
+
+
+// 트리 외부 클릭 시 편집 모드 종료 및 UI 복구
+$(document).on('mousedown', function(event) {
+    // 트리 외부 클릭 시 (단, 확인 버튼과 취소 버튼은 제외)
+    if (isEditing && !$(event.target).closest('#tree-container, #confirmNode, #cancleNode').length) {
+   
+        // 버튼 상태 변경
+        $('#confirmNode').hide();
+        $('#cancleNode').hide();
+        $('#modifyNode').show();
+        
+        // 편집 모드 종료
+        isEditing = false;
+        editingNodeId = null;
+    }
+});
 
     // 서버에 조직명 업데이트 요청 함수
     function updateTeamNameOnServer(nodeId, newName, state, org_p_idx, org_g_idx) {
@@ -469,7 +590,7 @@ $(function() {
             $('#tree-container').on('select_node.jstree', function(e, data) {
                 selectedNodeId = data.node.id;
             });
-        
+            
             // 트리 내의 다른 부분(노드 외부) 클릭 시 선택 해제 및 변수 초기화
             $('#tree-container').on('click.jstree', function(e) {
                 if (!$(e.target).closest('.jstree-anchor').length) {
@@ -478,12 +599,7 @@ $(function() {
                     console.log('Selected Node ID reset to null');
                 }
             });
-
-            // 노드 더블 클릭 시 수정 모드로 전환
-            $('#tree-container').on('dblclick', '.jstree-anchor', function(e) {
-                var nodeId = $(this).closest('li').attr('id');
-                $('#tree-container').jstree('edit', nodeId);
-            });
+            
     
             var selectedNodeIds = []; // 다중 선택된 노드의 ID를 저장할 배열
 
@@ -492,6 +608,7 @@ $(function() {
                 selectedNodeIds = data.selected; // 선택된 노드들의 ID 배열
                 console.log('Selected Node IDs:', selectedNodeIds);
             });
+
 
           // 노드 삭제 기능
         $('#deleteNode').on('click', function() {
@@ -887,174 +1004,93 @@ $(function() {
             }
         });
         
+        // 조직도내 팀원 이동
+
         let moveNodeTimeout;
 
         $('#tree-container').off('move_node.jstree').on('move_node.jstree', function (e, data) {
             clearTimeout(moveNodeTimeout); // 이전에 설정된 타임아웃을 초기화
         
             moveNodeTimeout = setTimeout(function () {
-                // 이동된 노드의 부모 노드 정보
                 const oldTeamId = data.old_parent; // 이동 전 팀의 ID (org_idx)
                 const newTeamId = data.parent; // 이동 후 팀의 ID (move_idx)
         
-                // 현재 트리에서 선택된 모든 노드를 가져옵니다.
-                const selectedNodes = $('#tree-container').jstree('get_selected'); // 선택된 모든 노드의 ID 배열
-                const selectedUserIds = selectedNodes.map(nodeId => nodeId.split('_')[1]); // user_idx 추출
-        
-                console.log('선택된 노드들:', selectedUserIds);
-        
-                // 선택된 노드 중 하나라도 "member" 타입인 경우에만 처리
-                const hasMembers = selectedNodes.some(nodeId => {
-                    const node = $('#tree-container').jstree('get_node', nodeId);
-                    return node.type === 'member';
-                });
-        
-                if (hasMembers) {
-                    // 이동할 팀(newTeamId)의 자식 노드에서 이미 추가된 멤버의 user_idx 추출
-                    const newTeamChildren = $('#tree-container').jstree('get_node', newTeamId).children;
-                    const newTeamUserIdxs = newTeamChildren.map(childId => {
-                        const childNode = $('#tree-container').jstree('get_node', childId);
-                        if (childNode.type === 'member') {
-                            return parseInt(childNode.id.split('_')[1], 10); // _ 뒤의 user_idx 추출
-                        }
-                        return null;
-                    }).filter(userIdx => userIdx !== null); // null 값 제거
-        
-                    // 중복 여부 체크: 해당 팀에 이미 추가된 user_idx와 이동하려는 user_idx 비교
-                    const duplicateUsers = selectedUserIds.filter(userIdx => newTeamUserIdxs.includes(parseInt(userIdx)));
-        
-                    if (duplicateUsers.length > 0) {
-                        alert("해당 팀에 이미 추가된 사용자가 있습니다: " + duplicateUsers.join(', '));
-        
-                        // 이동된 노드를 원래 위치로 되돌림 (이동 취소)
-                        $('#tree-container').jstree('refresh'); // 트리 새로고침하여 이동 취소
-        
-                        return; // 중복이 있으면 서버 요청을 취소하고 이동하지 않음
-                    }
-        
-                    // 서버로 보낼 데이터 준비
-                    const formData = new FormData();
-                    formData.append('user_datas', JSON.stringify(selectedUserIds)); // 선택된 user_idx 배열로 전송
-                    formData.append('org_idx', oldTeamId); // 기존 팀의 ID
-                    formData.append('move_idx', newTeamId); // 이동할 팀의 ID
-        
-                    const token = localStorage.getItem('accessToken');
-        
-                    // 서버에 AJAX 요청
-                    $.ajax({
-                        url: 'http://safe.withfirst.com:28888/with/users-add-org', // 엔드포인트
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        },
-                        data: formData,
-                        processData: false,
-                        contentType: false,
-                        success: function (response) {
-                            console.log('서버 응답:', response);
-        
-                            // 이동된 사용자들에 대한 처리
-                            selectedNodes.forEach(nodeId => {
-                                const node = $('#tree-container').jstree('get_node', nodeId);
-                                const userIdx = node.id.split('_')[1];
-        
-                                // 서버에서 받은 실제 ID로 노드 업데이트 (org_idx와 user_idx 조합)
-                                const newNodeId = `${newTeamId}_${userIdx}`;
-                                $('#tree-container').jstree('set_id', nodeId, newNodeId);
-        
-                                console.log(`사용자 ${node.text}가 성공적으로 이동되었습니다. ID 갱신: ${nodeId} -> ${newNodeId}`);
-                            });
-        
-                            // 트리 UI를 새로고침하여 추가된 사용자가 반영되도록 함
-                            loadTreeData();
-                        },
-                        error: function (xhr, status, error) {
-                            alert('사용자 이동에 실패했습니다.');
-                            console.error('서버 오류:', status, error);
-        
-                            // 오류 발생 시 이동된 노드를 원래 위치로 되돌림 (이동 취소)
-                            $('#tree-container').jstree('refresh'); // 트리 새로고침하여 이동 취소
-                        }
-                    });
-                } else {
-                    alert('멤버를 이동하세요.');
+                // **선택된 노드 가져오기** //
+                let selectedNodes = $('#tree-container').jstree('get_selected'); // 선택된 모든 노드의 ID 배열
+                
+                // 선택된 노드가 없으면 드래그된 노드를 처리
+                if (selectedNodes.length === 0) {
+                    selectedNodes = [data.node.id]; // 드래그된 노드만 처리
                 }
+        
+                const draggedUserIds = selectedNodes.map(nodeId => parseInt(nodeId.split('_')[1], 10)); // 선택된 노드들의 user_idx 추출 (숫자로 변환)
+                
+                console.log('선택된 노드들의 ID:', selectedNodes);
+                console.log('드래그된 노드들의 user_idx:', draggedUserIds);
+        
+                // 이동할 팀(newTeamId)의 자식 노드에서 이미 추가된 멤버의 노드 ID 추출 (teamID_userID)
+                const newTeamChildren = $('#tree-container').jstree('get_node', newTeamId).children;
+                const newTeamNodeIds = newTeamChildren.map(childId => {
+                    const childNode = $('#tree-container').jstree('get_node', childId);
+                    if (childNode.type === 'member') {
+                        return childNode.id; // 자식 노드의 전체 ID (teamID_userID) 반환
+                    }
+                    return null;
+                }).filter(id => id !== null);
+        
+                console.log('newTeamNodeIds:', newTeamNodeIds); // 이동할 팀의 노드 ID 출력 (teamID_userID)
+        
+                // 중복 여부 체크: 팀 내에 이미 같은 노드 ID (teamID_userID)가 있는지 확인
+                const duplicateUsers = draggedUserIds.filter(userId => newTeamNodeIds.includes(`${newTeamId}_${userId}`));
+                if (duplicateUsers.length > 0) {
+                    alert("해당 팀에 이미 추가된 사용자가 있습니다: " + duplicateUsers.join(', '));
+                    $('#tree-container').jstree('refresh'); // 트리 새로고침하여 이동 취소
+                    return; // 서버로 이동 요청을 보내지 않고, 여기서 중단
+                }
+        
+                // **중복 확인 후에만 서버 요청** //
+                const formData = new FormData();
+                formData.append('user_datas', JSON.stringify(draggedUserIds)); // 선택된 모든 user_idx 전송
+                formData.append('org_idx', oldTeamId); // 기존 팀의 ID
+                formData.append('move_idx', newTeamId); // 이동할 팀의 ID
+        
+                const token = localStorage.getItem('accessToken');
+        
+                // 서버에 AJAX 요청
+                $.ajax({
+                    url: 'http://safe.withfirst.com:28888/with/users-add-org',
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        console.log('서버 응답:', response);
+        
+                        // 서버에서 받은 실제 ID로 노드 업데이트 (org_idx와 user_idx 조합)
+                        selectedNodes.forEach(nodeId => {
+                            const userId = nodeId.split('_')[1];
+                            const newNodeId = `${newTeamId}_${userId}`;
+                            $('#tree-container').jstree('set_id', nodeId, newNodeId);
+                            console.log(`사용자 ${nodeId}가 성공적으로 이동되었습니다. ID 갱신: ${nodeId} -> ${newNodeId}`);
+                        });
+        
+                        // 트리 UI를 새로고침하여 추가된 사용자가 반영되도록 함
+                        loadTreeData();
+                    },
+                    error: function (xhr, status, error) {
+                        alert('사용자 이동에 실패했습니다.');
+                        console.error('서버 오류:', status, error);
+                        $('#tree-container').jstree('refresh'); // 트리 새로고침하여 이동 취소
+                    }
+                });
             }, 100); // 100ms 딜레이 후 서버로 요청을 보냅니다.
         });
-        
-            // let moveNodeTimeout;
 
-            // $('#tree-container').off('move_node.jstree').on('move_node.jstree', function (e, data) {
-            //     clearTimeout(moveNodeTimeout); // 이전에 설정된 타임아웃을 초기화
-            
-            //     moveNodeTimeout = setTimeout(function () {
-            //         // 이동된 노드의 부모 노드 정보
-            //         const oldTeamId = data.old_parent; // 이동 전 팀의 ID (org_idx)
-            //         const newTeamId = data.parent; // 이동 후 팀의 ID (move_idx)
-            
-            //         // 현재 트리에서 선택된 모든 노드를 가져옵니다.
-            //         const selectedNodes = $('#tree-container').jstree('get_selected'); // 선택된 모든 노드의 ID 배열
-            //         const selectedUserIds = selectedNodes.map(nodeId => nodeId.split('_')[1]); // user_idx 추출
-            
-            //         console.log('선택된 노드들ㅇㅇㅇㅇㅇㅇㅇㅇㅇ:', selectedUserIds);
-            
-            //         // 선택된 노드 중 하나라도 "member" 타입인 경우에만 처리
-            //         const hasMembers = selectedNodes.some(nodeId => {
-            //             const node = $('#tree-container').jstree('get_node', nodeId);
-            //             return node.type === 'member';
-            //         });
-            
-            //         if (hasMembers) {
-            //             // 이동할 팀(newTeamId)의 자식 노드에서 이미 추가된 멤버의 user_idx 추출
-            //             const newTeamChildren = $('#tree-container').jstree('get_node', newTeamId).children;
-            //             const newTeamUserIdxs = newTeamChildren.map(childId => {
-            //                 const childNode = $('#tree-container').jstree('get_node', childId);
-            //                 if (childNode.type === 'member') {
-            //                     return parseInt(childNode.id.split('_')[1], 10); // _ 뒤의 user_idx 추출
-            //                 }
-            //                 return null;
-            //             }).filter(userIdx => userIdx !== null); // null 값 제거
         
-            
-            //             // 서버로 보낼 데이터 준비
-            //             const formData = new FormData();
-            //             formData.append('user_datas', JSON.stringify(selectedUserIds)); // 선택된 user_idx 배열로 전송
-            //             formData.append('org_idx', oldTeamId); // 기존 팀의 ID
-            //             formData.append('move_idx', newTeamId); // 이동할 팀의 ID
-                        
-            //             // FormData의 내용을 콘솔에 출력 (디버깅용)
-            //             for (let [key, value] of formData.entries()) {
-            //                 console.log(`${key}: ${value}`);
-            //             }
-            
-            //             const token = localStorage.getItem('accessToken');
-            
-            //             // 서버에 AJAX 요청
-            //             $.ajax({
-            //                 url: 'http://safe.withfirst.com:28888/with/users-add-org', // 엔드포인트
-            //                 method: 'POST',
-            //                 headers: {
-            //                     'Authorization': `Bearer ${token}`
-            //                 },
-            //                 data: formData,
-            //                 processData: false,
-            //                 contentType: false,
-            //                 success: function (response) {
-            //                     console.log(response);
-            //                     loadTreeData();
-            //                 },
-            //                 error: function (xhr, status, error) {
-            //                     alert('사용자 이동에 실패했습니다.');
-            //                     console.error('서버 오류:', status, error);
-            //                 }
-            //             });
-            //         } else {
-            //             alert('멤버를 이동하세요.');
-            //         }
-            //     }, 100); // 100ms 딜레이 후 서버로 요청을 보냅니다.
-            // });
-            
-
+        
             // 조직 추가 기능
             $('#addTeam').on('click', function() {
                 var selectedNode = selectedNodeId ? $('#tree-container').jstree('get_node', selectedNodeId) : '#';
@@ -1079,7 +1115,7 @@ $(function() {
                     }
                 }
 
-                const newTeamName = "NEW TEAM";
+                const newTeamName = "새로운 조직";
                 const newNodeId = new Date().getTime();
                 
                 // 새로운 팀 노드 데이터 생성

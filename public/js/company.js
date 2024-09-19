@@ -197,7 +197,7 @@ function renderTable() {
         <td class="buttons"><button class="userBtn moveBtn" data-com-idx="${company.com_idx}" data-c-id="${company.c_id}">이동</button></td>
         <td class="buttons"><button class="categoryBtn moveBtn" data-com-idx="${company.com_idx}" data-c-id="${company.c_id}">이동</button></td>
         <td class="buttons"><button class="boardBtn moveBtn" data-com-idx="${company.com_idx}" data-c-id="${company.c_id}">이동</button></td>
-        <td class="buttons"><button class="teamBtn moveBtn" data-com-idx="${company.com_idx}" data-c-id="${company.c_id}">이동</button></td>
+        <td class="buttons"><button class="teamBtn moveBtn" data-com-idx="${company.com_idx}" data-c-id="${company.c_id}" data-c-name="${company.c_name}">이동</button></td>
         <td class="buttons">${approveButton}</td>
         <td class="buttons center-align">
             <button class="modifyBtn comModify" data-id="${company.com_idx}">수정</button>
@@ -457,11 +457,14 @@ function renderTable() {
         button.addEventListener('click', function () {
                 const com_id = this.getAttribute('data-c-id');
                 const comIdx = this.getAttribute('data-com-idx');
+                const comName = this.getAttribute('data-c-name');
                 console.log('comIdx:', comIdx); // 추가된 로그
                 console.log('com_id:', com_id); // 추가된 로그
+                console.log('회사이름!!:', comName); // 추가된 로그
     
                 // 로컬 스토리지에 저장
                 localStorage.setItem('com_idx', comIdx);
+                localStorage.setItem('com_name', comName);
                 const token = getCookieValue('refreshToken');
     
                 //서버에 POST 요청
@@ -588,11 +591,18 @@ document.getElementById('modifySaveBtn').addEventListener('click', function () {
     // const businessNumber = document.getElementById('businessNumber').value.trim(); 
     const comIdx = this.getAttribute('data-com-idx'); // 저장된 com_idx 값 가져오기
     const cId = document.getElementById('businessNumber').value.trim(); // c_id를 가져오는 부분
+    const fileInput = document.getElementById('realFileInput').files[0]; // 파일 입력 필드에서 파일 가져오기
+
 
     // 요청할 폼 데이터
     const formData = new FormData();
     formData.append('owner_name', representativeName);
     formData.append('c_name', companyName);
+
+     // 파일이 선택된 경우 폼 데이터에 파일 추가
+     if (fileInput) {
+        formData.append('file', fileInput); // 'file'은 서버에서 기대하는 파일 필드 이름이어야 합니다.
+    }
 
     const token = getCookieValue('refreshToken');
 

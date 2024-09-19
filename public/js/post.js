@@ -1263,9 +1263,9 @@ function autoAdjustTextareaHeight(textareaSelector) {
     });
 }
 
- // 파일 삭제 버튼 클릭 시 파일 UI에서 삭제하고 fileDeleted를 true로 설정
-document.getElementById('removeFileBtn').addEventListener('click', () => {
-    document.querySelector('.thumb_box').remove(); // 파일 UI 삭제
-    fileDeleted = true; // 파일이 삭제되었음을 표시
-});
+//  // 파일 삭제 버튼 클릭 시 파일 UI에서 삭제하고 fileDeleted를 true로 설정
+// document.getElementById('removeFileBtn').addEventListener('click', () => {
+//     document.querySelector('.thumb_box').remove(); // 파일 UI 삭제
+//     fileDeleted = true; // 파일이 삭제되었음을 표시
+// });
 

@@ -67,20 +67,27 @@
 
             <div class="d-flex">
                 <div class="Oinner">
-                    <div class="Owrap">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <p>위드퍼스트(회사이름)</p>
-                            <div>
-                                <button id="addTeam" class="addBtn">조직추가</button>
-                                <button id="deleteNode" class="deleteBtn">삭제</button>
-                            </div>
+                    <div class="d-flex justify-content-between align-items-center sticky-header">
+                        <!-- <p>위드퍼스트(회사이름)</p> -->
+                        <div>
+                            <button id="addTeam" class="addBtn">조직추가</button>
                         </div>
+                        <div class="rightContent">
+                            <button id="modifyNode" class="modifyBtn">수정</button>
+                            <button id="confirmNode" class="confirmBtn" style="display: none;">확인</button>
+                            <button id="deleteNode" class="deleteBtn">삭제</button>
+                        </div>
+                    </div>
+                    <div class="Owrap">
+                   
+                   
                         <hr>
 
                         <div id="tree-container">
                 
                         </div>
                     </div>
+               
                 </div>
                 <div class="Oinner2">
                     <div class="Owrap_user">

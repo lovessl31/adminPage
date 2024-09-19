@@ -2291,9 +2291,7 @@ em {
   overflow-y: auto; /* 컨텐츠가 넘칠 때 스크롤 생성 */
   margin-right: 2%;
 
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+
 }
 
 .Oinner2 {
@@ -2372,6 +2370,37 @@ em {
   transition: opacity 0.3s ease;
 }
 
-.jsteam {
+.rightContent {
+  display: flex;
+  justify-content: flex-end;
+}
 
+.rightContent button {
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 5px;
+  padding: 5px 8px;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+  margin-right: 4px;
+}
+
+.sticky-header {
+  position: sticky;
+  top: 0;
+  background-color: white; /* 배경색을 추가하여 스크롤 시 뒤 배경과 구분 */
+  z-index: 1000; /* 다른 요소들보다 위에 표시되도록 z-index 설정 */
+}
+
+.team_node_link {
+  font-weight: 700;
+}
+
+.member_node_link {
+  font-size: 15px;
+}
+
+.member-count {
+  font-size: 12px;
 }
