@@ -134,10 +134,8 @@ function renderPosts(postData) {
 
     // 댓글 총 개수
     const cmtCount = document.querySelector('.cmt_title span');
-    console.log('선택됫어? 이거 댓글 총개수 넣을 p', cmtCount);
     cmtCount.textContent = postData.comment_count;
 
-    console.log('데이터 받은 댓글총개수 몇개', postData.comment_count);
     
     const boardTtitle = document.querySelector('.post-header p');
     boardTtitle.textContent = postData.board_name;
@@ -232,12 +230,6 @@ function renderPosts(postData) {
         }
     });
 
-
-
-
-
-
-
     // 게시글 내용 렌더링
     const post_content = document.querySelector('.post_content');
     post_content.textContent = postData.p_content;
@@ -295,9 +287,6 @@ function renderPosts(postData) {
         likesWrap.style.display = 'none';
     }
 }
-
-
-
 
 
 // 댓글 관련 함수
@@ -403,9 +392,6 @@ function renderComments(comments) {
                         console.log(`Downloading file: ${file.o_f_name}, ID: ${file.f_idx}`);
 
                                 const token = localStorage.getItem('accessToken');
-
-console.log('토큰:', token);
-
 
                                 axios.get(`http://safe.withfirst.com:28888/file/download/${file.f_idx}`, {
                                     headers: {
@@ -527,8 +513,6 @@ function renderReplyComments(replyComments) {
         // 독립적으로 댓글을 .cmt_wrap에 추가
         commentsWrap.appendChild(replyElement);
 
-        // ㄴ 모양의 아이콘 추가 (import한 아이콘 이미지 사용)
-   // ㄴ 모양의 아이콘 추가 (import한 아이콘 이미지 사용)
         const replyImgWrap = replyElement.querySelector('.reply_img_wrap');
         if (replyImgWrap) {  // reply_img_wrap가 존재하는지 확인
             const replyImg = document.createElement('img');
@@ -636,7 +620,6 @@ function showCommentMenu(userName, commentContent, existingFile) {
         hideOverlayAndMenu();
         showReplyWrite(userName);
 
-        console.log('리플머냐',isReply);
     });
 
        // 삭제 기능
@@ -714,7 +697,6 @@ function showEditForm(commentContent, commentIdx, userId, existingFile) {
           fileViewUrl = `http://safe.withfirst.com:28888/file/imageView/${file.f_idx}?accessId=${accessId}`;
       }
 
-    console.log('기존파일 파일파일', file);
 
     
     // 기존 파일이 있으면 파일 UI를 표시
@@ -775,7 +757,6 @@ function showEditForm(commentContent, commentIdx, userId, existingFile) {
 
     // 파일 선택 시 처리
     document.getElementById('modify_cmt_input').addEventListener('change', (event) => {
-        console.log('파일 선택됨', event);
         handleModifyFileChange(event, file);
     });
 
@@ -809,7 +790,6 @@ function handleModifyFileChange(event, existingFile) {
     const file = event.target.files[0];
     if (!file) return;
 
-    console.log('파일존재해?',existingFile);
 
     const fileType = file.type;
     const fileSize = (file.size / 1024).toFixed(2) + 'KB';
@@ -902,7 +882,6 @@ function saveEditedComment(commentIdx, userId, newContent, postIdx) {
     const postidx = localStorage.getItem('postIdx');
     const token = localStorage.getItem('accessToken'); // 토큰 가져오기
 
-    console.log('게시글아이디', postidx);
 
     const file = document.querySelector('#modify_cmt_input').files[0];
     const isComment = selectedDepth === 1 ? 'top' : 'sub'; 

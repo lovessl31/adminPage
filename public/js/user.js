@@ -1,386 +1,349 @@
+// 공통 변수 선언
 let users = []; // 전역 변수로 users 선언
 let currentPage = 1; // 현재 페이지
 let itemsPerPage = 10; // 페이지 당 항목 수 (초기값)
 let totalPage = 1; // 총 페이지 수
 let optionType = "all";
 let optionValue = "";
+let total_count;
 
-document.addEventListener('DOMContentLoaded', () => {
-    
-    // 사용자 수정, 추가 함수 실행
-    document.querySelectorAll('#modifySaveBtn, #addSaveBtn').forEach(button => {
-        button.addEventListener('click', function() {
-            if (this.id === 'modifySaveBtn') {
-                updateUserData();
-            } else if (this.id === 'addSaveBtn') {
-                addUserData();
-            }
-        });
-    });
+// url
+const defaultUrl = "http://safe.withfirst.com:28888";
 
-    // 체크박스 전체 선택
-    document.querySelector('thead input[type="checkbox"]').addEventListener('change', function() {
-        const isChecked = this.checked;
-        const checkboxes = document.querySelectorAll('tbody input[type="checkbox"]');
-        checkboxes.forEach(checkbox => {
-            checkbox.checked = isChecked;
-        });
-    });
-    
-    // 체크박스 사용한 다중삭제 기능
-    document.getElementById('deleteBtn').addEventListener('click', () => {
-        const selectedUsers = Array.from(document.querySelectorAll('tbody input[type="checkbox"]:checked'))
-        .map(checkbox => ({
-            user_idx: checkbox.getAttribute('data-u-idx'),
-            user_id: checkbox.getAttribute('data-u-id')
-        }));
-        if (selectedUsers.length > 0) {
-            deleteUsers(selectedUsers);
-        } else {
-            alert('삭제할 사용자를 선택해주세요.');
-        }
-    });
+// 토큰
+const rtoken = getCookieValue('refreshToken');
+const atoken = localStorage.getItem('accessToken');
 
-    // localStorage에서 현재 페이지 번호 가져오기
-    const savedPage = localStorage.getItem('currentPage');
-    if (savedPage) {
-        currentPage = parseInt(savedPage, 10);
-        localStorage.removeItem('currentPage'); // 저장된 페이지 번호 삭제
-    } else {
-        currentPage = 1; // 기본 페이지를 1로 설정
-    }
+// 회사 리스트 로드 함수
+function fetchUserData(page = 1) {
 
-    // 데이터 로드 함수 호출
-    loadUserData(currentPage);
-    
-    // 검색 버튼 클릭 시와 검색 필드에서 엔터 키 입력 시 검색
-    document.getElementById('searchButton').addEventListener('click', () => {
-        executeSearch();
-    });
-
-    document.getElementById('searchInput').addEventListener('keydown', (event) => {
-        if (event.key === 'Enter') {
-            event.preventDefault();
-            executeSearch();
-        }
-    });
-
-    // 페이지 당 항목 수 변경
-    document.getElementById('itemCountSelect').addEventListener('change', (event) => {
-        itemsPerPage = parseInt(event.target.value, 10);
-        loadUserData(1);
-    });
-
-    // 사용자 추가 버튼 클릭 시
-    document.getElementById('addUserBtn').onclick = function() {
-        clearFormFields();
-        loadCompanyList(); // 회사 리스트 로드
-        document.getElementById('addPopupLayer').style.display = 'flex';
-    };
-
-    // 팝업 내 닫기 버튼 클릭 시 팝업 닫기
-    document.querySelectorAll('.popup .close').forEach(closeBtn => {
-        closeBtn.addEventListener('click', () => {
-            closeBtn.closest('.popup').style.display = 'none';
-        });
-    });
-
-    // 팝업 내 취소 버튼 클릭 시 팝업 닫기
-    document.querySelectorAll('.cancleBtn').forEach(cancelBtn => {
-        cancelBtn.addEventListener('click', () => {
-            cancelBtn.closest('.popup').style.display = 'none';
-        });
-    });
-
-    // 회사 리스트 로드 함수
-    function loadCompanyList() {
-        makeRequest('get', 'http://safe.withfirst.com:28888/with/com_list')
-            .then(response => {
-                const companies = response.data.data;
-                const selectElement = document.getElementById('addCompanySelect');
-                selectElement.innerHTML = 
-                '<option value="" disabled selected hidden>회사를 선택해주세요.</option>'; // 초기화
-                companies.forEach(company => {
-                    const option = document.createElement('option');
-                    option.value = company.com_idx;
-                    option.textContent = company.c_name;
-                    selectElement.appendChild(option);
-                });
-            })
-            .catch(error => handleError(error, '회사 목록을 불러오는 데 실패했습니다.'));
-        }
-});
-
-// 공통 요청 함수
-function makeRequest(method, url, data = {}) {
-    const token = localStorage.getItem('accessToken');
-    console.log("makeR");
-    console.log(data);
-    return axios({
-        method: method,
-        url: url,
-        data: data,
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-        }
-    });
-}
-
-// 에러 처리 함수
-function handleError(error, defaultMessage = 'An error occurred') {
-    const message = error.response && error.response.data ? error.response.data : defaultMessage;
-    console.error(message);
-    alert(message);
-}
-
-// 쿠키에서 특정 값을 가져오는 함수
-function getCookieValue(name) {
-    let value = `; ${document.cookie}`;
-    let parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(';').shift();
-}
-
-// 사용자 데이터 불러오기
-function loadUserData(page = 1) {
+    // 현재 페이지 기록
     currentPage = page;
-    localStorage.setItem('currentPage', currentPage); // 현재 페이지 저장
-    const url = `http://safe.withfirst.com:28888/with/users?option_type=${optionType}&option_value=${optionValue}&per_page=${itemsPerPage}&page=${currentPage}`;
 
-    makeRequest('get', url)
-        .then(response => {
-            const data = response.data.data;
-            users = data;
-            totalPage = response.data.total_page || 1;
+    $.ajax({
+        url : defaultUrl + `/with/user_list?option_type=${optionType}&option_value=${optionValue}&per_page=${itemsPerPage}&page=${currentPage}`,
+        method : 'GET',
+        headers : {
+            'Authorization' : `Bearer ${atoken}`
+        },
+        success : function(response) {
+            console.log('사용자 목록 데이터를 조회하는데 성공하였습니다.');
+            console.log('사용자 데이터 : ', response.data);
+            console.log('사용자 데이터 : ', response);
 
-            console.log('user',data);
+            // 로컬스토리지에 현재 페이지 저장
+            localStorage.setItem('currentPage', currentPage);
+
+            users = response.data;
+            totalPage = response.total_page || 1;
+            total_count = response.total_count;
 
             renderUserTable();
             renderPagination();
-            document.querySelector('thead input[type="checkbox"]').checked = false;
-        })
-        .catch(error => handleError(error, '사용자 데이터를 불러오는 데 실패했습니다.'));
+
+        },
+        error : function(e) {
+            console.log(e);
+            console.log(" error :: 사용자 접속 에러");
+        }
+    })
 }
 
-// 검색 실행 함수
-function executeSearch() {
-    const searchSelect = document.getElementById('searchSelect');
-    const searchInput = document.getElementById('searchInput');
-    if (searchSelect) {
-        optionType = searchSelect.value;
-    }
-    if (searchInput) {
-        optionValue = searchInput.value.trim();
-    }
-    // 검색 조건이 변경 될 때마다 페이지를 1로 설정하고 데이터를 가져옴
-    loadUserData(1);
-}
-
-// 사용자 테이블 렌더링
+// 유저 목록 테이블 렌더링
 function renderUserTable() {
-    const tableBody = document.getElementById('userTableBody');
-    tableBody.innerHTML = ''; // 기존 내용을 비우기
 
-    users.forEach(user => {
-        const row = document.createElement('tr');
+    $('.contentWrap p').text(`모든 사용자(${total_count})`);
+
+    const tableBody = $('#userTableBody').empty(); // 기존 내용을 비우기
+
+    users.forEach( function(user, index) {
         let approveButton = '';
+
+        // user.status 값에 따라 승인 버튼 다르게 렌더링
+        // N일 경우 '승인' 버튼 활성화
+        // Y일 경우 '완료' 버튼
         if (user.status === 'N') {
             approveButton = `<button class="approveBtn" data-u-idx="${user.user_idx}" data-u-id="${user.user_id}">승인</button>`;
         } else if (user.status === 'Y') {
             approveButton = `<button class="approveCBtn" disabled>완료</button>`;
         }
-        row.innerHTML = `
-            <td>
-                <div class="d-flex align-items-center justify-content-center">
+
+        // 유저 테이블 행(row) 생성
+        const row = $(`
+            <tr>
+                <td><div class="d-flex align-items-center justify-content-center">
                     <input type="checkbox" data-u-idx="${user.user_idx}" data-u-id="${user.user_id}">
-                </div>
-            </td>
-            <td>${user.user_name}</td>
-            <td>${user.user_id}</td>
-            <td>${user.phone_number}</td>
-            <td>${user.user_id}</td>
-            <td>${user.c_name}</td>
-            <td>${user.department}</td>
-            <td>${user.user_rank}</td>
-            <td>${user.user_position}</td>
-            <td class="buttons">${approveButton}</td>
-            <td class="buttons center-align">
-                <button class="modifyBtn"  data-u-id="${user.user_id}" data-u-idx="${user.user_idx}">수정</button>
-                <button class="" onclick="javascript:deleteUser('${user.user_idx}', '${user.user_id}')">삭제</button>
-            </td>
-        `;
-        tableBody.appendChild(row);
-    });
+                </div></td>
+                <td class="userName" data-u-idx="${user.user_idx}">${user.user_name}</td>
+                <td>${user.user_id}</td>
+                <td>${user.c_name}</td>
+                <td class="buttons">${approveButton}</td>
+                <td class="buttons center-align">
+                    <button class="detailBtn" data-u-idx="${user.user_idx}">보기</button>
+                    <button class="modifyBtn" data-u-id="${user.user_id}" data-u-idx="${user.user_idx}">수정</button>
+                    <button class="deleteBtn" data-u-idx="${user.user_idx}" data-u-id="${user.user_id}">삭제</button>
+                </td>
+            </tr>
+        `);
 
-    addEventListeners();
-}
+        // 동적으로 생성된 행(row)을 테이블에 추가
+        tableBody.append(row);
 
-// 이벤트 리스너 등록
-function addEventListeners() {
-    // 동적으로 생성된 승인 버튼에 대한 이벤트 리스너 추가
-    document.querySelectorAll('.approveBtn').forEach(button => {
-        button.addEventListener('click', approveUser);
-    });
-
-    // 동적으로 생성된 삭제 버튼에 대한 이벤트 리스너 추가
-    document.querySelectorAll('.deleteBtn').forEach(button => {
-        button.addEventListener('click', function() {
-            const userIdx = this.getAttribute('data-u-idx');
-            const userId = this.getAttribute('data-u-id');
-            deleteUser(userIdx, userId);
+        // 이름 클릭 시 팝업 호출
+        row.find('.userName').on('click', function() {
+            const userIdx = $(this).data('u-idx');
+            detailUser(userIdx); // 보기 버튼과 동일한 기능 호출
         });
+
     });
 
-    // 동적으로 생성된 수정 버튼에 대한 이벤트 리스너 추가
-    document.querySelectorAll('.modifyBtn').forEach(button => {
-        button.addEventListener('click', modifyUser);
+    // 체크박스 상태 초기화
+    $('thead input[type="checkbox"]').prop('checked', false);
+
+    // 동적으로 생성된 요소들에 이벤트 리스너 추가
+    $('#userTableBody').on('click', '.approveBtn', approveUser);
+    $('#userTableBody').on('click', '.detailBtn', function() {
+        const userIdx = $(this).data('u-idx'); // 버튼의 data-u-idx 속성에서 userIdx 추출
+        detailUser(userIdx); // 추출한 userIdx를 함수에 전달
     });
+    $('#userTableBody').on('click', '.modifyBtn', modifyUser);
+    $('#userTableBody').on('click', '.deleteBtn', deleteUser);
 }
 
-// 승인 함수
-function approveUser() {
-    const userIdx = this.getAttribute('data-u-idx');
-    const userId = this.getAttribute('data-u-id');
+// 페이지네이션 렌더링 함수
+function renderPagination() {
 
-    // 서버에 post 요청
-    makeRequest('post', `http://safe.withfirst.com:28888/with/user/${userIdx}/${userId}`)
-        .then(response => {
-            console.log(response.data);
+    // 페이지네이션 ui가 들어갈 요소 선택
+    const pagination = $('#pagination').empty();
+
+    // << 버튼 (첫 페이지로 이동)
+    const first = $('<li class="page-item"><a class="page-link" href="#"><<</a></li>');
+    first.on('click', function (event) {
+        event.preventDefault();
+        fetchUserData(1);
+    });
+    pagination.append(first);
+
+    const maxPagesToShow = 5; //한 번에 보여줄 페이지 번호의 개수(최대 5개로 설정)
+    // let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+    // let endPage = Math.min(totalPage, startPage + maxPagesToShow - 1);
+
+    // if (endPage - startPage + 1 < maxPagesToShow && startPage > 1) {
+    //     startPage = Math.max(1, endPage - maxPagesToShow + 1);
+    // }
+    let startPage = Math.max(1, Math.min(currentPage - Math.floor(maxPagesToShow / 2), totalPage - maxPagesToShow + 1));
+    let endPage = Math.min(totalPage, startPage + maxPagesToShow - 1);
+
+
+    // startPage 부터 endPage 까지의 페이지 번호 생성
+    for (let i = startPage; i <= endPage; i++) {
+        const pageItem = $(`<li class="page-item${i === currentPage ? ' active' : ''}"><a class="page-link" href="#">${i}</a></li>`);
+        pageItem.on('click', function (event) {
+            event.preventDefault();
+            fetchUserData(i);
+        });
+        pagination.append(pageItem);
+    }
+
+    // >> 버튼 (마지막 페이지로 이동)
+    const last = $('<li class="page-item"><a class="page-link" href="#">>></a></li>');
+    last.on('click', function (event) {
+        event.preventDefault();
+        fetchUserData(totalPage);
+    });
+    pagination.append(last);
+
+}
+
+// 유저 승인 요청 함수
+function approveUser() {
+    const userIdx = $(this).data('u-idx');
+    const userId = $(this).data('u-id');
+
+    const formData = new FormData();
+
+    formData.append('user_idx', userIdx);
+    formData.append('user_id', userId);
+
+    $.ajax({
+        url : defaultUrl + '/with/user_approve',
+        method : 'POST',
+        headers : {
+            'Authorization' : `Bearer ${atoken}`
+        },
+        contentType: false,
+        processData: false,
+        data : formData,
+        success : function(response) {
             alert('승인되었습니다.');
-            localStorage.setItem('currentPage', currentPage);
-            location.reload();
-        })
-        .catch(error => handleError(error, '승인에 실패했습니다.'));
+            fetchUserData(currentPage);
+        }
+    })
+}
+
+// 사용자 정보 보기 팝업 열기 함수
+function detailUser(userIdx) {
+
+    // 서버에서 조회해온 데이터 가져오기
+    $.ajax({
+        url : defaultUrl + `/with/user_detail/${userIdx}`,
+        method : 'GET',
+        headers : {
+            'Authorization' : `Bearer ${atoken}`
+        },
+        success : function(response) {
+            console.log('사용자 상세 조회 :' , response.data[0]);
+
+            // 가져온 데이터 user에 집어넣고 그걸로 화면 렌더링하기
+            const userDetail = response.data[0];
+            renderUserDetail(userDetail); // 배열의 첫 번째 요소 전달
+        }
+    });
+    // 팝업 표시
+    $('#userDetail').css('display', 'flex');
+}
+
+function renderUserDetail(user) {
+    // 사용자 이름 업데이트
+    $('.userForm h4').text(user.user_name);
+
+    // 사용자 정보 업데이트
+    $('#userName').text(user.user_name || '없음');
+    $('#userId').text(user.user_id || '없음');
+    $('#userPhone').text(user.phone_number || '없음');
+    $('#companyName').text(user.c_name || '없음');
+    $('#userRank').text(user.user_rank || '없음');
+    $('#userPosition').text(user.user_position || '없음');
+}
+
+// 사용자 수정 팝업 열기 함수
+function modifyUser() {
+
+    const userIdx = $(this).data('u-idx');
+    const user = users.find(u => u.user_idx == userIdx); // user 배열에서 user_idx에 해당하는 사용자 찾음
+    const com_idx = localStorage.getItem('com_idx');
+
+    // 사용자 정보가 있으면 수정 팝업에 데이터 채우기
+    if(user) {
+        console.log("수정할 사용자 정보:", user); // user 정보 확인
+        console.log("선택된 회사 ID:", com_idx); // 선택된 회사 ID 확인
+
+        editingUserId = userIdx; // 전역 변수로서 현재 수정 중인 사용자 id 저장 (수정 요청 시 )
+        
+        $('#modifyUserId').val(user.user_id);
+        $('#modifyUserName').val(user.user_name);
+        $('#modifyUserPhone').val(user.phone_number);
+        $('#modifyRank').val(user.user_rank);
+        $('#modifyPosition').val(user.user_position);
+
+        // 승인/미승인 상태 선택
+        $(`input[name="modifyStatus"][value="${user.status}"]`).prop('checked', true);
+
+        // 회사 리스트 로드 (수정 팝업)
+        loadCompanyList('modifyCompanySelect', com_idx); // 수정 시 선택된 회사 ID 전달
+
+        // 팝업 표시
+         $('#modifyPopupLayer').css('display', 'flex');
+
+    } else {
+        console.error('User not found with idx:', userIdx);
+    }
+
+}
+
+// 개별 삭제 함수
+function deleteUser() {
+    const user_idx = $(this).data('u-idx');
+    const user_id = $(this).data('u-id');
+
+    deleteUsers([{ user_idx: user_idx, user_id: user_id }]);
 }
 
 // 삭제 요청 함수
 function deleteUsers(users) {
-	console.log("############## delete ########");
-	console.log(users);
-	for(let i=0; i<users.length; i++){
-		
-		deleteUser(users[i].user_idx,users[i].user_id);
-		
-	}
+    console.log('전송될 데이터:', JSON.stringify(users));
 
-}
-
-// 개별 삭제 요청 함수
-function deleteUser(user_idx, user_id) {
-	let user= {"user_idx":user_idx, "user_id":user_id};
-    makeRequest('delete', 'http://safe.withfirst.com:28888/with/user_del', user)
-        .then(response => {
-            console.log('사용자 삭제 응답:', response.data);
-            //alert('삭제되었습니다.');
-            loadUserData(currentPage); // 데이터를 다시 불러와서 갱신
-        })
-        .catch(error => {
-            if (error.response && error.response.status === 401) {
-                // 401에러 발생 시 로그아웃 함수 호출
-                window.logout();
-            } else {
-                handleError(error, '삭제에 실패했습니다.');
-            }
-        });
-}
-
-// 수정 함수
-function modifyUser() {
-    const userIdx = this.getAttribute('data-u-idx');
-    const user = users.find(u => u.user_idx == userIdx);
-    
-    if (user) {
-        editingUserId = userIdx; // 수정할 사용자 ID 설정
-        document.getElementById('modifyUserId').value = user.user_id;
-        document.getElementById('modifyUserName').value = user.user_name;
-        document.getElementById('modifyUserPhone').value = user.phone_number;
-        document.getElementById('modifyRank').value = user.user_rank;
-        document.getElementById('modifyPosition').value = user.user_position;
-        document.querySelector(`input[name="modifyStatus"][value="${user.status}"]`).checked = true;
-
-        document.getElementById('modifyPopupLayer').style.display = 'flex';
-    } else {
-        console.error('User not found with idx:', userIdx);
-    }
-}
-
-// 폼 필드 초기화
-function clearFormFields() {
-    document.getElementById('addUserName').value = '';
-    document.getElementById('addUserPassword').value = '';
-    document.getElementById('addUserId').value = '';
-    document.getElementById('addUserPhone').value = '';
-    document.getElementById('addPosition').value = '';
-    document.getElementById('addRank').value = '';
-    document.getElementById('addCompanySelect').value = ''; // 회사 선택 초기화
-}
-
-// 사용자 추가 함수
-function addUserData() {
-    const userName = document.getElementById('addUserName').value;
-    const userId = document.getElementById('addUserId').value;
-    const userPassword = document.getElementById('addUserPassword').value;
-    const userPhone = document.getElementById('addUserPhone').value;
-    const position = document.getElementById('addPosition').value;
-    const rank = document.getElementById('addRank').value;
-    const statusYes = document.querySelector('input[name="addStatus"]:checked').value;
-    const com_idx = document.getElementById('addCompanySelect').value; // 선택된 회사 com_idx 가져오기
-
-    const newUser = {
-        id: Date.now().toString(), // 임시 ID 생성
-        name: userName,
-        userId: userId,
-        userPassword: userPassword,
-        contact: userPhone,
-        position: position,
-        rank: rank,
-        status: statusYes
-    };
-
-    users.push(newUser);
-    console.log('추가데이터:', newUser);
-
-    const token = localStorage.getItem('accessToken');
-
-    // FormData 안의 모든 key-value 쌍을 출력하는 함수
-    function logFormData(formData) {
-        for (let pair of formData.entries()) {
-            console.log(`${pair[0]}: ${pair[1]}`);
+    $.ajax({
+        url : defaultUrl + '/with/user_del',
+        method: 'DELETE',
+        headers : {
+            'Authorization': `Bearer ${atoken}`,
+            'Content-Type': 'application/json'
+        },
+        data : JSON.stringify(users),
+        success : function(response) {
+            console.log('회사 삭제 응답', response.data);
+            alert('삭제되었습니다.');
+            fetchUserData(currentPage);
+        },
+        error : function(e) {
+            console.log(e);
+            console.log("errpr :: delete error");
         }
-    }
+    })
+}
 
-    // 요청할 폼 데이터
+// 사용자 등록 요청 함수
+function addUserData() {
+    const userName = $('#addUserName').val().trim();
+    const userId = $('#addUserId').val().trim();
+    const userPassword = $('#addUserPassword').val().trim();
+    const userPhone = $('#addUserPhone').val().trim();
+    const position = $('#addPosition').val().trim();
+    const rank = $('#addRank').val().trim();
+    const statusYes = $('input[name="addStatus"]:checked').val();
+    const com_idx = $('#addCompanySelect').val(); // 선택된 회사 com_idx 가져오기
+
+  
+    // FormData 객체 생성
     const formData = new FormData();
     formData.append('user_id', userId);
     formData.append('user_pw', userPassword);
     formData.append('user_name', userName);
     formData.append('status', statusYes);
-    formData.append('com_idx', com_idx );
-    formData.append('phone_number', userPhone);
-    formData.append('user_rank', rank);
-    formData.append('user_position', position);
+    formData.append('com_idx', com_idx);
+    // formData.append('phone_number', userPhone);
+    // formData.append('user_rank', rank);
+    // formData.append('user_position', position);
 
-    logFormData(formData); // FormData 내용 로그 출력
+    const option_obj  = {
+        "phone_number" : userPhone,
+        "user_rank" : rank,
+        "user_position" : position
+    }
+    
+    // 객체를 JSON 문자열로 변환하여 추가
+    formData.append('option', JSON.stringify(option_obj));
 
-    axios.post('http://safe.withfirst.com:28888/with/signup', formData, {
+    // FormData 내용 로그 출력
+    formData.forEach((value, key) => {
+        console.log(`${key}: ${value}`);
+    });
+
+    // 서버에 POST 요청
+    $.ajax({
+        url: 'http://safe.withfirst.com:28888/with/user_add',
+        method: 'POST',
         headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data'
+            'Authorization': `Bearer ${atoken}`
+        },
+        processData: false, // FormData 사용 시 false로 설정
+        contentType: false, // FormData 사용 시 false로 설정
+        data: formData,
+        success: function(response) {
+            console.log(response);
+            alert('추가되었습니다.');
+            clearFormFields();
+            location.reload(); // 페이지 새로 고침
+        },
+        error: function(error) {
+            console.error('사용자 등록 오류:', error.responseJSON ? error.responseJSON : error);
+            alert('사용자 등록에 실패했습니다.');
         }
-    })
-    .then(response => {
-        console.log(response.data);
-        alert('추가되었습니다.');
-        clearFormFields();
-        location.reload();
-    })
-    .catch(error => {
-        console.error('사용자 등록 오류:', error.response ? error.response.data : error.message);
-        alert('사용자 등록에 실패했습니다.');
     });
 }
 
-// 사용자 수정 함수
+// 사용자 수정 요청 함수
 function updateUserData() {
     const userIdx = editingUserId;
     const user = users.find(u => u.user_idx == userIdx);
@@ -390,12 +353,13 @@ function updateUserData() {
         return;
     }
 
-    const userName = document.getElementById('modifyUserName').value.trim();
-    const userId = document.getElementById('modifyUserId').value.trim();
-    const userPhone = document.getElementById('modifyUserPhone').value.trim();
-    const rank = document.getElementById('modifyRank').value.trim();
-    const position = document.getElementById('modifyPosition').value.trim();
-    const status = document.querySelector('input[name="modifyStatus"]:checked').value;
+    // 값 가져오기
+    const userName = $('#modifyUserName').val().trim();
+    const userId = $('#modifyUserId').val().trim();
+    const userPhone = $('#modifyUserPhone').val().trim();
+    const rank = $('#modifyRank').val().trim();
+    const position = $('#modifyPosition').val().trim();
+    const status = $('input[name="modifyStatus"]:checked').val();
     const user_idx = userIdx; 
 
     // 수정된 사용자 정보 업데이트
@@ -405,88 +369,201 @@ function updateUserData() {
     user.rank = rank;
     user.position = position;
     user.status = status;
-    user.user_idx = user_idx; // 회사 ID 업데이트
+    user.user_idx = user_idx; 
 
-    const token = localStorage.getItem('accessToken');
+   // FormData 객체 생성 (서버로 전송할 데이터)
+    const formData = new FormData();
 
-    // JSON 객체 생성
-    const userData = {
-        user_idx: userIdx,
-        user_id: userId,
-        user_name: userName,
-        status: status,
-        phone_number: userPhone,
-        user_rank: rank,
-        user_position: position,
-    };
+    formData.append('user_idx', userIdx);
+    formData.append('user_id', userId);
+    formData.append('user_name', userName);
+    formData.append('status', status);
+    formData.append('phone_number', userPhone);
+    formData.append('user_rank', rank);
+    formData.append('user_position', position);
 
-     // 서버에 수정된 사용자 데이터 전송
-     axios.put(`http://safe.withfirst.com:28888/with/user/${userIdx}/${userId}`, userData, {
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
+    // FormData 내용 콘솔에 출력
+    for (let [key, value] of formData.entries()) {
+        console.log(`${key}: ${value}`);
+    }
+    
+    // 서버에 수정된 사용자 데이터 전송
+    $.ajax({
+        url : defaultUrl + '/with/user_edit',
+        method : 'POST',
+        headers : {
+             'Authorization': `Bearer ${atoken}`,
+        },
+        processData: false, // FormData 사용 시 필요
+        contentType: false, // FormData 사용 시 필요
+        data: formData,
+        success : function(response) {
+            alert('사용자 정보가 수정되었습니다.');
+            location.reload(); // 페이지 새로 고침
+        },
+        error : function(e) {
+            console.log('error :: ');
         }
     })
-    .then(response => {
-        console.log('사용자 수정 응답:', response.data);
-        alert('사용자 정보가 수정되었습니다.');
-        location.reload(); // 페이지 새로 고침
-    })
-    .catch(error => {
-        console.error('사용자 수정 오류:', error.response ? error.response.data : error.message);
-        alert('사용자 정보 수정에 실패했습니다.');
+}
+
+// 등록/수정 팝업에서 회사 리스트 목록 요청 함수
+function loadCompanyList(selectElementId, selectedComIdx = null) {
+
+    $.ajax({
+        url: defaultUrl + '/with/sub_com_list',
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${atoken}`
+        },
+        success: function(response) {
+            console.log('회사 목록 데이터:', response);
+
+            let companies = [];
+
+            // 응답 데이터가 배열인지 확인
+            if (Array.isArray(response.data)) {
+                companies = response.data; // 배열일 경우
+            } else if (response.data) {
+                companies = [response.data]; // 단일 객체일 경우 배열로 변환
+            }
+
+            // 해당 id를 가진 select 요소 선택
+            // 인자로 받은 '#addCompanySelect' 또는 '#modifyCompanySelect'
+            const selectElement = $(`#${selectElementId}`);
+            selectElement.empty();
+            
+            // 선택된 회사가 없을 때 , 기본 메시지 초기화
+            if (selectedComIdx === null) {
+                selectElement.html('<option value="" disabled selected hidden>회사를 선택해주세요.</option>'); 
+            }
+
+            // SELECT 요소에 옵션으로 추가
+            companies.forEach(company => {
+                const option = $('<option>')
+                .val(company.com_idx) // 옵션값으로 회사 IDX 설정
+                .text(company.c_name); // 옵션에 표시할 텍스트로 회사 이름 설정
+                
+                // 수정 시 사용자가 소속된 회사가 있으면 기본 선택되도록 설정
+                if (selectedComIdx && company.com_idx == selectedComIdx) {
+                    option.prop('selected', true);
+                }
+                
+                selectElement.append(option); // select 요소에 option 추가
+            });
+
+            if (selectedComIdx === null && selectElement.val() === "") {
+                selectElement.val("");
+            }
+        },
+        error: function(e) {
+            console.log(e);
+            console.log('회사 목록 로딩 오류:', e);
+        }
     });
+
 }
 
-// 페이지네이션 렌더링
-function renderPagination() {
-    const pagination = document.getElementById('pagination');
-    pagination.innerHTML = '';
+// 폼 필드 초기화 함수
+function clearFormFields() {
+    $('#addUserName').val('');
+    $('#addUserPassword').val('');
+    $('#addUserId').val('');
+    $('#addUserPhone').val('');
+    $('#addPosition').val('');
+    $('#addRank').val('');
+    $('#addCompanySelect').val(''); // 회사 선택 초기화
+}
+
+// 검색 실행 함수
+function executeSearch() {
+    const searchSelect = $('#searchSelect');
+    const searchInput = $('#searchInput');
     
-    // 첫 페이지로 이동 (<<)
-    const first = document.createElement('li');
-    first.className = 'page-item';
-    first.innerHTML = `<a class="page-link" href="#"><<</a>`;
-    first.onclick = (event) => {
-        event.preventDefault();
-        loadUserData(1);
-    };
-    pagination.appendChild(first);
-    
-    // 페이지 번호
-    const maxPagesToShow = 5; // 최대 페이지 버튼 수
-    let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
-    let endPage = Math.min(totalPage, startPage + maxPagesToShow - 1);
-    
-    // 페이지 번호가 최소 범위를 초과하면 오른쪽으로 이동
-    if (endPage - startPage + 1 < maxPagesToShow && startPage > 1) {
-        startPage = Math.max(1, endPage - maxPagesToShow + 1);
+    if (searchSelect.length) {
+        optionType = searchSelect.val();
     }
     
-    for (let i = startPage; i <= endPage; i++) {
-        const pageItem = document.createElement('li');
-        pageItem.className = 'page-item' + (i === currentPage ? ' active' : '');
-        
-        const pageButton = document.createElement('a');
-        pageButton.className = 'page-link';
-        pageButton.href = '#';
-        pageButton.textContent = i;
-        pageButton.onclick = (event) => {
+    if (searchInput.length) {
+        optionValue = searchInput.val().trim();
+    }
+
+    // 검색 조건이 변경 될 때마다 페이지를 1로 설정하고 데이터를 가져옴
+    fetchUserData(1);
+}
+
+$(function() {
+    
+     // localStorage에서 현재 페이지 번호 가져오기
+     const savedPage = localStorage.getItem('currentPage');
+     currentPage = savedPage ? parseInt(savedPage, 10) : 1;
+ 
+     // 페이지 데이터 로드
+     fetchUserData(currentPage);
+
+     // 수정 및 추가 팝업에서 저장 버튼 클릭 시, 사용자 수정 또는 추가 함수 실행
+     $('#modifySaveBtn, #addSaveBtn').on('click', function() {
+        if (this.id === 'modifySaveBtn') {
+            updateUserData();
+        } else if (this.id === 'addSaveBtn') {
+            addUserData();
+        }
+    });
+
+    // 검색 버튼 클릭 시와 검색 필드에서 엔터 키 입력 시 검색
+    $('#searchButton').on('click', function() {
+        executeSearch();
+    });
+
+    $('#searchInput').on('keydown', function(event) {
+        if (event.key === 'Enter') {
             event.preventDefault();
-            loadUserData(i);
-        };
-        
-        pageItem.appendChild(pageButton);
-        pagination.appendChild(pageItem);
-    }
+            executeSearch();
+        }
+    });
 
-    // 마지막 페이지로 이동 (>>)
-    const last = document.createElement('li');
-    last.className = 'page-item';
-    last.innerHTML = `<a class="page-link" href="#">>></a>`;
-    last.onclick = (event) => {
-        event.preventDefault();
-        loadUserData(totalPage);
-    };
-    pagination.appendChild(last);
-}
+    // 페이지 당 항목 수 변경 시 해당 항목 수에 맞춰 데이터 로드
+    $('#itemCountSelect').on('change', function() {
+        itemsPerPage = parseInt($(this).val(), 10);
+        fetchUserData(1);
+    });
+
+    // 사용자 추가 버튼 클릭 시 팝업 열고, 회사 리스트 로드 및 폼 초기화
+    $('#addUserBtn').on('click', function() {
+        clearFormFields();
+        loadCompanyList('addCompanySelect'); // 회사 리스트 로드
+        $('#addPopupLayer').css('display', 'flex');
+    });
+
+    // 팝업 내 닫기 버튼 클릭 시 팝업 닫기
+    $('.popup .close').on('click', function() {
+        $(this).closest('.popup').css('display', 'none');
+    });
+
+    // 팝업 내 취소 버튼 클릭 시 팝업 닫기
+    $('.cancleBtn').on('click', function() {
+        $(this).closest('.popup').css('display', 'none');
+    });
+    
+    // 체크박스 전체 선택
+    $('thead input[type="checkbox"]').on('change', function() {
+        const isChecked = $(this).is(':checked');
+        $('tbody input[type="checkbox"]').prop('checked', isChecked);
+    });
+    
+    // 체크박스 사용한 다중 삭제 기능
+    $('#deleteBtn').on('click', function() {
+        const selectedUsers = $('tbody input[type="checkbox"]:checked').map(function() {
+            return {
+                user_idx: $(this).data('u-idx'),
+                user_id: $(this).data('u-id')
+            };
+        }).get(); // 배열로 변환
+        
+        if (selectedUsers.length > 0) {
+            deleteUsers(selectedUsers);
+        } else {
+            alert('삭제할 사용자를 선택해주세요.');
+        }
+    });
+});

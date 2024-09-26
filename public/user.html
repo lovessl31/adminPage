@@ -49,9 +49,10 @@
         <div class="sideNav">
             <ul>
                 <li><a href="company.html">회사관리</a></li>
-                <li><a href="a_user.html">사용자관리</a></li>
-                <li><a href="a_category.html">카테고리관리</a></li>
-                <li><a href="a_board.html">게시판관리</a></li>
+                <li><a href="user.html">사용자관리</a></li>
+                <li><a href="category.html">카테고리관리</a></li>
+                <li><a href="board.html">게시판관리</a></li>
+                <li><a href="organization.html">조직도관리</a></li>
             </ul>
         </div>
         <!-- 메인 컨텐츠 -->
@@ -59,14 +60,13 @@
             <h4>사용자관리</h4>
             <div class="contentInner">
                <div class="contentWrap">
-                <p>모든 사용자(256)</p> <!-- 괄호 안 총 사용자 수 데이터 -->
+                <p></p> <!-- 괄호 안 총 사용자 수 데이터 -->
 
                 <div class="searchContent">
                     <div class="searchWrap">
                         <select class="searchSelect" id="searchSelect">
                             <option value="all">전체</option>
                             <option value="name">이름</option>
-                            <option value="phone">연락처</option>
                             <option value="company">회사</option>
                         </select>
                         
@@ -96,12 +96,9 @@
                             </th>
                             <th>이름</th>
                             <th>아이디</th>
-                            <th>연락처</th>
-                            <th>메일</th>
+                            <!-- <th>연락처</th> -->
                             <th>회사</th>
-                            <th>부서</th>
-                            <th>직급</th>
-                            <th>직책</th>
+                            <!-- <th>부서</th> -->
                             <th>승인</th>
                             <th></th>
                         </tr>
@@ -183,9 +180,9 @@
                         <input type="email" placeholder="아이디" id="addUserId">
                         <input type="password" placeholder="비밀번호" id="addUserPassword">
                         <input type="text" placeholder="이름" id="addUserName">
-                        <input type="text" placeholder="연락처" id="addUserPhone">
+                        <input type="text" placeholder="연락처" id="addUserPhone"> 
                         <input type="text" placeholder="직급" id="addPosition">
-                        <input type="text" placeholder="직책" id="addRank">
+                        <input type="text" placeholder="직책" id="addRank"> 
                         <select id="addCompanySelect">
                             <option value="" disabled selected hidden>회사를 선택해주세요.</option>
                         </select>
@@ -227,9 +224,12 @@
                 <input type="email" placeholder="아이디" id="modifyUserId">
                 <!-- <input type="password" placeholder="비밀번호" id="modifyUserPassword"> -->
                 <input type="text" placeholder="이름" id="modifyUserName">
-                <input type="text" placeholder="연락처" id="modifyUserPhone">
+                <input type="text" placeholder="연락처" id="modifyUserPhone"> 
                 <input type="text" placeholder="직급" id="modifyPosition">
-                <input type="text" placeholder="직책" id="modifyRank">
+                <input type="text" placeholder="직책" id="modifyRank"> 
+                <select id="modifyCompanySelect">
+               
+                </select>
                 <div class="d-flex align-items-center approveWrap">
                     <div class="d-flex align-items-center me-2">
                         <input type="radio" id="modifyStatusYes" name="modifyStatus" value="Y" class="me-1">
@@ -249,6 +249,55 @@
     </div>
 </div>
 </div>
+
+   <!-- 사용자 상세보기 팝업 레이어 -->
+   <div id="userDetail" class="popup">
+    <div class="popup-content">
+        <div class="popup-title">
+            <div class="d-flex align-items-center">
+                <h2>사용자정보</h2>
+            </div>
+            <div>
+                <span class="close">&times;</span>
+            </div>
+        </div>
+
+        <div class="contentPadding-gray">
+            <div class="userForm">
+                <h4></h4>
+                <div class="infoContent">
+                    <div class="row infoRow">
+                        <div class="col-3 infoTitle">아이디</div>
+                        <div class="col-9 infoText" id="userId"></div>
+                    </div>
+                    <div class="row infoRow">
+                        <div class="col-3 infoTitle">휴대폰</div>
+                        <div class="col-9 infoText" id="userPhone"></div>
+                    </div>
+                    <div class="row infoRow">
+                        <div class="col-3 infoTitle">비밀번호</div>
+                        <div class="col-9 infoText"><button class="pwChangeBtn">비밀번호 변경</button></div>
+                    </div>
+                </div>
+                <div class="infoContent">
+                    <div class="row infoRow">
+                        <div class="col-3 infoTitle">회사명</div>
+                        <div class="col-9 infoText" id="companyName"></div>
+                    </div>
+                    <div class="row infoRow">
+                        <div class="col-3 infoTitle">직급</div>
+                        <div class="col-9 infoText" id="userRank"></div>
+                    </div>
+                    <div class="row infoRow">
+                        <div class="col-3 infoTitle">직책</div>
+                        <div class="col-9 infoText" id="userPosition"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+</div>
+
 
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <!-- jQuery -->

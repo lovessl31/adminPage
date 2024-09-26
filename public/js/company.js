@@ -1,130 +1,21 @@
+// 공통 변수 선언
 let companies = []; // 서버에서 받아온 회사 데이터
 let currentPage = 1; // 현재 페이지
 let itemsPerPage = 10; // 페이지 당 항목 수 (초기값)
 let totalPage = 1; // 총 페이지 수
 let optionType = "all"; // 기본 옵션 타입
 let optionValue = ""; // 검색어
+let total_count;
 
-document.addEventListener('DOMContentLoaded', () => {
-    document.querySelector('thead input[type="checkbox"]').addEventListener('change', function () {
-        const isChecked = this.checked;
-        const checkboxes = document.querySelectorAll('tbody input[type="checkbox"]');
-        checkboxes.forEach(checkbox => {
-            checkbox.checked = isChecked;
-        });
-    });
+// url
+const defaultUrl = "http://safe.withfirst.com:28888"
+const params = new URL(document.location.href).searchParams;
 
-    // 다중 삭제
-    document.getElementById('deleteBtn').addEventListener('click', () => {
-        const selectedCompanies = Array.from(document.querySelectorAll('tbody input[type="checkbox"]:checked'))
-            .map(checkbox => ({
-                c_id: checkbox.getAttribute('data-c-id'),
-                com_idx: checkbox.getAttribute('data-com-idx')
-            }));
+// 토큰
+const rtoken = getCookieValue('refreshToken');
+const atoken = getCookieValue('accessToken');
 
-        if (selectedCompanies.length > 0) {
-            deleteCompanies(selectedCompanies);
-        } else {
-            alert('삭제할 회사를 선택해주세요.');
-        }
-    });
-
-    // 삭제 요청 함수
-    function deleteCompanies(companies) {
-        const token = getCookieValue('refreshToken');
-
-        console.log('전송될 데이터:', JSON.stringify(companies));
-
-        axios.delete('http://safe.withfirst.com:28888/with/del_com', {
-            data: companies,
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            }
-        })
-            .then(response => {
-                console.log('회사 삭제 응답:', response.data);
-                alert('삭제되었습니다.');
-                localStorage.setItem('currentPage', currentPage);
-                //페이지 새로 고침
-                location.reload();
-            })
-            .catch(error => {
-                console.error('회사 삭제 오류:', error.response ? error.response.data : error.message);
-                alert('삭제에 실패했습니다.');
-            });
-    }
-
-    // localStorage에서 현재 페이지 번호 가져오기
-    const savedPage = localStorage.getItem('currentPage');
-    if (savedPage) {
-        currentPage = parseInt(savedPage, 10);
-        localStorage.removeItem('currentPage'); // 저장된 페이지 번호 삭제
-    } else {
-        currentPage = 1; // 기본 페이지를 1로 설정
-    }
-
-    // 데이터 로드 함수 호출
-    fetchCompanyData(currentPage);
-
-    // 페이지 로드 시 데이터 로드
-    // fetchCompanyData(1);
-
-    // 검색 버튼 클릭 시와 검색 필드에서 엔터 키 입력 시
-    document.getElementById('searchButton').addEventListener('click', () => {
-        executeSearch();
-    });
-
-    document.getElementById('searchInput').addEventListener('keydown', (event) => {
-        if (event.key === 'Enter') {
-            event.preventDefault(); // 엔터 키 기본 동작 방지
-            executeSearch();
-        }
-    });
-
-    // 검색 실행 함수
-    function executeSearch() {
-        const searchSelect = document.getElementById('searchSelect');
-        const searchInput = document.getElementById('searchInput');
-        if (searchSelect) {
-            optionType = searchSelect.value;
-        }
-        if (searchInput) {
-            optionValue = searchInput.value.trim();
-        }
-        // 검색 조건이 변경 될 때마다 페이지를 1로 설정하고 데이터를 가져옴
-        fetchCompanyData(1);
-    }
-
-    // 페이지 당 항목 수를 변경
-    document.getElementById('itemCountSelect').addEventListener('change', (event) => {
-        itemsPerPage = parseInt(event.target.value, 10);
-        fetchCompanyData(1);
-    });
-
-    // 회사 등록 버튼 클릭 시 팝업 표시
-    document.getElementById('addCompanyBtn').addEventListener('click', () => {
-        document.getElementById('registerPopup').style.display = 'flex';
-    });
-
-    // 등록 팝업: 첨부 버튼 클릭 시 파일 입력 필드 클릭
-    document.getElementById('registerAttachBtn').addEventListener('click', () => {
-        document.getElementById('registerRealFileInput').click();
-    });
-
-    // 등록 팝업: 파일 선택 시 파일 이름을 표시
-    document.getElementById('registerRealFileInput').addEventListener('change', () => {
-        const fileInput = document.getElementById('registerFileInput');
-        const files = document.getElementById('registerRealFileInput').files;
-
-        if (files.length > 0) {
-            fileInput.value = files[0].name;
-        }
-    });
-
-});
-
-// 쿠키에서 특정 값을 가져오는 함수
+// 쿠키에서 특정 값 가져오는 함수
 function getCookieValue(name) {
     let value = `; ${document.cookie}`;
     let parts = value.split(`; ${name}=`);
@@ -133,574 +24,516 @@ function getCookieValue(name) {
 
 // 회사 데이터 가져오기
 function fetchCompanyData(page = 1) {
-    currentPage = page; // 매개 변수로 전달된 page 값 currentPage 변수에 저장
-    const token = getCookieValue('refreshToken');
-    const url = `http://safe.withfirst.com:28888/with/com-info?option_type=${optionType}&option_value=${optionValue}&per_page=${itemsPerPage}&page=${currentPage}`;
+    
+    // 현재 페이지 기록
+    currentPage = page;
 
-    axios.get(url, {
-        headers: {
-            'Authorization': `Bearer ${token}`
+    $.ajax({
+        url : defaultUrl + `/with/com_list?option_type=${optionType}&option_value=${optionValue}&per_page=${itemsPerPage}&page=${currentPage}`,
+        method : 'GET',
+        headers : {
+            'Authorization' : `Bearer ${rtoken}`
+        },
+        success : function(response) {
+            console.log('회사 목록 데이터를 조회하는데 성공하였습니다.');
+            console.log('회사 데이터 : ', response.data);
+            console.log('회사 데이터 : ', response);
+
+            // 로컬스토리지에 현재 페이지 저장
+            localStorage.setItem('currentPage', currentPage);
+
+            companies = response.data;
+            totalPage = response.total_page || 1;
+            total_count = response.total_count;
+
+            renderTable();
+            renderPagination();
         }
     })
-        .then(response => {
-            console.log('성공');
-            const data = response.data.data;
-            console.log('data', data);
-            console.log('파일', response.data);
-
-
-            // 데이터를 created_date 기준으로 내림차순 정렬
-            // data.sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
-
-            companies = data;
-            totalPage = response.data.total_page || 1; // 기본값으로 1 사용
-            renderTable();
-
-            // 페이지네이션 이동 시 thead 체크박스 초기화
-            document.querySelector('thead input[type="checkbox"]').checked = false;
-        })
-        .catch(error => {
-            console.error('Error loading company data:', error.response ? error.response.data : error.message);
-        });
 }
 
-// 테이블 렌더링 
+// 가져온 데이터로 테이블 렌더링
 function renderTable() {
-    const tableBody = document.getElementById('companyTableBody');
-    tableBody.innerHTML = ''; // 체이블 본문 초기화
+    $('.contentWrap p').text(`전체 회사 (${total_count})`);
 
-    // 전체 데이터에서 현재 페이지의 시작 인덱스 계산
+    const tableBody = $('#companyTableBody').empty();
     const startIndex = (currentPage - 1) * itemsPerPage;
 
-    companies.forEach((company, index) => {
-        const row = document.createElement('tr');
-        let approveButton = '';
+    companies.forEach(function (company, index) {
+        const approveButton = company.chan_yn === 'N' ? 
+            `<button class="approveBtn" data-com-idx="${company.com_idx}" data-c-id="${company.c_id}" data-u-id="${company.user_id}">승인</button>` : 
+            `<button class="approveCBtn" disabled>완료</button>`;
 
-        if (company.chan_yn === 'N') {
-            approveButton = `<button class="approveBtn" data-com-idx="${company.com_idx}" data-c-id="${company.c_id}">승인</button>`;
-        } else if (company.chan_yn === 'Y') {
-            approveButton = `<button class="approveCBtn" disabled>완료</button>`;
-        }
-
-        row.innerHTML = `
-        <td>
-            <div class="d-flex align-items-center justify-content-center">
-                <input type="checkbox" data-com-idx="${company.com_idx}" data-c-id="${company.c_id}">
-            </div>
-        </td>
-        <td>${startIndex + index + 1}</td>
-        <td>${company.c_name}</td>
-        <td>${company.owner_name}</td>
-        <td>${company.c_id}</td>
-        <td>${company.created_date.split(' ')[0]}</td>
-        <td><a href="#" class="download-link" data-f-idx="${company.f_idx}"><img src="images/download.svg" alt="download">${company.o_f_name}</a></td>
-        <td class="buttons"><button class="userBtn moveBtn" data-com-idx="${company.com_idx}" data-c-id="${company.c_id}">이동</button></td>
-        <td class="buttons"><button class="categoryBtn moveBtn" data-com-idx="${company.com_idx}" data-c-id="${company.c_id}">이동</button></td>
-        <td class="buttons"><button class="boardBtn moveBtn" data-com-idx="${company.com_idx}" data-c-id="${company.c_id}">이동</button></td>
-        <td class="buttons"><button class="teamBtn moveBtn" data-com-idx="${company.com_idx}" data-c-id="${company.c_id}" data-c-name="${company.c_name}">이동</button></td>
-        <td class="buttons">${approveButton}</td>
-        <td class="buttons center-align">
-            <button class="modifyBtn comModify" data-id="${company.com_idx}">수정</button>
-
-            <button class="deleteBtn" data-com-idx="${company.com_idx}" data-c-id="${company.c_id}">삭제</button>
-        </td>
-        `;
-        tableBody.appendChild(row);
+        const row = `
+        <tr>
+            <td>
+                <div class="d-flex align-items-center justify-content-center">
+                    <input type="checkbox" data-com-idx="${company.com_idx}" data-c-id="${company.c_id}">
+                </div>
+            </td>
+            <td>${startIndex + index + 1}</td>
+            <td>${company.c_name}</td>
+            <td>${company.owner_name}</td>
+            <td>${company.c_id}</td>
+            <td>${company.created_date.split(' ')[0]}</td>
+            <td class="table-cell-ellipsis"><a href="#" class="download-link" data-f-idx="${company.f_idx}"><img src="images/download.svg" alt="download">${company.o_f_name}</a></td>
+            <td class="buttons"><button class="userBtn moveBtn" data-com-idx="${company.com_idx}" data-c-id="${company.c_id}">이동</button></td>
+            <td class="buttons"><button class="categoryBtn moveBtn" data-com-idx="${company.com_idx}" data-c-id="${company.c_id}">이동</button></td>
+            <td class="buttons"><button class="boardBtn moveBtn" data-com-idx="${company.com_idx}" data-c-id="${company.c_id}">이동</button></td>
+            <td class="buttons"><button class="teamBtn moveBtn" data-com-idx="${company.com_idx}" data-c-id="${company.c_id}" data-c-name="${company.c_name}">이동</button></td>
+            <td class="buttons">${approveButton}</td>
+            <td class="buttons center-align">
+                <button class="modifyBtn comModify" data-id="${company.com_idx}">수정</button>
+                <button class="deleteBtn" data-com-idx="${company.com_idx}" data-c-id="${company.c_id}">삭제</button>
+            </td>
+        </tr>`;
+        tableBody.append(row);
     });
 
-    // 동적으로 생성된 파일 다운로드 링크에 이벤트 리스너 추가
-    document.querySelectorAll('.download-link').forEach(link => {
-        link.addEventListener('click', function (event) {
-            event.preventDefault(); // 기본 링크 클릭 동작 방지
-            const fileIdx = this.getAttribute('data-f-idx'); // f_idx 값 가져오기
-            const token = getCookieValue('accessToken');
-
-            const url = `http://safe.withfirst.com:28888/file/download/${fileIdx}`;
-
-            axios.get(url, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
-                responseType: 'blob' // 응답을 blob으로 설정
-            })
-                .then(response => {
-                    console.log('response', response);
-                    // 원본 파일명 가져오기
-                    const disposition = response.headers['content-disposition'];
-                    let filename = 'downloaded_file';
-                    if (disposition && disposition.indexOf('attachment') !== -1) {
-                        const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
-                        const matches = filenameRegex.exec(disposition);
-                        if (matches != null && matches[1]) {
-                            filename = matches[1].replace(/['"]/g, '');
-                        }
-                    }
-
-                    //파일 다운로드
-                    const blob = new Blob([response.data], { type: response.headers['content-type'] });
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.style.display = 'none';
-                    a.href = url;
-                    a.download = filename;
-                    document.body.appendChild(a);
-                    a.click();
-                    window.URL.revokeObjectURL(url);
-                })
-                .catch(error => {
-                    console.error('파일 다운로드 오류:', error.response ? error.response.data : error.message);
-                    if (error.response && error.response.status === 401) {
-                        // 401에러 발생 시 로그아웃 함수 호출
-                        window.logout();
-                    } else {
-                        handleError(error, '삭제에 실패했습니다.');
-                    }
-                });
-        });
-    });
-
-    // 동적으로 생성된 수정 버튼에 이벤트 리스너 추가
-    document.querySelectorAll('.comModify').forEach(button => {
-        button.addEventListener('click', function () {
-            const companyId = this.getAttribute('data-id'); // 클릭 시 해당 회사 idx 저장
-            const company = companies.find(c => c.com_idx == companyId); // 해당 idx 일치하는 회사 객체 저장
-
-            // 해당 회사 객체로 팝업에 데이터 채우기
-            document.getElementById('companyName').value = company.c_name;
-            document.getElementById('representativeName').value = company.owner_name;
-            document.getElementById('businessNumber').value = company.c_id;
-            document.getElementById('registrationDate').textContent = company.created_date.split(' ')[0];
-            document.getElementById('fileInput').value = company.o_f_name;
-
-            // 저장 버튼에 com_idx를 data 속성으로 추가
-            document.getElementById('modifySaveBtn').setAttribute('data-com-idx', company.com_idx);
-            document.getElementById('modifyPopup').style.display = 'flex';
-        });
-    });
-
-    //개별 삭제
-    document.querySelectorAll('.deleteBtn').forEach(button => {
-        button.addEventListener('click', function () {
-            const c_id = this.getAttribute('data-c-id');
-            const comIdx = this.getAttribute('data-com-idx');
-            deleteCompany([{ c_id: c_id, com_idx: comIdx }]);
-        })
-    });
-
-    // 삭제 요청 함수
-    function deleteCompany(company) {
-        const token = getCookieValue('refreshToken');
-
-        console.log('전송될 데이터:', JSON.stringify(company));
-
-        axios.delete('http://safe.withfirst.com:28888/with/del_com', {
-            data: company,
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            }
-        })
-            .then(response => {
-                console.log('회사 삭제 응답:', response.data);
-                alert('삭제되었습니다.');
-                localStorage.setItem('currentPage', currentPage);
-                //페이지 새로 고침
-                location.reload();
-            })
-            .catch(error => {
-                console.error('회사 삭제 오류:', error.response ? error.response.data : error.message);
-                if (error.response && error.response.status === 401) {
-                    // 401에러 발생 시 로그아웃 함수 호출
-                    window.logout();
-                } else {
-                    alert('삭제에 실패했습니다.');
-                }
-            });
-    }
-
-
-    // 동적으로 생성된 사용자관리 이동 버튼에 이벤트 리스너 추가
-    document.querySelectorAll('.userBtn').forEach(button => {
-        button.addEventListener('click', function () {
-            const com_id = this.getAttribute('data-c-id');
-            const comIdx = this.getAttribute('data-com-idx');
-            console.log('comIdx:', comIdx); // 추가된 로그
-            console.log('com_id:', com_id); // 추가된 로그
-
-            // 로컬 스토리지에 저장
-            localStorage.setItem('com_idx', comIdx);
-            const token = getCookieValue('refreshToken');
-
-            //서버에 POST 요청
-            axios.post(`http://safe.withfirst.com:28888/with/com-change/${com_id}`, {}, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                },
-                withCredentials: true, // 크레덴셜 포함
-            })
-                .then(response => {
-                    console.log('서버에서 받은 성공 데이터:', response.data);
-                    localStorage.setItem('accessToken', response.data.data.accessToken);
-                    localStorage.setItem('refreshToken', response.data.data.refreshToken);
-
-                    // 로컬 스토리지에서 accessToken 가져와서 콘솔에 출력
-                    const accessToken = localStorage.getItem('accessToken');
-                    console.log('Stored accessToken:', accessToken);
-
-                    localStorage.setItem('accessId', response.data.data.accessId);
-
-                    //해당 회사의 카테고리 관리 페이지로 이동
-                    window.location.href = `user.html?=${comIdx}`;
-                })
-                .catch(error => {
-                    console.error('Error during post request:', error);
-
-                    if (error.response && error.response.status === 401) {
-                        // 401 에러 발생 시 로그아웃 함수 호출
-                        window.logout();
-                    } else {
-                        // 기타 에러 처리
-                        alert('요청 중 오류가 발생했습니다.');
-                    }
-                });
-        });
-    });
-
-    // 동적으로 생성된 카테고리 이동 버튼에 이벤트 리스너 추가
-    document.querySelectorAll('.categoryBtn').forEach(button => {
-        button.addEventListener('click', function () {
-            const com_id = this.getAttribute('data-c-id');
-            const comIdx = this.getAttribute('data-com-idx');
-            console.log('comIdx:', comIdx); // 추가된 로그
-            console.log('com_id:', com_id); // 추가된 로그
-
-            // 로컬 스토리지에 저장
-            localStorage.setItem('com_idx', comIdx);
-            const token = getCookieValue('refreshToken');
-
-            //서버에 POST 요청
-            axios.post(`http://safe.withfirst.com:28888/with/com-change/${com_id}`, {}, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                },
-                withCredentials: true, // 크레덴셜 포함
-            })
-                .then(response => {
-                    console.log('서버에서 받은 성공 데이터:', response.data);
-                    localStorage.setItem('accessToken', response.data.data.accessToken);
-                    localStorage.setItem('refreshToken', response.data.data.refreshToken);
-
-                    // 로컬 스토리지에서 accessToken 가져와서 콘솔에 출력
-                    const accessToken = localStorage.getItem('accessToken');
-                    console.log('Stored accessToken:', accessToken);
-
-                    //해당 회사의 카테고리 관리 페이지로 이동
-                    window.location.href = `category.html?=${comIdx}`;
-                })
-                .catch(error => {
-                    if (error.response && error.response.status === 401) {
-                        // 401 에러 발생 시 로그아웃 함수 호출
-                        window.logout();
-                    } else {
-                        // 기타 에러 처리
-                        alert('요청 중 오류가 발생했습니다.');
-                    }
-                });
-        });
-    });
-
-    // 동적으로 생성된 게시판관리 이동 버튼에 이벤트 리스너 추가
-    document.querySelectorAll('.boardBtn').forEach(button => {
-        button.addEventListener('click', function () {
-            const com_id = this.getAttribute('data-c-id');
-            const comIdx = this.getAttribute('data-com-idx');
-            console.log('comIdx:', comIdx); // 추가된 로그
-            console.log('com_id:', com_id); // 추가된 로그
-
-            // 로컬 스토리지에 저장
-            localStorage.setItem('com_idx', comIdx);
-            const token = getCookieValue('refreshToken');
-
-            //서버에 POST 요청
-            axios.post(`http://safe.withfirst.com:28888/with/com-change/${com_id}`, {}, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                },
-                withCredentials: true, // 크레덴셜 포함
-            })
-                .then(response => {
-                    console.log('서버에서 받은 성공 데이터:', response.data);
-                    localStorage.setItem('accessToken', response.data.data.accessToken);
-                    localStorage.setItem('refreshToken', response.data.data.refreshToken);
-
-                    // 로컬 스토리지에서 accessToken 가져와서 콘솔에 출력
-                    const accessToken = localStorage.getItem('accessToken');
-                    console.log('Stored accessToken:', accessToken);
-
-                    //해당 회사의 카테고리 관리 페이지로 이동
-                    window.location.href = `board.html?=${comIdx}`;
-                })
-                .catch(error => {
-                    if (error.response && error.response.status === 401) {
-                        // 401 에러 발생 시 로그아웃 함수 호출
-                        window.logout();
-                    } else {
-                        // 기타 에러 처리
-                        alert('요청 중 오류가 발생했습니다.');
-                    }
-                });
-        });
-    });
-
-    // 동적으로 생성된 조직도관리 이동 버튼에 이벤트 리스너 추가
-    document.querySelectorAll('.teamBtn').forEach(button => {
-        button.addEventListener('click', function () {
-                const com_id = this.getAttribute('data-c-id');
-                const comIdx = this.getAttribute('data-com-idx');
-                const comName = this.getAttribute('data-c-name');
-                console.log('comIdx:', comIdx); // 추가된 로그
-                console.log('com_id:', com_id); // 추가된 로그
-                console.log('회사이름!!:', comName); // 추가된 로그
-    
-                // 로컬 스토리지에 저장
-                localStorage.setItem('com_idx', comIdx);
-                localStorage.setItem('com_name', comName);
-                const token = getCookieValue('refreshToken');
-    
-                //서버에 POST 요청
-                axios.post(`http://safe.withfirst.com:28888/with/com-change/${com_id}`, {}, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    },
-                    withCredentials: true, // 크레덴셜 포함
-                })
-                    .then(response => {
-                        console.log('서버에서 받은 성공 데이터:', response.data);
-                        localStorage.setItem('accessToken', response.data.data.accessToken);
-                        localStorage.setItem('refreshToken', response.data.data.refreshToken);
-    
-                        // 로컬 스토리지에서 accessToken 가져와서 콘솔에 출력
-                        const accessToken = localStorage.getItem('accessToken');
-                        console.log('Stored accessToken:', accessToken);
-    
-                        //해당 회사의 카테고리 관리 페이지로 이동
-                        window.location.href = `organization.html?=${comIdx}`;
-                    })
-                    .catch(error => {
-                        if (error.response && error.response.status === 401) {
-                            // 401 에러 발생 시 로그아웃 함수 호출
-                            window.logout();
-                        } else {
-                            // 기타 에러 처리
-                            alert('요청 중 오류가 발생했습니다.');
-                        }
-                    });
-            });
-        });
-
-    // 동적으로 생성된 승인 버튼에 이벤트 리스너 추가
-    document.querySelectorAll('.approveBtn').forEach(button => {
-        button.addEventListener('click', function () {
-            const comIdx = this.getAttribute('data-com-idx');
-            const comId = this.getAttribute('data-c-id');
-            const token = getCookieValue('refreshToken');
-
-            // 서버에 PUT 요청
-            axios.put(`http://safe.withfirst.com:28888/with/com-approved/${comIdx}/${comId}`, {}, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            })
-                .then(response => {
-                    console.log('Approval response:', response.data);
-                    // 승인 후 UI 업데이트 등 추가 작업 가능
-                    alert('승인되었습니다.');
-                    localStorage.setItem('currentPage', currentPage);
-                    //페이지 새로 고침
-                    location.reload();
-                })
-                .catch(error => {
-                    console.error('Error approving company:', error.response ? error.response.data : error.message);
-                    alert('승인에 실패했습니다.');
-                });
-        });
-    });
-
-    // 페이지네이션 업데이트
-    renderPagination();
+    // 동적으로 생성된 요소들에 이벤트 리스너 추가
+    $('#companyTableBody').on('click', '.userBtn', moveToPage('user.html'));
+    $('#companyTableBody').on('click', '.categoryBtn', moveToPage('category.html'));
+    $('#companyTableBody').on('click', '.boardBtn', moveToPage('board.html'));
+    $('#companyTableBody').on('click', '.teamBtn', moveToPage('organization.html'));
+    $('.comModify').on('click', modifyCompany);
+    $('.approveBtn').on('click', approveCompany);
+    $('.deleteBtn').on('click', deleteSingleCompany);
+    $('.download-link').on('click', downloadFile);
 }
 
 // 페이지네이션 렌더링
 function renderPagination() {
-    const pagination = document.getElementById('pagination');
-    pagination.innerHTML = '';
-
-    // 첫 페이지로 이동 (<<)
-    const first = document.createElement('li');
-    first.className = 'page-item';
-    first.innerHTML = `<a class="page-link" href="#"><<</a>`;
-    first.onclick = (event) => {
+    const pagination = $('#pagination').empty();
+    const first = $('<li class="page-item"><a class="page-link" href="#"><<</a></li>');
+    first.on('click', function (event) {
         event.preventDefault();
         fetchCompanyData(1);
-    };
-    pagination.appendChild(first);
+    });
+    pagination.append(first);
 
-    // 페이지 번호
-    const maxPagesToShow = 5; // 최대 페이지 버튼 수
+    const maxPagesToShow = 5;
     let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
     let endPage = Math.min(totalPage, startPage + maxPagesToShow - 1);
 
-    // 페이지 번호가 최소 범위를 초과하면 오른쪽으로 이동
     if (endPage - startPage + 1 < maxPagesToShow && startPage > 1) {
         startPage = Math.max(1, endPage - maxPagesToShow + 1);
     }
 
     for (let i = startPage; i <= endPage; i++) {
-        const pageItem = document.createElement('li');
-        pageItem.className = 'page-item' + (i === currentPage ? ' active' : '');
-
-        const pageButton = document.createElement('a');
-        pageButton.className = 'page-link';
-        pageButton.href = '#';
-        pageButton.textContent = i;
-        pageButton.onclick = (event) => {
+        const pageItem = $(`<li class="page-item${i === currentPage ? ' active' : ''}"><a class="page-link" href="#">${i}</a></li>`);
+        pageItem.on('click', function (event) {
             event.preventDefault();
             fetchCompanyData(i);
-        };
-
-        pageItem.appendChild(pageButton);
-        pagination.appendChild(pageItem);
+        });
+        pagination.append(pageItem);
     }
 
-    // 마지막 페이지로 이동 (>>)
-    const last = document.createElement('li');
-    last.className = 'page-item';
-    last.innerHTML = `<a class="page-link" href="#">>></a>`;
-    last.onclick = (event) => {
+    const last = $('<li class="page-item"><a class="page-link" href="#">>></a></li>');
+    last.on('click', function (event) {
         event.preventDefault();
         fetchCompanyData(totalPage);
-    };
-    pagination.appendChild(last);
+    });
+    pagination.append(last);
 }
 
-// 팝업 내 저장 버튼 클릭 이벤트 핸들러 추가
-document.getElementById('modifySaveBtn').addEventListener('click', function () {
-    // 입력 필드에서 값 가져오기
-    const companyName = document.getElementById('companyName').value.trim();
-    const representativeName = document.getElementById('representativeName').value.trim();
-    // const businessNumber = document.getElementById('businessNumber').value.trim(); 
-    const comIdx = this.getAttribute('data-com-idx'); // 저장된 com_idx 값 가져오기
-    const cId = document.getElementById('businessNumber').value.trim(); // c_id를 가져오는 부분
-    const fileInput = document.getElementById('realFileInput').files[0]; // 파일 입력 필드에서 파일 가져오기
+
+// 페이지 이동 함수 (다양한 관리 페이지로 이동)
+function moveToPage(page) {
+    return function() {
+        const com_id = $(this).data('c-id');
+        const comIdx = $(this).data('com-idx');
+        
+        // 로컬스토리지에 com_idx 저장
+        localStorage.setItem('com_idx', comIdx);
+       
+        const formData = new FormData();
+
+        formData.append('com_id', com_id);
 
 
-    // 요청할 폼 데이터
-    const formData = new FormData();
-    formData.append('owner_name', representativeName);
-    formData.append('c_name', companyName);
+        console.log('사업자번호', com_id);
+        console.log('리프레시토큰ㄴ', rtoken);
 
-     // 파일이 선택된 경우 폼 데이터에 파일 추가
-     if (fileInput) {
-        formData.append('file', fileInput); // 'file'은 서버에서 기대하는 파일 필드 이름이어야 합니다.
+        $.ajax({
+            url : defaultUrl + '/with/com_connect',
+            method : 'POST',
+            headers : {
+                'Authorization' : `Bearer ${rtoken}`
+            },
+            contentType: false,
+            processData: false,
+            data : formData,
+            success : function(response) {
+                console.log('회사 DB에 접속 성공');
+                console.log('응답 데이터 : ', response.data);
+                
+                localStorage.setItem('accessToken', response.data.accessToken);
+                localStorage.setItem('refreshToken', response.data.refreshToken);
+                localStorage.setItem('accessId', response.data.accessId);
+                window.location.href = `${page}?=${comIdx}`;
+            },
+            error : function(e) {
+                console.log(e);
+                console.log(" error :: 회사 접속 에러");
+            } 
+        })
     }
+}
 
-    const token = getCookieValue('refreshToken');
+// 회사 승인 요청 함수
+function approveCompany() {
+    const comIdx = $(this).data('com-idx');
+    const comId = $(this).data('c-id');
+    const userId =  $(this).data('u-id');
 
-    // 수정 PUT 요청 보내기
-    axios.put(`http://safe.withfirst.com:28888//with/com-change/${cId}`, formData, {
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data' // 폼데이터 전송 시 설정
+    console.log('유저아이디!!!!!!!!!!!!!!!!!!!', userId);
+    const formData = new FormData();
+
+    formData.append('com_id', comId);
+    formData.append('user_id', userId);
+
+    $.ajax({
+        url: defaultUrl + `/with/com_approve`,
+        method: 'POST',
+        headers : {
+            'Authorization' : `Bearer ${rtoken}`
+        },
+        contentType: false,
+        processData: false,
+        data : formData,
+        success : function(response) {
+            alert('승인되었습니다.');
+            console.log('회사 승인 데이터 : ',  response.data);
+            localStorage.setItem('currentPage', currentPage);
+            location.reload();
+        },
+        error : function(e) {
+            console.log(e)
+            console.log("error ::");
         }
     })
-        .then(response => {
-            console.log('회사 정보 수정 응답:', response.data);
-            alert('회사 정보가 수정되었습니다.');
-            localStorage.setItem('currentPage', currentPage);
-            //페이지 새로 고침
-            location.reload();
-        })
-        .catch(error => {
-            console.error('회사 정보 수정 오류:', error.response ? error.response.data : error.message);
+}
 
-            if (error.response && error.response.status === 401) {
-                // 401 에러 발생 시 로그아웃 함수 호출
-                window.logout();
-            } else {
-                // 기타 에러 처리
-                alert('수정에 실패했습니다.');
-            }
-        });
-});
+// 폼 필드 초기화 함수
+function clearFormFields() {
+    $('#c_name').val(''); // 회사명 초기화
+    $('#owner_name').val(''); // 대표자명 초기화
+    $('#c_id').val(''); // 사업자번호 초기화
+    $('#registerFileInput').val(''); // 파일명 초기화
+    $('#registerRealFileInput').val(null); // 실제 파일 초기화
+}
 
-// 등록 저장 버튼 클릭 이벤트 핸들러 추가
-document.getElementById('registerSaveBtn').addEventListener('click', () => {
-
+// 회사 등록 함수
+function addCompany() {
     // 입력필드에서 값 가져오기
-    const companyName = document.getElementById('c_name').value.trim();
-    const representativeName = document.getElementById('owner_name').value.trim();
-    const businessNumber = document.getElementById('c_id').value.trim();
-    const status = document.querySelector('input[name="status"]:checked').value;
-    const fileInput = document.getElementById('registerRealFileInput').files[0];
+    const companyName = $('#c_name').val().trim();
+    const representativeName = $('#owner_name').val().trim();
+    const businessNumber = $('#c_id').val().trim();
+    const status = $('input[name="status"]:checked').val();
+    const fileInput = $('#registerRealFileInput')[0].files[0] || null;
+
+    // if (fileInput) {
+    //     formData.append('file', fileInput);
+    // }
 
     // 요청할 폼 데이터
     const formData = new FormData();
     formData.append('c_name', companyName);
     formData.append('owner_name', representativeName);
     formData.append('c_id', businessNumber);
-    formData.append('chan_yn', status); // 승인여부 (Y 또는 N)
-    formData.append('file', fileInput); // 첨부 파일
+    formData.append('file', fileInput); 
 
-    const token = getCookieValue('accessToken'); // 쿠키에서 토큰 가져오기
+        // // FormData 내용 확인 (콘솔 출력)
+        // for (let pair of formData.entries()) {
+        //     console.log(pair[0] + ': ' + pair[1]); // key: value 형식으로 출력
+        // }
 
-    // 서버에 POST 요청 보내기
-    axios.post('http://safe.withfirst.com:28888/with/com-info', formData, {
+    $.ajax({
+        url : defaultUrl + '/with/com_add',
+        method: 'POST',
+        headers : {
+            'Authorization' : `Bearer ${atoken}`
+        },
+        contentType: false, // FormData 사용 시 false로 설정
+        processData: false, // FormData 사용 시 false로 설정
+        data: formData,
+        success: function(response) {
+            // console.log('회사 등록 응답', response.data);
+            alert('회사가 등록되었습니다.');
+            $('#registerPopup').css('display', 'none'); // 팝업 닫기
+            fetchCompanyData(currentPage); // 데이터를 다시 불러와서 갱신
+            clearFormFields();
+
+        },
+        error : function(e) {
+            console.log(e)
+            console.log("error :: ")
+        }
+    });
+}
+
+// 회사 수정 팝업 등록 함수
+function modifyComSave() {
+    const companyName = $('#companyName').val().trim();
+    const representativeName = $('#representativeName').val().trim();
+    const comIdx = $(this).data('com-idx'); // 저장된 com_idx 값 가져오기
+    const cId = $('#businessNumber').val().trim(); // c_id를 가져오는 부분
+    const fileInput = $('#realFileInput')[0].files[0]; // 파일 입력 필드에서 파일 가져오기
+
+    // 요청할 폼 데이터
+    const formData = new FormData();
+    formData.append('owner_name', representativeName);
+    formData.append('c_name', companyName);
+    formData.append('c_id', cId);
+    formData.append('com_idx', comIdx);
+    
+    // 파일이 있을 때만 파일 추가
+    if (fileInput) {
+        formData.append('file', fileInput); // 'file'은 서버에서 기대하는 파일 필드 이름이어야 합니다.
+    }
+
+    // FormData 내용 로그 출력
+    formData.forEach((value, key) => {
+        console.log(`${key}: ${value}`);
+    });
+
+    // 수정 요청 보내기
+    $.ajax({
+        url: defaultUrl + `/with/com_edit`,
+        type: 'POST',
+        data: formData,
+        processData: false, // FormData 사용 시 false로 설정
+        contentType: false, // FormData 사용 시 false로 설정
         headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data'
+            'Authorization': `Bearer ${rtoken}`,
+        },
+        success: function (response) {
+            console.log('회사 정보 수정 응답:', response);
+            alert('회사 정보가 수정되었습니다.');
+            fetchCompanyData(currentPage); // 현재 페이지 데이터 갱신
+            localStorage.setItem('currentPage', currentPage);
+            // 페이지 새로 고침
+            location.reload();
+        },
+        error: function (error) {
+            console.error('회사 정보 수정 오류:', error.responseJSON ? error.responseJSON : error.statusText);
+
+            if (error.status === 401) {
+                // 401 에러 발생 시 로그아웃 함수 호출
+                window.logout();
+            } else {
+                // 기타 에러 처리
+                alert('수정에 실패했습니다.');
+            }
+        }
+    });
+}
+
+// 회사 수정 함수
+function modifyCompany() {
+    const companyId = $(this).data('id');
+    const company = companies.find(c => c.com_idx == companyId);
+
+    $('#companyName').val(company.c_name);
+    $('#representativeName').val(company.owner_name);
+    $('#businessNumber').val(company.c_id);
+    $('#registrationDate').text(company.created_date.split(' ')[0]);
+    $('#fileInput').val(company.o_f_name);
+    $('#modifySaveBtn').data('com-idx', company.com_idx);
+    $('#modifyPopup').css('display', 'flex');
+}
+
+// 회사 개별 삭제 함수 
+function deleteSingleCompany() {
+    const c_id = $(this).data('c-id');
+    const comIdx = $(this).data('com-idx');
+    deleteCompanies([{ c_id: c_id, com_idx: comIdx }]);
+}
+
+// 삭제 요청 함수
+function deleteCompanies(companies) {
+    console.log('전송될 데이터:', JSON.stringify(companies));
+
+    $.ajax({
+        url : defaultUrl + '/with/com_del',
+        method: 'DELETE',
+        headers : {
+            'Authorization': `Bearer ${rtoken}`,
+            'Content-Type': 'application/json'
+        },
+        data : JSON.stringify(companies),
+        success : function(response) {
+            console.log('회사 삭제 응답', response.data);
+            alert('삭제되었습니다.');
+            fetchCompanyData(currentPage); // 현재 페이지 데이터 갱신
+            localStorage.setItem('currentPage', currentPage);
+            location.reload();
+        },
+        error : function(e) {
+            console.log(e);
+            console.log("errpr :: delete error");
         }
     })
-        .then(response => {
-            console.log('회사 등록 응답:', response.data);
-            alert('회사가 등록되었습니다.');
-            document.getElementById('registerPopup').style.display = 'none';
-            // 추가적인 UI 업데이트 작업 수행 가능
-            fetchCompanyData(currentPage); // 데이터를 다시 불러와서 갱신
-        })
-        .catch(error => {
-            console.error('회사 등록 오류:', error.response ? error.response.data : error.message);
-            alert('회사 등록에 실패했습니다.');
-        });
-});
+}
 
-// 첨부 파일 수정
-document.getElementById('attachBtn').addEventListener('click', function () {
-    // 숨겨진 파일 입력 필드를 클릭하여 파일 선택 창 열기
-    document.getElementById('realFileInput').click();
-});
+// 파일 다운로드 함수
+function downloadFile(event) {
+    event.preventDefault();
+    const fileIdx = $(this).data('f-idx');
+    const token = getCookieValue('accessToken');
+    const url = `http://safe.withfirst.com:28888/file/download/${fileIdx}`;
 
-// 파일 선택 시 이벤트
-document.getElementById('realFileInput').addEventListener('change', function () {
-    const fileInput = document.getElementById('fileInput');
-    const files = this.files;
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+    xhr.responseType = 'blob'; // 바이너리 데이터를 처리하기 위해 blob으로 설정
 
-    // 선택된 파일이 있으면 파일명을 표시
-    if (files.length > 0) {
-        fileInput.value = files[0].name;
+    xhr.onload = function () {
+        if (xhr.status === 200) {
+            // Content-Disposition 헤더에서 파일 이름 추출
+            const disposition = xhr.getResponseHeader('content-disposition');
+            let filename = 'downloaded_file';
+            if (disposition && disposition.includes('attachment')) {
+                const matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
+                if (matches && matches[1]) {
+                    filename = matches[1].replace(/['"]/g, '');
+                }
+            }
+
+            // Blob 데이터를 사용하여 파일 다운로드
+            const blob = xhr.response;
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        } else {
+            alert('파일 다운로드에 실패했습니다.');
+        }
+    };
+
+    xhr.onerror = function () {
+        alert('파일 다운로드 중 오류가 발생했습니다.');
+    };
+
+    xhr.send();
+}
+
+
+$(function() {
+    
+    // // DOM이 준비된 후 실행될 코드
+    // fetchCompanyData(1);
+    
+    // // localStorage에서 현재 페이지 번호 가져오기
+    // const savedPage = localStorage.getItem('currentPage');
+    // if (savedPage) {
+    //     currentPage = parseInt(savedPage, 10);
+    //     localStorage.removeItem('currentPage');
+    // } else {
+    //     currentPage = 1;
+    // }
+    
+    // fetchCompanyData(currentPage);
+    
+     // localStorage에서 현재 페이지 번호 가져오기
+     const savedPage = localStorage.getItem('currentPage');
+     currentPage = savedPage ? parseInt(savedPage, 10) : 1;
+ 
+     // 페이지 데이터 로드
+     fetchCompanyData(currentPage);
+
+    // 검색 버튼 클릭 시
+    $('#searchButton').on('click', executeSearch);
+    $('#searchInput').on('keydown', function (event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            executeSearch();
+        }
+    });
+    
+    // 검색 실행 함수
+    function executeSearch() {
+        optionType = $('#searchSelect').val();
+        optionValue = $('#searchInput').val().trim();
+        fetchCompanyData(1);
     }
-});
-
-// 팝업 내 닫기 버튼 클릭 시 팝업 닫기
-document.querySelectorAll('.popup .close').forEach(closeBtn => {
-    closeBtn.addEventListener('click', () => {
-        closeBtn.closest('.popup').style.display = 'none';
+    
+    // 페이지 당 항목 수 변경
+    $('#itemCountSelect').on('change', function () {
+        itemsPerPage = parseInt($(this).val(), 10);
+        fetchCompanyData(1);
     });
-});
-
-// 팝업 내 취소 버튼 클릭 시 팝업 닫기
-document.querySelectorAll('.cancleBtn').forEach(cancelBtn => {
-    cancelBtn.addEventListener('click', () => {
-        cancelBtn.closest('.popup').style.display = 'none';
+    
+    // 회사 등록 버튼 클릭 시 팝업 표시
+    $('#addCompanyBtn').on('click', function() {
+        $('#registerPopup').css('display', 'flex');
     });
-});
+    
+    // 등록 팝업 첨부 버튼 클릭 시 파일 입력 필드 클릭
+    $('#registerAttachBtn').on('click', function () {
+        $('#registerRealFileInput').click();
+    });
+    
+    // 등록 팝업 파일 선택 시 파일 이름 표시
+    $('#registerRealFileInput').on('change', function () {
+        const fileInput = $('#registerFileInput');
+        const files = this.files;
+        if (files.length > 0) {
+            fileInput.val(files[0].name);
+        }
+    });
+    
+    // 회사 등록 저장 버튼 클릭 이벤트 핸들러 추가
+    $('#registerSaveBtn').on('click', addCompany);
 
+    // 회사 수정 팝업 내 저장 버튼 클릭 이벤트 핸들러 추가
+    $('#modifySaveBtn').on('click', modifyComSave);
+
+    // 다중 선택
+    $('thead input[type="checkbox"]').on('change', function () {
+        const isChecked = $(this).is(':checked');
+        $('tbody input[type="checkbox"]').prop('checked', isChecked);
+    });
+    
+    // 다중 삭제
+    $('#deleteBtn').on('click', function () {
+        const selectedCompanies = $('tbody input[type="checkbox"]:checked').map(function () {
+            return {
+                c_id: $(this).data('c-id'),
+                com_idx: $(this).data('com-idx')
+            };
+        }).get();
+
+        if (selectedCompanies.length > 0) {
+            deleteCompanies(selectedCompanies);
+        } else {
+            alert('삭제할 회사를 선택해주세요.');
+        }
+    });
+
+    // 첨부 파일 수정
+    $('#attachBtn').on('click', function () {
+        // 숨겨진 파일 입력 필드를 클릭하여 파일 선택 창 열기
+        $('#realFileInput').click();
+    });
+
+    // 파일 선택 시 이벤트
+    $('#realFileInput').on('change', function () {
+        const files = this.files;
+        
+        // 선택된 파일이 있으면 파일명을 표시
+        if (files.length > 0) {
+            $('#fileInput').val(files[0].name);
+        }
+    });
+
+    // 팝업 닫기 버튼 클릭 시 팝업 닫기
+    $(document).on('click', '.popup .close', function() {
+        $(this).closest('.popup').css('display', 'none');
+    });
+
+});

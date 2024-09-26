@@ -479,10 +479,8 @@
 			                $("#optionsBody").append(createdElement)
 			                break;
 			        }				       
-					
-				} 
-	
-				
+
+				}
 			}
 			, error: function(e) {
 				console.log(e)

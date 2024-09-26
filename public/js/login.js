@@ -31,6 +31,10 @@ async function sendCredentials() {
         const accessToken = response.data.data.accessToken;
         const refreshToken = response.data.data.refreshToken;
 
+
+        console.log('토큰데이터', accessToken);
+        console.log('토큰데이터', refreshToken);
+
         if (accessToken && refreshToken) {
             // 쿠키에 토큰 저장
             setCookie('accessToken', accessToken, 1); // 1일 후 만료
@@ -42,6 +46,7 @@ async function sendCredentials() {
             document.getElementById('logoutButton').style.display = 'block';
             document.getElementById('userInfo').style.display = 'block';
 
+ 
             // 로그인 성공 시 index.html로 리디렉션
             window.location.href = 'company.html';
         } else {
