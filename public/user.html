@@ -220,9 +220,67 @@
         </div>
 
         <div class="contentPadding">
+
             <div class="userForm">
+   
+                    <div class="row modiRow">
+                        <div class="col-3 infoTitle">아이디</div>
+                        <div class="col-9 infoText"><input type="email" id="modifyUserId" readonly></div>
+                    </div>
+                    <div class="row modiRow">
+                        <div class="col-3 infoTitle">비밀번호</div>
+                        <div class="col-9 infoText">
+                            <div class="pwChangeWrap">
+                                <button class="pwChangeBtn">비밀번호 변경</button>
+                            </div>
+                            <input type="password" placeholder="새 비밀번호" id="newUserPassword" style="display: none;">
+                        </div>
+                    </div>
+                    <div class="row modiRow">
+                        <div class="col-3 infoTitle">이름</div>
+                        <div class="col-9 infoText"><input type="text" id="modifyUserName"></div>
+                    </div>
+                    <div class="row modiRow">
+                        <div class="col-3 infoTitle">연락처</div>
+                        <div class="col-9 infoText"><input type="text" id="modifyUserPhone"></div>
+                    </div>
+                    <div class="row modiRow">
+                        <div class="col-3 infoTitle">직급</div>
+                        <div class="col-9 infoText"><input type="text" id="modifyRank"></div>
+                    </div>
+                    <div class="row modiRow">
+                        <div class="col-3 infoTitle">직책</div>
+                        <div class="col-9 infoText"><input type="text" id="modifyPosition"></div>
+                    </div>
+                    <select id="modifyCompanySelect">
+               
+                    </select>
+
+                    <div class="d-flex align-items-center approveWrap">
+                        <div class="d-flex align-items-center me-2">
+                            <input type="radio" id="modifyStatusYes" name="modifyStatus" value="Y" class="me-1">
+                            <label for="modifyStatusYes">승인</label>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <input type="radio" id="modifyStatusNo" name="modifyStatus" value="N" class="me-1">
+                            <label for="modifyStatusNo">미승인</label>
+                        </div>
+                    </div>
+
+                    <div class="saveBtnWrap">
+                        <button class="cancleBtn">취소</button>
+                        <button id="modifySaveBtn" class="saveBtn">저장</button>
+                    </div>
+
+                </div>
+           
+
+           
+     
+<!-- 
                 <input type="email" placeholder="아이디" id="modifyUserId">
-                <!-- <input type="password" placeholder="비밀번호" id="modifyUserPassword"> -->
+                <button class="pwModifyBtn">비밀번호 변경</button>
+                <input type="password" placeholder="비밀번호" id="modifyUserPassword" style="display: none;">
                 <input type="text" placeholder="이름" id="modifyUserName">
                 <input type="text" placeholder="연락처" id="modifyUserPhone"> 
                 <input type="text" placeholder="직급" id="modifyPosition">
@@ -244,7 +302,9 @@
             <div class="saveBtnWrap">
                 <button class="cancleBtn">취소</button>
                 <button id="modifySaveBtn" class="saveBtn">저장</button>
-            </div>
+            </div> -->
+
+
         </div>
     </div>
 </div>

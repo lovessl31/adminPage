@@ -6,6 +6,8 @@ let totalPage = 1; // 총 페이지 수
 let optionType = "all";
 let optionValue = "";
 let total_count;
+let editingUserId;
+let originPw = ''; // 원래 비밀번호
 
 // url
 const defaultUrl = "http://safe.withfirst.com:28888";
@@ -218,37 +220,120 @@ function renderUserDetail(user) {
 
 // 사용자 수정 팝업 열기 함수
 function modifyUser() {
-
+    
     const userIdx = $(this).data('u-idx');
-    const user = users.find(u => u.user_idx == userIdx); // user 배열에서 user_idx에 해당하는 사용자 찾음
+    editingUserId = userIdx; // 사용자 수정 시 사용할 userIdx 저장
     const com_idx = localStorage.getItem('com_idx');
 
-    // 사용자 정보가 있으면 수정 팝업에 데이터 채우기
-    if(user) {
-        console.log("수정할 사용자 정보:", user); // user 정보 확인
-        console.log("선택된 회사 ID:", com_idx); // 선택된 회사 ID 확인
+     // 팝업 열 때 비밀번호 입력창 초기화
+     $('#newUserPassword').hide();  // 비밀번호 입력창 숨기기
+     $('.pwChangeWrap').show();     // 비밀번호 변경 버튼 표시
+     
+    
+    // 서버에서 조회해온 데이터 가져오기
+    $.ajax({
+        url : defaultUrl + `/with/user_detail/${userIdx}`,
+        method : 'GET',
+        headers : {
+            'Authorization' : `Bearer ${atoken}`
+        },
+        success : function(response) {
+            console.log('사용자 상세 조회 :' , response.data[0]);
+            
+            // 가져온 데이터 user에 집어넣고 그걸로 화면 렌더링하기
+            const userDetail = response.data[0];
+            originPw = userDetail.user_pw; // 전역 변수에 저장
 
-        editingUserId = userIdx; // 전역 변수로서 현재 수정 중인 사용자 id 저장 (수정 요청 시 )
-        
-        $('#modifyUserId').val(user.user_id);
-        $('#modifyUserName').val(user.user_name);
-        $('#modifyUserPhone').val(user.phone_number);
-        $('#modifyRank').val(user.user_rank);
-        $('#modifyPosition').val(user.user_position);
+            console.log('원래 비번', originPw);
 
-        // 승인/미승인 상태 선택
-        $(`input[name="modifyStatus"][value="${user.status}"]`).prop('checked', true);
+            $('#modifyUserId').val(userDetail.user_id);
+            $('#modifyUserName').val(userDetail.user_name);
+            $('#modifyUserPhone').val(userDetail.phone_number);
+            $('#modifyRank').val(userDetail.user_rank);
+            $('#modifyPosition').val(userDetail.user_position);
+    
+            // 승인/미승인 상태 선택
+            $(`input[name="modifyStatus"][value="${userDetail.status}"]`).prop('checked', true);
+    
+            // 회사 리스트 로드 (수정 팝업)
+            loadCompanyList('modifyCompanySelect', com_idx); // 수정 시 선택된 회사 ID 전달
+    
+            // 팝업 표시
+             $('#modifyPopupLayer').css('display', 'flex');
+    
+    
+        },
+        error: function(error) {
+            console.error('사용자 조회 오류:', error);
+            alert('사용자 정보를 불러오는데 실패했습니다.');
+        }
+    });
+    // const user = users.find(u => u.user_idx == userIdx); // user 배열에서 user_idx에 해당하는 사용자 찾음
+}
 
-        // 회사 리스트 로드 (수정 팝업)
-        loadCompanyList('modifyCompanySelect', com_idx); // 수정 시 선택된 회사 ID 전달
-
-        // 팝업 표시
-         $('#modifyPopupLayer').css('display', 'flex');
-
-    } else {
-        console.error('User not found with idx:', userIdx);
+// 사용자 수정 요청 함수
+function updateUserData() {
+    const userIdx = editingUserId;
+ 
+    if (!userIdx) {
+        console.error('User ID not found.');
+        return;
     }
 
+    // 값 가져오기
+    const userName = $('#modifyUserName').val().trim();
+    const userId = $('#modifyUserId').val().trim();
+    const newPassword = $('#newUserPassword').val().trim();
+    const userPhone = $('#modifyUserPhone').val().trim();
+    const rank = $('#modifyRank').val().trim();
+    const position = $('#modifyPosition').val().trim();
+    const status = $('input[name="modifyStatus"]:checked').val();
+    // const user_idx = userIdx; 
+
+    // 새로운 비밀번호가 있으면 그것을 사용, 없으면 기존 비밀번호 사용
+    const userPassword = newPassword ? newPassword : originPw;
+
+    //옵션 데이터를 객체로 생성
+    const option_obj = {
+        "phone_number": userPhone,
+        "user_rank": rank,
+        "user_position": position
+    };
+
+   // FormData 객체 생성 (서버로 전송할 데이터)
+    const formData = new FormData();
+
+    formData.append('user_idx', userIdx);
+    formData.append('user_pw', userPassword);
+    formData.append('user_name', userName);
+    formData.append('status', status);
+    // 객체를 JSON 문자열로 변환하여 추가
+    formData.append('option', JSON.stringify(option_obj));
+
+
+    // FormData 내용 콘솔에 출력
+    for (let [key, value] of formData.entries()) {
+        console.log(`${key}: ${value}`);
+    }
+    
+    // 서버에 수정된 사용자 데이터 전송
+    $.ajax({
+        url : defaultUrl + '/with/user_edit',
+        method : 'POST',
+        headers : {
+             'Authorization': `Bearer ${atoken}`,
+        },
+        processData: false, // FormData 사용 시 필요
+        contentType: false, // FormData 사용 시 필요
+        data: formData,
+        success : function(response) {
+            alert('사용자 정보가 수정되었습니다.');
+            location.reload(); // 페이지 새로 고침
+        },
+        error : function(e) {
+            console.log('error :: ');
+        }
+    })
 }
 
 // 개별 삭제 함수
@@ -341,70 +426,6 @@ function addUserData() {
             alert('사용자 등록에 실패했습니다.');
         }
     });
-}
-
-// 사용자 수정 요청 함수
-function updateUserData() {
-    const userIdx = editingUserId;
-    const user = users.find(u => u.user_idx == userIdx);
-
-    if (!user) {
-        console.error('User not found with idx:', userIdx);
-        return;
-    }
-
-    // 값 가져오기
-    const userName = $('#modifyUserName').val().trim();
-    const userId = $('#modifyUserId').val().trim();
-    const userPhone = $('#modifyUserPhone').val().trim();
-    const rank = $('#modifyRank').val().trim();
-    const position = $('#modifyPosition').val().trim();
-    const status = $('input[name="modifyStatus"]:checked').val();
-    const user_idx = userIdx; 
-
-    // 수정된 사용자 정보 업데이트
-    user.user_name = userName;
-    user.userId = userId;
-    user.contact = userPhone;
-    user.rank = rank;
-    user.position = position;
-    user.status = status;
-    user.user_idx = user_idx; 
-
-   // FormData 객체 생성 (서버로 전송할 데이터)
-    const formData = new FormData();
-
-    formData.append('user_idx', userIdx);
-    formData.append('user_id', userId);
-    formData.append('user_name', userName);
-    formData.append('status', status);
-    formData.append('phone_number', userPhone);
-    formData.append('user_rank', rank);
-    formData.append('user_position', position);
-
-    // FormData 내용 콘솔에 출력
-    for (let [key, value] of formData.entries()) {
-        console.log(`${key}: ${value}`);
-    }
-    
-    // 서버에 수정된 사용자 데이터 전송
-    $.ajax({
-        url : defaultUrl + '/with/user_edit',
-        method : 'POST',
-        headers : {
-             'Authorization': `Bearer ${atoken}`,
-        },
-        processData: false, // FormData 사용 시 필요
-        contentType: false, // FormData 사용 시 필요
-        data: formData,
-        success : function(response) {
-            alert('사용자 정보가 수정되었습니다.');
-            location.reload(); // 페이지 새로 고침
-        },
-        error : function(e) {
-            console.log('error :: ');
-        }
-    })
 }
 
 // 등록/수정 팝업에서 회사 리스트 목록 요청 함수
@@ -566,4 +587,14 @@ $(function() {
             alert('삭제할 사용자를 선택해주세요.');
         }
     });
+
+
+   // 비밀번호 변경 버튼 클릭 시 이벤트 처리
+    $('.pwChangeWrap').on('click', '.pwChangeBtn', function() {
+        // 비밀번호 입력창 표시
+        $('#newUserPassword').show();
+        // 비밀번호 변경 버튼이 있는 div (pwChangeWrap) 숨기기
+        $(this).closest('.pwChangeWrap').hide();
+    });
+
 });

@@ -643,8 +643,11 @@ table td {
   width: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  /* justify-content: center; */
   gap: 20px;
+  max-height: 625px; /* 높이 625픽셀 이상일 때 제한 */
+  overflow-y: auto; /* 세로 스크롤 추가 */
+  overflow-x: hidden;
 }
 
 .userForm input {
@@ -710,6 +713,40 @@ table td {
   background: #4b61cc;
 }
 
+.pwModifyBtn {
+  border: 1px solid #eaeaea;
+  width: 100px;
+  height: 40px;
+  background: #fff;
+  font-size: 14px;
+  border-radius: 2px;
+}
+
+.pwChangeWrap {
+  display: flex;
+  align-items: center;
+  height: 50px;
+}
+
+.modiRow {
+  display: flex;
+  align-items: center;
+}
+
+.modifyForm {
+  width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+   gap: 20px;
+}
+
+.modiRow input {
+  width: 100%;
+  height: 50px;
+  border: 0;
+  border-bottom: 1px solid #d2d2d6;
+}
 /* 사용자 정보 팝업 스타일 */
 
 .contentPadding-gray {
@@ -748,7 +785,8 @@ table td {
   background: #fff;
   color: #2F2F37;
   font-size: 12px;
-  padding: 5px 7px;
+  width: 80px;
+  height: 35px;
   border-radius: 2px;
 }
 

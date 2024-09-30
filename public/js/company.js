@@ -6,6 +6,7 @@ let totalPage = 1; // 총 페이지 수
 let optionType = "all"; // 기본 옵션 타입
 let optionValue = ""; // 검색어
 let total_count;
+let selectedCompany = null; // 수정에서 사용될 선택된 회사 정보
 
 // url
 const defaultUrl = "http://safe.withfirst.com:28888"
@@ -49,7 +50,7 @@ function fetchCompanyData(page = 1) {
             renderTable();
             renderPagination();
         }
-    })
+    });
 }
 
 // 가져온 데이터로 테이블 렌더링
@@ -64,6 +65,16 @@ function renderTable() {
             `<button class="approveBtn" data-com-idx="${company.com_idx}" data-c-id="${company.c_id}" data-u-id="${company.user_id}">승인</button>` : 
             `<button class="approveCBtn" disabled>완료</button>`;
 
+        // 'attribute'가 'brc'인 파일 찾기 (company.files가 배열인지 확인)
+        const brcFile = Array.isArray(company.files) ? company.files.find(file => file.attribute === 'brc') : null;
+
+        const fileName = brcFile ? brcFile.o_f_name : '파일 없음';
+        const fileLink = brcFile ?
+        `<a href="${brcFile.domain}/${brcFile.f_idx}" class="download-link" data-f-idx="${brcFile.f_idx}">
+        <img src="images/download.svg" alt="download">${fileName}
+        </a>` 
+        : '파일 없음';
+
         const row = `
         <tr>
             <td>
@@ -76,7 +87,7 @@ function renderTable() {
             <td>${company.owner_name}</td>
             <td>${company.c_id}</td>
             <td>${company.created_date.split(' ')[0]}</td>
-            <td class="table-cell-ellipsis"><a href="#" class="download-link" data-f-idx="${company.f_idx}"><img src="images/download.svg" alt="download">${company.o_f_name}</a></td>
+            <td class="table-cell-ellipsis">${fileLink}</td>
             <td class="buttons"><button class="userBtn moveBtn" data-com-idx="${company.com_idx}" data-c-id="${company.c_id}">이동</button></td>
             <td class="buttons"><button class="categoryBtn moveBtn" data-com-idx="${company.com_idx}" data-c-id="${company.c_id}">이동</button></td>
             <td class="buttons"><button class="boardBtn moveBtn" data-com-idx="${company.com_idx}" data-c-id="${company.c_id}">이동</button></td>
@@ -139,7 +150,13 @@ function renderPagination() {
 
 // 페이지 이동 함수 (다양한 관리 페이지로 이동)
 function moveToPage(page) {
+     // 외부 함수 moveToPage가 실행됨
+     console.log(`moveToPage 실행됨, page: ${page}`);
+
     return function() {
+        // 나중에 클릭 시 반환된 이 함수가 실행됨
+        console.log(`페이지 이동: ${page}`);
+
         const com_id = $(this).data('c-id');
         const comIdx = $(this).data('com-idx');
         
@@ -152,7 +169,7 @@ function moveToPage(page) {
 
 
         console.log('사업자번호', com_id);
-        console.log('리프레시토큰ㄴ', rtoken);
+        console.log('리프레시토큰', rtoken);
 
         $.ajax({
             url : defaultUrl + '/with/com_connect',
@@ -186,7 +203,6 @@ function approveCompany() {
     const comId = $(this).data('c-id');
     const userId =  $(this).data('u-id');
 
-    console.log('유저아이디!!!!!!!!!!!!!!!!!!!', userId);
     const formData = new FormData();
 
     formData.append('com_id', comId);
@@ -203,8 +219,6 @@ function approveCompany() {
         data : formData,
         success : function(response) {
             alert('승인되었습니다.');
-            console.log('회사 승인 데이터 : ',  response.data);
-            localStorage.setItem('currentPage', currentPage);
             location.reload();
         },
         error : function(e) {
@@ -229,24 +243,26 @@ function addCompany() {
     const companyName = $('#c_name').val().trim();
     const representativeName = $('#owner_name').val().trim();
     const businessNumber = $('#c_id').val().trim();
-    const status = $('input[name="status"]:checked').val();
-    const fileInput = $('#registerRealFileInput')[0].files[0] || null;
+    const fileInputs = $('#registerRealFileInput')[0].files; // 파일들을 배열로 가져옴
 
-    // if (fileInput) {
-    //     formData.append('file', fileInput);
-    // }
-
+    console.log('파일 확인',fileInputs);
+    
     // 요청할 폼 데이터
     const formData = new FormData();
     formData.append('c_name', companyName);
     formData.append('owner_name', representativeName);
     formData.append('c_id', businessNumber);
-    formData.append('file', fileInput); 
 
-        // // FormData 내용 확인 (콘솔 출력)
-        // for (let pair of formData.entries()) {
-        //     console.log(pair[0] + ': ' + pair[1]); // key: value 형식으로 출력
-        // }
+    // 파일이 존재할 경우에만 처리 (여러 파일을 처리)
+    for (let i = 0; i < fileInputs.length; i++) {
+        formData.append(`files[${i}][action]`, 'add'); // 파일 액션 추가
+        formData.append(`files[${i}][file]`, fileInputs[i]); // 동적으로 파일 추가
+    }
+
+    // FormData 내용 확인 (콘솔 출력)
+    for (let pair of formData.entries()) {
+        console.log(pair[0] + ': ' + pair[1]); // key: value 형식으로 출력
+    }
 
     $.ajax({
         url : defaultUrl + '/with/com_add',
@@ -263,7 +279,6 @@ function addCompany() {
             $('#registerPopup').css('display', 'none'); // 팝업 닫기
             fetchCompanyData(currentPage); // 데이터를 다시 불러와서 갱신
             clearFormFields();
-
         },
         error : function(e) {
             console.log(e)
@@ -278,7 +293,7 @@ function modifyComSave() {
     const representativeName = $('#representativeName').val().trim();
     const comIdx = $(this).data('com-idx'); // 저장된 com_idx 값 가져오기
     const cId = $('#businessNumber').val().trim(); // c_id를 가져오는 부분
-    const fileInput = $('#realFileInput')[0].files[0]; // 파일 입력 필드에서 파일 가져오기
+    const fileInputs = $('#realFileInput')[0].files; // 파일 입력 필드에서 파일 배열로 가져오기
 
     // 요청할 폼 데이터
     const formData = new FormData();
@@ -287,10 +302,23 @@ function modifyComSave() {
     formData.append('c_id', cId);
     formData.append('com_idx', comIdx);
     
+    // // 파일이 있을 때만 파일 추가
+    // if (fileInput) {
+    //     formData.append('file', fileInput); // 'file'은 서버에서 기대하는 파일 필드 이름이어야 합니다.
+    // }
+    
     // 파일이 있을 때만 파일 추가
-    if (fileInput) {
-        formData.append('file', fileInput); // 'file'은 서버에서 기대하는 파일 필드 이름이어야 합니다.
-    }
+    if (fileInputs.length > 0 && selectedCompany.files) {
+        for (let i = 0; i < fileInputs.length; i++) {
+            const existingFile = selectedCompany.files[i];
+            if (existingFile) {
+                    formData.append(`files[${i}][action]`, 'update'); // 파일 액션 추가
+                    formData.append(`files[${i}][f_idx]`, existingFile.f_idx); // f_idx 추가
+                }
+                formData.append(`files[${i}][file]`, fileInputs[i]); // 파일 추가
+            }
+        }
+
 
     // FormData 내용 로그 출력
     formData.forEach((value, key) => {
@@ -333,14 +361,28 @@ function modifyComSave() {
 function modifyCompany() {
     const companyId = $(this).data('id');
     const company = companies.find(c => c.com_idx == companyId);
+    // 선택된 회사의 데이터를 selectedCompany에 저장
+    selectedCompany = companies.find(c => c.com_idx == companyId);
+    console.log('선택된 회사 정보@@@@@@@@@@@@@', selectedCompany);
 
     $('#companyName').val(company.c_name);
     $('#representativeName').val(company.owner_name);
     $('#businessNumber').val(company.c_id);
     $('#registrationDate').text(company.created_date.split(' ')[0]);
-    $('#fileInput').val(company.o_f_name);
     $('#modifySaveBtn').data('com-idx', company.com_idx);
     $('#modifyPopup').css('display', 'flex');
+    // $('#fileInput').val(company.o_f_name);
+
+    // 파일 목록이 있을 경우 f_idx 저장
+    if (Array.isArray(company.files)) {
+        company.files.forEach((file, index) => {
+            // 파일 f_idx를 data-f-idx 속성에 저장
+            $('#fileInput').val(file.o_f_name).data(`f-idx-${index}`, file.f_idx);
+
+            // 저장된 f_idx 값을 콘솔에 출력
+            console.log(`file ${index} f_idx:`, $('#fileInput').data(`f-idx-${index}`));
+        });
+    }
 }
 
 // 회사 개별 삭제 함수 
@@ -439,12 +481,12 @@ $(function() {
     
     // fetchCompanyData(currentPage);
     
-     // localStorage에서 현재 페이지 번호 가져오기
-     const savedPage = localStorage.getItem('currentPage');
-     currentPage = savedPage ? parseInt(savedPage, 10) : 1;
+    // localStorage에서 현재 페이지 번호 가져오기
+    const savedPage = localStorage.getItem('currentPage');
+    currentPage = savedPage ? parseInt(savedPage, 10) : 1;
  
-     // 페이지 데이터 로드
-     fetchCompanyData(currentPage);
+    // 페이지 데이터 로드
+    fetchCompanyData(currentPage);
 
     // 검색 버튼 클릭 시
     $('#searchButton').on('click', executeSearch);
@@ -535,5 +577,6 @@ $(function() {
     $(document).on('click', '.popup .close', function() {
         $(this).closest('.popup').css('display', 'none');
     });
-
+    
 });
+
