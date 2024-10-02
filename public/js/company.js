@@ -66,11 +66,11 @@ function renderTable() {
             `<button class="approveCBtn" disabled>완료</button>`;
 
         // 'attribute'가 'brc'인 파일 찾기 (company.files가 배열인지 확인)
-        const brcFile = Array.isArray(company.files) ? company.files.find(file => file.attribute === 'brc') : null;
+        const brcFile = Array.isArray(company.files) ? company.files.find(file => file.sts_cd === '19') : null;
 
         const fileName = brcFile ? brcFile.o_f_name : '파일 없음';
         const fileLink = brcFile ?
-        `<a href="${brcFile.domain}/${brcFile.f_idx}" class="download-link" data-f-idx="${brcFile.f_idx}">
+        `<a href="${brcFile.domain}/${brcFile.f_idx}" class="download-link" data-f-idx="${brcFile.f_idx}" data-f-path="${brcFile.f_path}" data-f-name="${brcFile.o_f_name}">
         <img src="images/download.svg" alt="download">${fileName}
         </a>` 
         : '파일 없음';
@@ -314,11 +314,11 @@ function modifyComSave() {
             if (existingFile) {
                     formData.append(`files[${i}][action]`, 'update'); // 파일 액션 추가
                     formData.append(`files[${i}][f_idx]`, existingFile.f_idx); // f_idx 추가
+                    formData.append(`files[${i}][file]`, fileInputs[i]); // 파일 추가
+                    formData.append(`files[${i}][attribute]`, '19'); // 파일 추가
                 }
-                formData.append(`files[${i}][file]`, fileInputs[i]); // 파일 추가
             }
         }
-
 
     // FormData 내용 로그 출력
     formData.forEach((value, key) => {
@@ -326,6 +326,7 @@ function modifyComSave() {
     });
 
     // 수정 요청 보내기
+
     $.ajax({
         url: defaultUrl + `/with/com_edit`,
         type: 'POST',
@@ -422,32 +423,28 @@ function deleteCompanies(companies) {
 function downloadFile(event) {
     event.preventDefault();
     const fileIdx = $(this).data('f-idx');
-    const token = getCookieValue('accessToken');
-    const url = `http://safe.withfirst.com:28888/file/download/${fileIdx}`;
+    const fPath = $(this).data('f-path'); 
+    const ofName = $(this).data('f-name'); 
+    const splitPath = fPath.split('view')[1]; // 'imageView' 뒤의 부분을 추출
+    console.log(splitPath);
+    console.log(ofName);
+
+
+    const url = `http://safe.withfirst.com:28888/with/com/file/view${splitPath}&o_filename=${ofName}`;
 
     const xhr = new XMLHttpRequest();
     xhr.open('GET', url, true);
-    xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+    xhr.setRequestHeader('Authorization', `Bearer ${atoken}`);
     xhr.responseType = 'blob'; // 바이너리 데이터를 처리하기 위해 blob으로 설정
 
     xhr.onload = function () {
         if (xhr.status === 200) {
-            // Content-Disposition 헤더에서 파일 이름 추출
-            const disposition = xhr.getResponseHeader('content-disposition');
-            let filename = 'downloaded_file';
-            if (disposition && disposition.includes('attachment')) {
-                const matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
-                if (matches && matches[1]) {
-                    filename = matches[1].replace(/['"]/g, '');
-                }
-            }
-
             // Blob 데이터를 사용하여 파일 다운로드
             const blob = xhr.response;
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = filename;
+            a.download = ofName; // HTML에서 전달된 파일명으로 다운로드
             document.body.appendChild(a);
             a.click();
             window.URL.revokeObjectURL(url);
@@ -456,6 +453,37 @@ function downloadFile(event) {
             alert('파일 다운로드에 실패했습니다.');
         }
     };
+    
+    // xhr.open('GET', url, true);
+    // xhr.setRequestHeader('Authorization', `Bearer ${atoken}`);
+    // xhr.responseType = 'blob'; // 바이너리 데이터를 처리하기 위해 blob으로 설정
+
+    // xhr.onload = function () {
+    //     if (xhr.status === 200) {
+    //         // Content-Disposition 헤더에서 파일 이름 추출
+    //         const disposition = xhr.getResponseHeader('content-disposition');
+    //         let filename = 'downloaded_file';
+    //         if (disposition && disposition.includes('attachment')) {
+    //             const matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
+    //             if (matches && matches[1]) {
+    //                 filename = matches[1].replace(/['"]/g, '');
+    //             }
+    //         }
+
+    //         // Blob 데이터를 사용하여 파일 다운로드
+    //         const blob = xhr.response;
+    //         const url = window.URL.createObjectURL(blob);
+    //         const a = document.createElement('a');
+    //         a.href = url;
+    //         a.download = filename;
+    //         document.body.appendChild(a);
+    //         a.click();
+    //         window.URL.revokeObjectURL(url);
+    //         document.body.removeChild(a);
+    //     } else {
+    //         alert('파일 다운로드에 실패했습니다.');
+    //     }
+    // };
 
     xhr.onerror = function () {
         alert('파일 다운로드 중 오류가 발생했습니다.');
@@ -577,6 +605,6 @@ $(function() {
     $(document).on('click', '.popup .close', function() {
         $(this).closest('.popup').css('display', 'none');
     });
-    
+
 });
 

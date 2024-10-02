@@ -2378,6 +2378,7 @@ em {
   border-radius: 2px; /* 선택사항: 모서리 둥글게 */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 선택사항: 컨텐츠에 그림자 효과 */
   padding: 20px; /* 선택사항: 컨텐츠 내부 여백 */
+  padding-top: 0px;
   height: calc(100vh - 60px - 34px - 80px - 32px); 
   overflow-y: auto; /* 컨텐츠가 넘칠 때 스크롤 생성 */
   margin-right: 2%;
@@ -2494,4 +2495,15 @@ em {
 
 .member-count {
   font-size: 12px;
+}
+
+.orgTable {
+  width: 100% !important;
+  border: 1px solid #EBECF0;
+  font-size: 14px;
+}
+
+.org_sticky {
+  padding-top: 20px;
+  padding-bottom: 10px;
 }

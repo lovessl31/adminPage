@@ -62,13 +62,14 @@
                 <li><a href="organization.html">조직도관리</a></li>
             </ul>
         </div>
+        
         <!-- 메인 컨텐츠 -->
         <div id="content">
             <h4>조직도관리</h4>
 
             <div class="d-flex">
                 <div class="Oinner">
-                    <div class="d-flex justify-content-between align-items-center sticky-header">
+                    <div class="d-flex justify-content-between align-items-center sticky-header org_sticky">
                         <!-- <p>위드퍼스트(회사이름)</p> -->
                         <div>
                             <button id="addTeam" class="addBtn">조직추가</button>
@@ -77,6 +78,7 @@
                             <button id="modifyNode" class="modifyBtn">수정</button>
                             <button id="confirmNode" class="confirmBtn" style="display: none;">확인</button>
                             <button id="deleteNode" class="deleteBtn">삭제</button>
+                            <button id="cancleNode" class="cancleBtn"  style="display: none;">취소</button>
                         </div>
                     </div>
                     <div class="Owrap">
@@ -111,16 +113,15 @@
                         </div>
                         
                     
-                        <table style="text-align: center;">
+                        <table class="orgTable" style="text-align: center;">
                             <thead>
                                 <tr>
                                     <th></th>
                                     <th>이름</th>
                                     <th>아이디</th>
-                                    <th>연락처</th>
-                                    <th>회사</th>
-                                    <th>직급</th>
-                                    <th>직책</th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody id="userTableBody">
