@@ -103,7 +103,7 @@ function renderTable() {
 
     // 동적으로 생성된 요소들에 이벤트 리스너 추가
     $('#companyTableBody').on('click', '.userBtn', moveToPage('user.html'));
-    $('#companyTableBody').on('click', '.categoryBtn', moveToPage('category.html'));
+    $('#companyTableBody').on('click', '.categoryBtn', moveToPage('newCategory.html'));
     $('#companyTableBody').on('click', '.boardBtn', moveToPage('board.html'));
     $('#companyTableBody').on('click', '.teamBtn', moveToPage('organization.html'));
     $('.comModify').on('click', modifyCompany);
@@ -257,6 +257,7 @@ function addCompany() {
     for (let i = 0; i < fileInputs.length; i++) {
         formData.append(`files[${i}][action]`, 'add'); // 파일 액션 추가
         formData.append(`files[${i}][file]`, fileInputs[i]); // 동적으로 파일 추가
+        formData.append(`files[${i}][attribute]`, '19'); // 파일 추가
     }
 
     // FormData 내용 확인 (콘솔 출력)

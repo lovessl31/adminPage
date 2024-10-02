@@ -2398,7 +2398,7 @@ em {
 
 .Owrap {
     width: 100%;
-    padding: 5px;
+    /* padding: 5px; */
 }
 
 .o-side {
@@ -2507,3 +2507,18 @@ em {
   padding-top: 20px;
   padding-bottom: 10px;
 }
+
+
+/* new 카테고리 관리 */
+
+.cate_addBtn {
+  width: 80px;
+  height: 30px;
+  border: none;
+  background: #2F2F37;
+  color: #fff;
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
