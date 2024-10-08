@@ -413,6 +413,7 @@ table td {
   padding: 15px 10px;
   vertical-align: middle;
   /* 수직 정렬 중앙 */
+  cursor: pointer;
 }
 
 .userInfo {

@@ -100,6 +100,7 @@ function renderUserTable() {
         updateSelectedRows();
         });
 
+
         // 테이블 바깥을 클릭했을 때 선택 해제
         $(document).on('click', function(e) {
             // 테이블 내부 요소를 클릭하지 않았을 때만 선택 해제
@@ -770,7 +771,14 @@ $(function() {
         moveNodeTimeout = setTimeout(function () {
             const oldTeamId = data.old_parent; // 이동 전 팀의 ID (org_idx)
             const newTeamId = data.parent; // 이동 후 팀의 ID (move_idx)
+            const newPosition = data.position; // 새로운 위치
             
+            // **같은 팀 내에서 순서만 변경되는 경우 중복 체크 생략**
+            if (oldTeamId === newTeamId) {
+                console.log('같은 팀 내에서 순서만 변경됩니다.');
+                return; // 중복 체크 건너뛰고 종료
+            }
+
             // **선택된 노드 가져오기** //
             let selectedNodes = $('#tree-container').jstree('get_selected'); // 선택된 모든 노드의 ID 배열
             

@@ -196,7 +196,7 @@ function renderCategories(categories) {
 function cateGetData() {
     const token = localStorage.getItem('accessToken');
     
-    return axios.get('http://safe.withfirst.com:28888/with/cateList', {
+    return axios.get('http://safe.withfirst.com:28888/with/cate_list', {
         headers: {
             'Authorization': `Bearer ${token}`
         }
@@ -266,7 +266,7 @@ function addTopCategory() {
     formData.append('cate_name', newCategory.cate_name);
     
     // 서버에 새로운 카테고리 추가 요청
-    axios.post(`http://safe.withfirst.com:28888/with/addCate/${isCategory}`, formData, {
+    axios.post(`http://safe.withfirst.com:28888/with/cate_add`, formData, {
         headers: {
             'Content-Type': 'multipart/form-data',
             'Authorization': `Bearer ${token}`
@@ -362,7 +362,7 @@ function addSubCategory(parentLi, parentCategory, depth) {
     formData.append('s_depth', newSubCategory.s_depth);
 
     // 서버에 새로운 하위 카테고리 추가 요청
-    axios.post(`http://safe.withfirst.com:28888/with/addCate/${isCategory}`, formData, {
+    axios.post(`http://safe.withfirst.com:28888/with/cate_add/`, formData, {
         headers: {
             'Content-Type': 'multipart/form-data',
             'Authorization': `Bearer ${token}`
