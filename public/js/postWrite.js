@@ -1,464 +1,646 @@
+// 경로
+const defaultUrl = "http://safe.withfirst.com:28888";
+
+// 토큰
+const rtoken = getCookieValue('refreshToken');
+const atoken = localStorage.getItem('accessToken');
+const bidx = localStorage.getItem('board_idx');
+
+let singleFile = []; // 단일 파일 담을 배열
+let multiFilesInput = {}; // ol_idx를 키로 하는 객체
+let filesArray = []; // 파일 배열
+
 // 전역 변수를 객체로 묶어 관리
 const state = {
     options: [],
     uploadedFileIds: [],
-    filesArray: []
+    filesArray: [],
+    group_idx : null
 };
 
-const urlParams = new URLSearchParams(window.location.search);
-const Id = urlParams.get('id');
-const mode = urlParams.get('mode');  // 'edit' or 'create'
-const defaultUrl = "http://safe.withfirst.com:28888"
+// 게시판 디테일 정보 서버에서 받아오기
+function fetchBoardDetailData() {
+	$.ajax({
+		url: defaultUrl + `/with/board_detail?bidx=${bidx}`,
+		method: 'GET',
+		headers: {
+			'Authorization': `Bearer ${atoken}`,
+		},
+		success: function(response) {
+			console.log('옵션 데이터 조회 성공', response);
+			const boardDeatail = response.data;
+            // options와 group_idx를 추출해 state에 할당
+            state.options = boardDeatail.options;
+            state.group_idx = boardDeatail.group_idx;
+            renderModules(state.options); // options 기반으로 모듈 렌더링		
+		},
+		error: function(e) {
+			console.log('error :: 옵션 조회 에러', e);
+		}
+	});
+}
 
-document.addEventListener('DOMContentLoaded', function () {
-    initializeSummernote();
-    initializeFileUpload();
-    initializeForm();
+// options 데이터를 기반으로 동적으로 모듈을 렌더링하는 함수
+function renderModules(options) {
 
-    if (mode === 'edit') {
-        document.querySelector(".contentTitle").innerHTML = "게시글 수정";
-        loadPostEditData(Id);
-    } else if (mode === 'create') {
-        document.querySelector(".contentTitle").innerHTML = "게시글 등록";
-        loadPostWriteData(Id);
-    } else {
-        // 로렘입숨으로 대체할 예정
-    }
-});
+    const moduleWrap = $('.module_wrap');   // 모듈들이 들어갈 컨테이너
+    moduleWrap.empty(); // 기존의 모든 모듈을 비우기
 
-function initializeSummernote() {
-    const $summernote = $('#summernote');
-    $summernote.show();       
+  // 게시글 비공개 설정 모듈 (조건 없이 항상 렌더링)
+    const visibilityModule = `
+        <div class="modlue_item typeHide">
+            <input type="checkbox" id="visibleCheckbox" class="module_visible">
+            <label for="visibleCheckbox">게시글 비공개</label>
+        </div>
+    `;
+    moduleWrap.append(visibilityModule); 
+
+    // 옵션별 모듈 생성
+    options.forEach((option, index) => {
+        let moduleElement;
+
+        const requiredClass = option.required === 'Y' ? 'required' : ''; // required 값에 따라 클래스 결정
+        
+        // ol_type에 따라 필요한 모듈을 생성
+        switch (option.ol_type) {
+
+            // 드롭다운 모듈
+            case 'dropdown':
+                moduleElement = `
+                    <div class="modlue_item typeDropdown">
+                    <h5 class="module_name ${requiredClass}">${option.ol_name}</h5>
+                        <select id="dropdown_${index}">
+                            ${option.ol_value.map(value => `<option value="${value.ol_value}">${value.ol_value}</option>`).join('')}
+                        </select>
+                    </div>
+                    `;
+            break;
+
+            // 데이터 입력 필드 모듈
+            case 'dataInput':
+                moduleElement = `
+                    <div class="modlue_item typeInput">
+                        <h5 class="module_name ${requiredClass}">${option.ol_name}</h5>
+                        <input type="text" id="dataInput_${index}" class="module_input">
+                    </div>
+                    `;
+            break;
+
+            // 날짜 입력 필드 모듈
+            case 'dateInput':
+                moduleElement = `
+                    <div class="modlue_item typeDate">
+                        <h5 class="module_name ${requiredClass}">${option.ol_name}</h5>
+                        <input type="date" id="dateInput_${index}" class="module_date">
+                    </div>
+                    `;
+            break;
+                
+            // 멀티 파일 모듈
+            case 'files':
+                moduleElement = `
+                    <div class="modlue_item typeMultiFiles">
+                        <h5 class="module_name ${requiredClass}">${option.ol_name}</h5>
+                        <div class="file_attach_wrap">
+                            <div class="file_attach_btn">
+                                <div>
+                                    <input type="file" id="multiFileInput_${index}" class="module_mutifiles" multiple style="display: none;" data-ol_idx="${option.ol_idx}">
+                                    <button id="multiFileBtn_${index}">파일첨부</button>
+                                    <button id="deleteAllBtn_${index}" style="display: none;">전체삭제</button>
+                                </div>
+                                <p class="total_volume">첨부파일 <em>0</em>개 (0.0KB)</p>
+                            </div>
+                            <div class="file_wrap">
+                                <table>
+                                    <thead>
+                                        <th class="col-1"></th>
+                                        <th>파일명</th>
+                                        <th class="text-right">용량</th>
+                                        <th></th>
+                                    </thead>
+                                    <tbody id="fileList_${index}"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    `;
+            break;
+
+            // 전체 파일 모듈
+            case 'file':
+                moduleElement = `
+                    <div class="modlue_item typeFile">
+                        <h5 class="module_name ${requiredClass}">${option.ol_name}</h5>
+                        <div class="file_attach_wrap">
+                            <div class="file_attach_btn">
+                              <div>
+                                    <input type="file" id="fileInput_${index}" class="module_file" style="display: none;">
+                                    <button id="fileBtn_${index}" class="fileUploadBtn">파일첨부</button>
+                                </div>
+                            </div>
+                            <div id="fileInfoWrap_${index}" class="fileInfoWrap" style="display: none;">
+                                <div class="fileInfoContent">
+                                    <div class="d-flex align-items-center">
+                                        <span class="folder_img"><img src="/images/folder.svg"></span>
+                                        <p class="file_name"></p>
+                                    </div>
+                                    <span class="file_size"></span>
+                                </div>
+                                <button class="file_delete_Btn"><img src="/images/trash.svg"></button>
+                            </div>
+                        </div>
+                    </div>
+                    `;
+            break;
+
+            // 이미지 전용 파일 모듈
+            case 'file_img': 
+                moduleElement = `
+                    <div class="modlue_item typeFile">
+                        <h5 class="module_name ${requiredClass}">${option.ol_name}</h5>
+                        <div class="file_attach_wrap">
+                            <div class="file_attach_btn">
+                                <div>
+                                    <input type="file" id="fileImgInput_${index}" class="module_file" accept="image/*" style="display: none;">
+                                    <button id="fileImgBtn_${index}" class="fileUploadBtn">파일 첨부</button>
+                                </div>
+                            </div>
+                            <div id="fileInfoWrap_${index}" class="fileInfoWrap" style="display: none;">
+                                <div class="fileInfoContent">
+                                    <div class="d-flex align-items-center">
+                                        <span class="folder_img"><img src="/images/folder.svg"></span>
+                                        <p class="file_name"></p>
+                                    </div>
+                                    <span class="file_size"></span>
+                                </div>
+                                <button class="file_delete_Btn"><img src="/images/trash.svg"></button>
+                            </div>
+                        </div>
+                    </div>
+                    `;
+            break;
+
+            // 비디오 전용 파일 모듈
+            case 'file_video': 
+                moduleElement = `
+                    <div class="modlue_item typeFile">
+                        <h5 class="module_name ${requiredClass}">${option.ol_name}</h5>
+                        <div class="file_attach_wrap">
+                            <div class="file_attach_btn">
+                                <div>
+                                    <input type="file" id="fileVideoInput_${index}" class="module_file" accept="video/*" style="display: none;">
+                                    <button id="fileVideoBtn_${index}" class="fileUploadBtn">파일 첨부</button>
+                                </div>
+                            </div>
+                            <div id="fileInfoWrap_${index}" class="fileInfoWrap" style="display: none;">
+                                <div class="fileInfoContent">
+                                    <div class="d-flex align-items-center">
+                                        <span class="folder_img"><img src="/images/folder.svg"></span>
+                                        <p class="file_name"></p>
+                                    </div>
+                                    <span class="file_size"></span>
+                                </div>
+                                <button class="file_delete_Btn"><img src="/images/trash.svg"></button>
+                            </div>
+                        </div>
+                    </div>
+                    `;
+            break;
+
+            // 텍스트 영역 모듈
+            case 'textArea': // 텍스트 영역 모듈
+                moduleElement = `
+                    <div class="modlue_item typeTextArea">
+                        <h5 class="module_name ${requiredClass}">${option.ol_name}</h5>
+                        <textarea id="textArea_${index}" class="module_textArea"></textarea>
+                    </div>
+                    `;
+            break;     
+
+            // 에디터 영역 모듈
+            case 'editor':
+                moduleElement = `
+                    <div class="modlue_item typeEditor">
+                        <h5 class="module_name ${requiredClass}">${option.ol_name}</h5>
+                        <div id="editor_${index}"></div>
+                    </div>
+                    `;
+            break;
+
+            // 그 외
+            default:
+                moduleElement = `<div><p>알 수 없는 모듈 유형: ${option.ol_type}</p></div>`;
+        }
+        
+        // 생성된 모듈을 컨테이너에 추가
+        moduleWrap.append(moduleElement);
+
+    });
+    
+    // 에디터 모듈 초기화 (모듈이 렌더링된 후 실행)
+    options.forEach((option, index) => {
+        if (option.ol_type === 'editor') {
+            setTimeout(() => {
+                initializeEditor(`#editor_${index}`);
+            }, 0); // DOM이 완전히 렌더링된 후에 초기화
+        }
+    });
 
 
-    $('#summernote').summernote({
-        height: 500,
-        minHeight: 350,
-        maxHeight: 642,
-        focus: true,
-        lang: "ko-KR",
-        toolbar: [
-            ['fontname', ['fontname']],
-            ['fontsize', ['fontsize']],
-            ['style', ['bold', 'italic', 'underline', 'strikethrough', 'clear']],
-            ['color', ['forecolor', 'color']],
-            ['table', ['table']],
-            ['para', ['ul', 'ol', 'paragraph']],
-            ['height', ['height']],
-            ['insert', ['picture', 'link', 'video']],
-            ['view', ['fullscreen', 'help']]
-        ],
-        fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New', '맑은 고딕', '궁서', '굴림체', '굴림', '돋움체', '바탕체'],
-        fontSizes: ['8', '9', '10', '11', '12', '14', '16', '18', '20', '22', '24', '28', '30', '36', '50', '64', '72', '96', '144'],
-        callbacks: {
+    // type_img 일 경우 허용 가능한 이미지 확장자
+    const allowedImageTypes = [
+        'image/jpeg', 'image/png', 'image/gif', 
+        'image/bmp', 'image/webp', 'image/svg+xml', 
+        'image/tiff', 'image/x-icon'
+    ];
 
+    // 각 파일 모듈 설정 (필요한 기능 세팅)
+    options.forEach((option, index) => {
 
-            onImageUpload: function (files) {
-                console.log(files);                
-                for (let i = 0; i < files.length; i++) {
-                    uploadImage(files[i], this);
-                }
-            },
-            onPaste: function (e) {
-                var clipboardData = e.originalEvent.clipboardData;
-                if (clipboardData && clipboardData.items && clipboardData.items.length) {
-                    var item = clipboardData.items[0];
-                    if (item.kind === 'file' && item.type.indexOf('image/') !== -1) {
-                        e.preventDefault();
-                        var blob = item.getAsFile();
-                        uploadImage(blob, this);
-                    }
-                }
-            }
+        if (option.ol_type === 'files') {
+            initializeMultiFileUpload(`#multiFileInput_${index}`, `#multiFileBtn_${index}`, `#deleteAllBtn_${index}`, `#fileList_${index}`);
         }
 
-        // 	//여기 부분이 이미지를 첨부하는 부분
-        //     onImageUpload : function(files) {
-        //         console.log(files);                                             
-        //         for (let i = 0; i < files.length; i++) {
-        //                         uploadImage(files[i], this);
-        //                     }
-        //     },
-        //     onPaste: function (e) {
-        //         var clipboardData = e.originalEvent.clipboardData;
-        //         if (clipboardData && clipboardData.items && clipboardData.items.length) {
-        //             var item = clipboardData.items[0];
-        //             if (item.kind === 'file' && item.type.indexOf('image/') !== -1) {
-        //                 e.preventDefault();
-        //             }
-        //         }
-        //     }
-        // }
-        
+        if (option.ol_type === 'file') {
+            initializeSingleFileUpload(`#fileInput_${index}`, `#fileBtn_${index}`, `#fileInfoWrap_${index}`);
+        }
+
+        if (option.ol_type === 'file_img') {
+            initializeSingleFileUpload(`#fileImgInput_${index}`, `#fileImgBtn_${index}`, `#fileInfoWrap_${index}`, allowedImageTypes);
+        }
+
+        if (option.ol_type === 'file_video') {
+            initializeSingleFileUpload(`#fileVideoInput_${index}`, `#fileVideoBtn_${index}`, `#fileInfoWrap_${index}`, ['video/mp4', 'video/avi']);
+        }
     });
 }
 
+// 에디터 설정 함수
+function initializeEditor(editorSelector) {
+    const editorElement = document.querySelector(editorSelector);
+    
+    // 에디터가 적용될 DOM 요소가 존재하는지 확인
+    if (editorElement) {
+        new toastui.Editor({
+            el: editorElement,
+            height: '600px',
+            initialEditType: 'wysiwyg',
+            hideModeSwitch: true // 모드 전환 버튼 숨기기
+        });
+    } else {
+        console.error(`에디터 요소를 찾을 수 없습니다: ${editorSelector}`);
+    }
+}
 
-// $('#summernote').on('summernote.image.upload', function(we, files) {
-//         for (let i = 0; i < files.length; i++) {
-//             uploadImage(files[i], this);
-//         }
-//     });
+// 파일 모듈 설정 함수
+function initializeMultiFileUpload(fileInputId, fileBtnId, deleteAllBtnId, fileListId) {
+    const fileInput = $(fileInputId);
+    const fileBtn = $(fileBtnId);
+    const deleteAllBtn = $(deleteAllBtnId);
+    const fileList = $(fileListId);
+    const totalVolumeElement = $(fileBtnId).closest('.file_attach_wrap').find('.total_volume em');
+    const totalVolumeText = $(fileBtnId).closest('.file_attach_wrap').find('.total_volume');
+    const olIdx = $(fileInput).data('ol_idx'); // 파일 모듈의 고유 ID로 사용
 
-    function uploadImage(file, editor) {
-        const token = localStorage.getItem('accessToken');
-        const accessId = localStorage.getItem('accessId');
-        const url = `${defaultUrl}/file/upload?accessId=${accessId}`;
-		data = new FormData();
-		data.append("file", file);
-        console.log(data);
-		$.ajax({
-			data : data,
-			type : "POST",
-			url : url,
-			contentType : false,
-			processData : false,
-            headers: {
-                'Authorization': `Bearer ${token}`
-            },
-            success: function(response) {
-                console.log(response.data);
-                
-                if (response.data.data.url) {
-                    let imgNode = document.createElement('img');
-                    imgNode.src = response.data.data.url;
-                    $(editor).summernote('insertNode', imgNode);
-                    console.log('Image inserted successfully');
+    // 파일 저장 공간 초기화
+    if (!multiFilesInput[olIdx]) {
+        multiFilesInput[olIdx] = [];
+    }
+
+    // 파일 선택 창 오픈
+    fileBtn.on('click', function() {
+        fileInput.trigger('click');
+    });
+
+    // 파일 선택 후 배열에 저장
+    fileInput.on('change', function(event) {
+        const newFiles = Array.from(event.target.files);
+
+        // 기존의 filesArray와 새로 선택된 newFiles 배열을 합쳐서 할당
+        filesArray = [...filesArray, ...newFiles];
+
+        newFiles.forEach((file) => {
+    
+            // 각 파일을 객체로 구성하여 배열에 추가
+            multiFilesInput[olIdx].push({
+                file: file,
+                action: 'add',
+                ol_idx: olIdx,
+                attribute: '4'
+            });
+        });
+
+        renderFileList(olIdx, fileList, deleteAllBtn);
+        updateTotalVolume(olIdx, totalVolumeElement, totalVolumeText);
+        fileInput.val('');
+    });
+
+    // 전체 삭제 버튼 클릭 시 실행
+    deleteAllBtn.on('click', function() {
+        multiFilesInput[olIdx] = [];
+        renderFileList(olIdx, fileList, deleteAllBtn);
+        updateTotalVolume(olIdx, totalVolumeElement, totalVolumeText);
+    });
+}
+
+// 다중 파일 목록을 렌더링하는 함수
+function renderFileList(olIdx, fileList, deleteAllBtn) {
+
+    fileList.empty(); // 기존 목록 초기화
+
+    multiFilesInput[olIdx].forEach((fileObj, index) => {
+
+        console.log('파일오브제머야?', fileObj);
+        const fileRow = $(`
+            <tr>
+                <td class="col-1">
+                    <button class="remove-btn" data-index="${index}"><img src="/images/delete.svg"></button>
+                </td>
+                <td class="file-cell">${fileObj.file.name}</td>
+                <td class="text-right">${(fileObj.file.size / 1024).toFixed(2)}KB</td>
+                <td></td>
+            </tr>
+        `);
+
+        fileRow.find('.remove-btn').on('click', function() {
+            removeFile(olIdx, index, fileList, deleteAllBtn);
+        });
+
+        fileList.append(fileRow);
+
+    });
+
+    // 파일 목록이 존재할 때만 전체삭제 버튼 보이도록 설정
+    deleteAllBtn.toggle(multiFilesInput[olIdx].length > 0);
+}
+
+// 파일 삭제 하는 함수
+function removeFile(olIdx, index, fileList, deleteAllBtn) {
+    multiFilesInput[olIdx].splice(index, 1);
+    renderFileList(olIdx, fileList, deleteAllBtn);
+    updateTotalVolume(olIdx);
+}
+
+// 파일 용량을 업데이트하는 함수
+function updateTotalVolume(olIdx, totalVolumeElement, totalVolumeText) {
+    const totalSize = multiFilesInput[olIdx].reduce((sum, fileObj) => sum + fileObj.file.size, 0);
+    const totalCount = multiFilesInput[olIdx].length;
+
+    totalVolumeElement.text(totalCount);
+    totalVolumeText.html(`첨부파일 <em>${totalCount}</em>개 (${(totalSize / 1024).toFixed(2)}KB)`);
+}
+
+// 개별 파일 업로드
+function initializeSingleFileUpload(fileInputId, fileBtnId, fileInfoWrapId, allowedTypes = []) {
+    const fileInput = $(fileInputId); 
+    const fileBtn = $(fileBtnId); 
+    const fileInfoWrap = $(fileInfoWrapId); // 선택된 파일 정보가 표시 되는 영역
+    const fileNameElement = fileInfoWrap.find('.file_name');
+    const fileSizeElement = fileInfoWrap.find('.file_size');
+    const deleteBtn = fileInfoWrap.find('.file_delete_Btn');
+
+    // 파일 첨부 버튼 클릭 시 파일 선택 창 열기
+    fileBtn.on('click', function() {
+        fileInput.trigger('click'); // 숨겨진 파일 input 요소에 클릭 이벤트 발생
+    });
+
+    // 파일 선택 시 파일 정보 업데이트
+    fileInput.on('change', function(event) {
+        const selectedFile = event.target.files[0]; // 첫 번째 선택한 파일
+
+         // 파일 타입 체크
+         if (selectedFile && allowedTypes.length > 0 && !allowedTypes.includes(selectedFile.type)) {
+
+            Swal.fire({
+                title: '경고',
+                html: '허용되지 않는 파일 형식입니다. <br> 다시 선택해주세요.',
+                icon: 'warning',
+                confirmButtonText: '확인'
+            });
+            fileInput.val(''); // 잘못된 파일 선택시 input 초기화
+            return;
+        }
+
+        if (selectedFile) {
+
+            // 파일 정보 영역 나타나기
+            fileInfoWrap.show();
+
+            // 파일 이름 및 크기 업데이트
+            fileNameElement.text(selectedFile.name);
+            const fileSizeInKB = (selectedFile.size / 1024).toFixed(2) + 'KB';
+            fileSizeElement.text(fileSizeInKB);
+
+            // 파일 삭제 버튼 활성화 및 파일 제거 이벤트 추가
+            deleteBtn.show().on('click', function() {
+                // 영역 없애기
+                fileInfoWrap.hide();
+                fileInput.val(''); // 파일 input 초기화
+                fileNameElement.text(''); // 파일 이름 초기화
+                fileSizeElement.text(''); // 파일 크기 초기화
+                $(this).hide(); // 삭제 버튼 숨기기
+            });
+        }
+    });
+}
+
+// 입력된 모듈 데이터 값 수집하는 함수
+function collectModuleData() {
+
+    const collectedData  = [];
+
+    state.options.forEach((option, index) => {
+        let value;
+        let eachVal = false; // 파일일 경우 옵션 데이터 보내지 않기 위한 변수
+
+        let file;
+            
+        switch (option.ol_type) {                        
+            case 'dropdown': 
+                const selectedValue = $(`#dropdown_${index}`).val(); // 선택된 ol_value 값
+                const selectedOption = option.ol_value.find(v => v.ol_value === selectedValue); // 선택된 값에 해당하는 옵션 객체 찾기
+
+                if (selectedOption) {
+                    value = selectedOption.ov_idx;
                 } else {
-                    console.error('Image upload failed: No URL in response');
+                    value = null;
                 }
+                eachVal = true;
+                break;
+
+            case 'dataInput': // 여러 개의 텍스트 입력 필드
+                value = $(`#dataInput_${index}`).val();
+                eachVal = true;
+                break;
+
+            case 'dateInput': // 여러 개의 날짜 입력 필드
+                value = $(`#dateInput_${index}`).val();
+                eachVal = true;
+                break;
+
+            // case 'files': // 다중 파일 입력 모듈
+            // const specificFilesArray  = []; // 각 파일 모듈에 대한 파일 배열 생성
+            // const specificFiles = $(`#multiFileInput_${index}`).get(0).files;
+
+            // for (let i = 0; i < specificFiles.length; i++) {
+            //     const file = specificFiles[i];
+            //     const fileObj = {
+            //         file: file,
+            //         name: file.name,
+            //         size: file.size,
+            //         action: 'add',
+            //         ol_idx: option.ol_idx,
+            //         attribute: '4'
+            //     };
+            //     specificFilesArray.push(fileObj);
+            // }
+            
+            // if (specificFilesArray.length > 0) {
+            //     // ol_idx별로 파일 그룹화
+            //     multiFilesInput[option.ol_idx] = specificFilesArray;
+            // }
+            // // // 모듈마다의 파일 리스트로 multiFilesInput에 추가
+            // // multiFilesInput.push(...specificFileArray);
+            // value = specificFilesArray.map(file => ({ name: file.name, size: file.size }));
+            // break;
+     
+            case 'file': // 단일 파일 입력 모듈
+
+            const singleFileInput = $(`#fileInput_${index}`).get(0);
+                if (singleFileInput && singleFileInput.files.length > 0) {
+                    file = singleFileInput.files[0];
+                    singleFile.push({ file: file, action: 'add', ol_idx: option.ol_idx, attribute: '1' });
+                    value = {
+                        name: file.name,
+                        size: file.size
+                    }; // 단일 파일 수집
+                } else {
+                    value = null; // 파일이 없을 경우 null
+                }
+                break;
+
+                case 'file_img': // 이미지 파일만 허용
+                const imgFileInput = $(`#fileImgInput_${index}`).get(0);
+                if (imgFileInput && imgFileInput.files.length > 0) {
+                    file = imgFileInput.files[0];
+                    singleFile.push({ file, action: 'add', ol_idx: option.ol_idx, attribute: '2' });
+                    value = {
+                        name: file.name,
+                        size: file.size
+                    };
+                } else {
+                    value = null;
+                }
+                break;
+
+            case 'file_video': // 비디오 파일만 허용
+                const videoFileInput = $(`#fileVideoInput_${index}`).get(0);
+                if (videoFileInput && videoFileInput.files.length > 0) {
+                    file = videoFileInput.files[0];
+                    singleFile.push({ file, action: 'add', ol_idx: option.ol_idx, attribute: '3' });
+                    value = {
+                        name: file.name,
+                        size: file.size
+                    };
+                } else {
+                    value = null;
+                }
+                break;
+
+            case 'textArea': // 텍스트 영역
+            value = $(`#textArea_${index}`).val();
+            break;
+
+            case 'checkbox':
+                value = $('#visibleCheckbox').is(':checked');
+                break;
+
+            default:
+                value = null; // 알 수 없는 유형 처리
+        }
+
+        if( eachVal === true ) {
+            collectedData.push({
+                ol_idx: option.ol_idx, // 옵션의 고유 식별자
+                ol_type: option.ol_type, // 옵션 유형
+                ol_value: value           // 수집된 값
+            });
+        }   
+
+        eachVal = false;     
+    });
+
+    return collectedData; // 수집된 데이터 반환
+}
+
+
+$(function() {
+    
+    fetchBoardDetailData();
+    
+    $('#saveButton').on('click', function() {
+
+        const moduleData = collectModuleData(); // 동적으로 생성된 모듈에서 값을 수집
+
+        console.log('수집된 데이터:', moduleData);
+        console.log('수집된 단일 파일 배열:', singleFile);
+        console.log('수집된 멀티 파일 배열:', multiFilesInput);
+        
+        const p_seq = $('#visibleCheckbox').is(':checked') ? "N" : "Y";
+        const p_notice =  "N" ;
+        
+        const formData = new FormData();
+        
+        if (singleFile.length > 0) {
+            singleFile.forEach((item, index) => {
+                formData.append(`files[${index}][file]`, item.file);
+                formData.append(`files[${index}][action]`, item.action);
+                formData.append(`files[${index}][ol_idx]`, item.ol_idx);
+                formData.append(`files[${index}][attribute]`, item.attribute);
+            });
+        }
+
+        // 다중 파일 배열 추가
+        if (multiFilesInput && Object.keys(multiFilesInput).length > 0) {
+            let startIndex = singleFile.length;
+            
+            for (const [ol_idx, fileArray] of Object.entries(multiFilesInput)) {
+                fileArray.forEach((item, index) => {
+                    const formDataIndex = startIndex++;
+                    formData.append(`files[${formDataIndex}][file]`, item.file);
+                    formData.append(`files[${formDataIndex}][action]`, item.action);
+                    formData.append(`files[${formDataIndex}][ol_idx]`, item.ol_idx);
+                    formData.append(`files[${formDataIndex}][attribute]`, item.attribute);
+                });
+            }
+        }
+
+        formData.append('p_seq', p_seq);
+        formData.append('p_notice', p_notice);
+        formData.append('group_idx', state.group_idx);
+        formData.append('board_idx', bidx);
+        formData.append('option', JSON.stringify(moduleData)); 
+
+        // FormData 내용 콘솔에 출력
+        for (let [key, value] of formData.entries()) {
+            console.log(`${key}: ${value}`);
+        }
+
+        $.ajax({
+            url : defaultUrl + '/with/post_add',
+            method : 'POST',
+            data : formData,
+            processData : false,
+            contentType : false,
+            headers : {
+                'Authorization' : `Bearer ${atoken}` 
             },
-            error: function(jqXHR, textStatus, errorThrown) {
-                console.error('Image upload failed:', textStatus, errorThrown);
+            success : function(response) {
+                console.log('게시글 등록 응답:', response.data);
+            },
+            error: function(error) {
+                console.error('게시글 등록 오류:', error.response ? error.response.data : error.message);
             }
         });
-    }
-
-
-
-
-
-function initializeForm() {
-    const registerButton = document.querySelector('.regiBtn button');
-    registerButton.addEventListener('click', handleFormSubmission);
-}
-
-// function uploadImage(file, editor) {
-//     console.log("editoreditoreditoreditoreditoreditoreditoreditoreditoreditoreditoreditoreditor");    
-//     console.log(editor);
-//     console.log("editoreditoreditoreditoreditoreditoreditoreditoreditoreditoreditoreditoreditor");
-//     const formData = new FormData();
-//     formData.append('file', file);
-
-//     const token = localStorage.getItem('accessToken');
-//     const accessId = localStorage.getItem('accessId');
-//     const url = `${defaultUrl}/file/upload?accessId=${accessId}`;
-
-//     axios.post(url, formData, {
-//         headers: {
-//             'Content-Type': 'multipart/form-data',
-//             'Authorization': `Bearer ${token}`
-//         }
-//     })
-//     .then(response => {
-//         const imageUrl = response.data.data.url;
-
-//         $('#summernote').summernote('insertImage', imageUrl);
-//         // $(editor).summernote('insertImage', imageUrl);
-//         state.uploadedFileIds.push(response.data.data.file_id);
-        
-        
-//         // if (response.data.result === 'success') {
-//         //     const imageUrl = response.data.data.url;
-//         //     $(editor).summernote('editor.insertImage', imageUrl);
-//         //     state.uploadedFileIds.push(response.data.data.file_id);
-//         // } else {
-//         //     throw new Error('Upload failed');
-//         // }
-//     })
-//     .catch(error => {
-//         console.error('Error uploading image:', error);
-//         showPopup(2, "Error uploading", "이미지 업로드에 실패했습니다.");
-//     });
-// }
-
-/**
-	* 이미지 파일 업로드
-	*/
-	// function uploadImage(file, editor) {
-    //     const token = localStorage.getItem('accessToken');
-    //     const accessId = localStorage.getItem('accessId');
-    //     const url = `${defaultUrl}/file/upload?accessId=${accessId}`;
-	// 	data = new FormData();
-	// 	data.append("file", file);
-    //     console.log(data);
-	// 	$.ajax({
-	// 		data : data,
-	// 		type : "POST",
-	// 		url : url,
-	// 		contentType : false,
-	// 		processData : false,
-    //         headers: {
-    //             'Authorization': `Bearer ${token}`
-    //         },
-	// 		success : function(data) {
-    //             console.log(111111111111111111);                                                        
-    //         	//항상 업로드된 파일의 url이 있어야 한다.
-    //             let Insert_url = data.data.url
-	// 			$(editor).summernote('insertImage', Insert_url);
-	// 		}
-	// 	});
-	// }
-
-
-function handleFormSubmission(e) {
-    e.preventDefault();
-
-    const titleInput = document.querySelector('.title_box input');
-    const privacyRadios = document.querySelectorAll('input[name="privacy"]');
-    const noticeRadios = document.querySelectorAll('input[name="notice"]');
-    const moduleWrap = document.querySelector('.module-wrap');
-
-    const title = titleInput.value;
-    const content = $('#summernote').summernote('code');
-    const privacy = document.querySelector('input[name="privacy"]:checked').value;
-    const isNotice = document.querySelector('input[name="notice"]:checked').value;
-
-    const dynamicOptions = Array.from(moduleWrap.querySelectorAll('.dynamic-option input')).reduce((acc, input) => {
-        acc[input.name] = input.value;
-        return acc;
-    }, {});
-
-    if (!title || !content) {
-        showPopup(2, "Error", "제목과 내용을 모두 입력해주세요.");
-        return;
-    }
-
-    // FormData 객체 생성
-    const formData = new FormData();
-
-    // 텍스트 데이터 추가
-    formData.append('p_title', title);
-    formData.append('p_content', content);
-    formData.append('p_seq', privacy);
-    formData.append('p_notice', isNotice);
-    
-    // 동적 옵션 추가
-    Object.keys(dynamicOptions).forEach(key => {
-        formData.append(key, dynamicOptions[key]);
     });
-
-    // 첨부파일 추가
-    state.filesArray.forEach((file) => {
-        formData.append(`file`, file);
-    });
-
-    // 업로드된 이미지 파일 ID 추가 (Summernote에서 업로드한 이미지)
-    formData.append('uploadedFileIds', JSON.stringify(state.uploadedFileIds));
-
-    // AJAX 요청
-    const token = localStorage.getItem('accessToken');
-
-    console.log(123456789);    
-    // console.log(formData);
-    console.log(...formData.entries());
-    console.log(123456789);
-
-    $.ajax({
-        url: `${defaultUrl}/with/post/add/${Id}`,
-        method: 'POST',
-        data: formData,
-        processData: false,
-        contentType: false,
-        headers: {
-            'Authorization': `Bearer ${token}`
-        },
-        success: function(response) {
-            console.log('successfully:', response);
-            showPopup(1, "Success", "게시글이 성공적으로 등록되었습니다.", 'suc');
-            // 성공 후 추가 작업 (예: 페이지 리디렉션)
-        },
-        error: function(jqXHR, textStatus, errorThrown) {
-            console.error('Form submission failed:', textStatus, errorThrown);
-            showPopup(2, "Error", "게시글 등록에 실패했습니다. 다시 시도해 주세요.");
-        }
-    });
-    
-}
-
-
-// 옵션값 불러오기
-function loadPostWriteData(boardId) {
-    const token = localStorage.getItem('accessToken');
-    const url = `${defaultUrl}/with/post/add/${boardId}`;
-    axios.get(url, {
-        headers: {
-            'Authorization': `Bearer ${token}`
-        }
-    })
-    .then(response => {
-        console.log('성공');
-        const data = response.data.data;
-        console.log('데이터값 확인 :', data);
-
-        state.options = data;
-        const option_wrap = document.querySelector(".module-wrap");
-
-        if (state.options.length === 0) {
-            option_wrap.style.display = "none";
-        } else {
-            option_wrap.style.display = "block";
-            renderDynamicOptions(state.options);
-        }
-    })
-    .catch(error => {
-        console.error('Error loading post data:', error);
-        showPopup(2, "Error loading post data", error);
-    });
-}
-
-function renderDynamicOptions(options) {
-    const moduleWrap = document.querySelector(".module-wrap");
-    moduleWrap.innerHTML = '';
-
-    options.forEach(option => {
-        const rowElement = document.createElement('div');
-        rowElement.className = 'row module align-items-center mb-3';
-
-        const labelElement = document.createElement('div');
-        labelElement.className = 'col-2 font-weight-bold';
-        labelElement.textContent = option.df_name;
-
-        const inputWrapElement = document.createElement('div');
-        inputWrapElement.className = 'col-10';
-
-        let inputElement;
-
-        switch (option.df_type) {
-            case 'dropdown':
-                inputElement = document.createElement('select');
-                inputElement.className = 'form-control';
-                const extraData = JSON.parse(option.extra_data);
-                extraData.options.forEach(optionItem => {
-                    const optElement = document.createElement('option');
-                    optElement.value = optionItem;
-                    optElement.textContent = optionItem;
-                    inputElement.appendChild(optElement);
-                });
-                break;
-            case 'dataInput':
-                inputElement = document.createElement('input');
-                inputElement.type = 'text';
-                inputElement.className = 'form-control';
-                break;
-            default:
-                inputElement = document.createElement('input');
-                inputElement.type = 'text';
-                inputElement.className = 'form-control';
-        }
-
-        inputElement.name = `option_${option.df_idx}`;
-        inputElement.id = `option_${option.df_idx}`;
-        if (option.required === 'Y') {
-            inputElement.required = true;
-            labelElement.innerHTML += ' <span class="text-danger">*</span>';
-        }
-
-        inputWrapElement.appendChild(inputElement);
-        rowElement.appendChild(labelElement);
-        rowElement.appendChild(inputWrapElement);
-        moduleWrap.appendChild(rowElement);
-    });
-}
-
-function loadPostEditData(postId) {
-    console.log("수정이지");
-    // TODO: 수정 모드 로직 구현
-}
-
-function renderFileList() {
-    const fileList = document.getElementById('fileList');
-    fileList.innerHTML = '';
-
-    state.filesArray.forEach((file, index) => {
-        const fileRow = document.createElement('tr');
-
-        fileRow.innerHTML = `
-            <td class="col-1">
-                <button class="remove-btn" data-index="${index}">삭제</button>
-            </td>
-            <td class="file-cell">${file.name}</td>
-            <td class="text-right">${(file.size / 1024).toFixed(2)}KB</td>
-            <td></td>
-        `;
-
-        fileList.appendChild(fileRow);
-    });
-}
-
-function initializeFileUpload() {
-    const fileInput = document.getElementById('fileInput');
-    const fileBtn = document.getElementById('fileBtn');
-    const deleteAllBtn = document.getElementById('deleteAllBtn');
-    const fileList = document.getElementById('fileList');
-
-    fileBtn.addEventListener('click', () => fileInput.click());
-    fileInput.addEventListener('change', handleFileSelection);
-    deleteAllBtn.addEventListener('click', deleteAllFiles);
-
-    // 파일 리스트에 대한 이벤트 위임
-    fileList.addEventListener('click', (event) => {
-        if (event.target.closest('.remove-btn')) {
-            const index = event.target.closest('.remove-btn').getAttribute('data-index');
-            removeFile(index);
-        }
-    });
-}
-
-function handleFileSelection(event) {
-    const newFiles = Array.from(event.target.files);
-    state.filesArray = [...state.filesArray, ...newFiles];
-    renderFileList();
-    updateTotalVolume();
-    // 파일 선택 후 input 초기화
-    event.target.value = '';
-}
-
-function deleteAllFiles() {
-    state.filesArray = [];
-    renderFileList();
-    updateTotalVolume();
-}
-
-
-function removeFile(index) {
-    state.filesArray.splice(index, 1);
-    renderFileList();
-    updateTotalVolume();
-}
-
-function updateTotalVolume() {
-    const totalSize = state.filesArray.reduce((sum, file) => sum + file.size, 0);
-    const totalCount = state.filesArray.length;
-
-    const totalVolumeElement = document.querySelector('.total_volume em');
-    const totalVolumeText = document.querySelector('.total_volume');
-
-    totalVolumeElement.textContent = totalCount;
-    totalVolumeText.innerHTML = `첨부파일 <em>${totalCount}</em>개 (${(totalSize / 1024).toFixed(2)}KB)`;
-
-    const deleteAllBtn = document.getElementById('deleteAllBtn');
-    deleteAllBtn.style.display = totalCount > 0 ? 'inline-block' : 'none';
-}
-
-function showPopup(seq, title, content, status, istype) {
-    const popup = new TimedPopup({
-        duration: seq * 1000,
-        title: title,
-        content: content,
-        backgroundColor: status,
-        type: istype,
-        onClose: () => console.log('팝업이 닫혔습니다.')
-    });
-    popup.show();
-}
+});

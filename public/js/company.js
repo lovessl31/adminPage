@@ -281,6 +281,7 @@ function addCompany() {
             fetchCompanyData(currentPage); // 데이터를 다시 불러와서 갱신
             clearFormFields();
         },
+        
         error : function(e) {
             console.log(e)
             console.log("error :: ")

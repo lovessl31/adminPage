@@ -1,409 +1,266 @@
-
-
-if(typeof TimedPopup === 'undefined') {
-    console.error('TimedPopup is not defined. Make sure TimedPopup.js is loaded correctly.');
-}
-const defaultUrl = "http://safe.withfirst.com:28888"
+// 공통 변수 선언
 let boards = [];
-let currentPage = 1;
-let itemsPerPage = 10;
-let totalPage = 1;
-let optionType = "all";
-let optionValue = "";
+let currentPage = 1; // 현재 페이지
+let itemsPerPage = 10; // 페이지 당 항목 수 (초기값)
+let totalPage = 1; // 총 페이지 수
+let optionType = "all"; // 기본 옵션 타입
+let optionValue = ""; // 검색어
+let total_count;
 
+// url 
+const defaultUrl = "http://safe.withfirst.com:28888"
+const params = new URL(document.location.href).searchParams;
 
+// 토큰
+const rtoken = getCookieValue('refreshToken');
+const atoken = localStorage.getItem('accessToken');
 
-document.addEventListener('DOMContentLoaded', () => {
-
-    // 전체 선택 기능
-    document.querySelector('thead input[type="checkbox"]').addEventListener('change', function () {
-        const isChecked = this.checked;
-        const checkboxes = document.querySelectorAll('tbody input[type="checkbox"');
-        checkboxes.forEach(checkbox => {
-            checkbox.checked = isChecked;
-        });
-    });
-
-    // 다중 삭제
-    document.getElementById('deleteBtn').addEventListener('click', () => {
-        const selectedBoards = Array.from(document.querySelectorAll('tbody input[type="checkbox"]:checked'))
-            .map(checkbox => ({
-                board_idx: checkbox.getAttribute('data-board-idx'),
-                board_name: checkbox.getAttribute('data-board-name')
-            }));
-
-        console.log('이건 머라고 나올까', selectedBoards);
-        if (selectedBoards.length > 0) {
-            deleteBoards(selectedBoards);
-        } else {
-            alert('삭제할 게시판을 선택해주세요.');
-        }
-    });
-
-    // localStorage에서 현재 페이지 번호 가져오기
-    const savedPage = localStorage.getItem('currentPage');
-    if (savedPage) {
-        currentPage = parseInt(savedPage, 10);
-        localStorage.removeItem('currentPage'); // 저장된 페이지 번호 삭제
-    } else {
-        currentPage = 1; // 기본 페이지를 1로 설정
-    }
-
-    // 검색 버튼 클릭 시와 검색 필드에서 엔터 키 입력 시
-    document.getElementById('searchButton').addEventListener('click', () => {
-        executeSearch();
-    });
-
-    document.getElementById('searchInput').addEventListener('keydown', (event) => {
-        if (event.key === 'Enter') {
-            event.preventDefault();
-            executeSearch();
-        }
-    });
-
-    function executeSearch() {
-        const searchSelect = document.getElementById('searchSelect');
-        const searchInput = document.getElementById('searchInput');
-        console.log(111111111111111111);
-        
-        console.log(searchInput);
-        console.log(searchSelect);
-        
-        if (searchSelect) {
-            console.log("test:        1",searchSelect.value);
-            
-            optionType = searchSelect.value.trim();
-        }
-        if (searchInput) {
-            optionValue = searchInput.value.trim();
-        }
-        // 검색 조건이 바뀔 때 마다 페이지를 1로 설정하고 데이터 로드하기
-        loadBoardData(1);
-    }
-
-    // 페이지 당 항목 수를 변경
-    document.getElementById('itemCountSelect').addEventListener('change', (event) => {
-        itemsPerPage = parseInt(event.target.value, 10);
-        loadBoardData(1);
-    });
-
-    // 데이터 로드 함수 호출
-    loadBoardData(currentPage);
-});
-
-// 실제 서버에서 데이터 불러오기
-function loadBoardData(page = 1) {
-    currentPage = page;
-    const token = localStorage.getItem('accessToken');
-    const url = `${defaultUrl}/with/boards?option_type=${optionType}&option_value=${optionValue}&per_page=${itemsPerPage}&page=${currentPage}`;
-
-    axios.get(url, {
-        headers: {
-            'Authorization': `Bearer ${token}`
-        }
-    })
-        .then(response => {
-            console.log('성공');
-            const data = response.data.data;
-            console.log('데이터값 확인 :', data);
-
-            boards = data;
-            console.log(boards);
-            console.log(response.data);
-            
-            totalPage = response.data.total_page || 1;            
-            totalCount = `모든 게시판(${response.data.total_count || 0})`
-            console.log(totalPage);
-            console.log(111111);
-            renderTable();
-            console.log(222222);
-
-            document.querySelector('thead input[type="checkbox"]').checked = false;
-            document.getElementById('board_count').textContent = totalCount;
-        })
-        .catch(error => {
-            console.error('Error loading board data:', error.response ? error.response.data : error.message);
-        });
-}
-
-function updateMove(bidx){
-
-	location.href="boardUpdate.html?bidx="+bidx;
-}
-
-// 테이블 랜더링
-function renderTable() {
-    const tableBody = document.getElementById('boardTableBody');
-    tableBody.innerHTML = ''; // 테이블 본문 초기화
-
-    // 전체 데이터에서 현재 페이지의 시작 인덱스 계산
-    const startIndex = (currentPage - 1) * itemsPerPage;
-
-    boards.forEach((board, index) => {
-        console.log("테이블 렌더링board :", board);
-
-        const row = document.createElement('tr');
-        row.innerHTML = `
-        <td>
-            <div class="d-flex align-items-center justify-content-center">
-                <input type="checkbox" data-board-idx="${board['게시판 번호']}" data-board-name="${board['게시판 명']}">
-            </div>
-        </td>        
-        <td>${startIndex + index + 1}</td>
-        <td><a href="/postList.html?id=${board['게시판 번호']}&name=${board["게시판 명"]}">${board["게시판 명"]}<img src="./images/link.svg"></a></td>        
-        <td>${board["게시판 타입"]}</td>
-        <td>${board["좋아요 유/무"]}</td>
-        <td>${board["카테고리 명"]}</td>
-        <td>${board["카테고리 유형"]}</td>
-        <td>${board["게시판 생성일"] ? board["게시판 생성일"].split(' ')[0] : ''}</td>
-        <td class="buttons center-align">                      
-            <button class="moveBtn" data-id="${board["게시판 번호"]}">이동</button>
-            <button class="modifyBtn" onclick="updateMove(${board['게시판 번호']})">수정</button>  
-            <button class="deleteBtn" data-board-idx="${board["게시판 번호"]}" data-board-name="${board["게시판 명"]}">삭제</button>
-        </td>
-        `;
-        console.log(0);
-        // if board[""]
-        tableBody.appendChild(row);
-        console.log(tableBody);
-
-        console.log(12);        
-    });
-
+// 게시판 리스트 로드 함수
+function fetchBoardData(page = 1) {
     
-    // 게시판 이동 이벤트
-    document.querySelectorAll('.moveBtn').forEach(button => {        
-        button.addEventListener('click', function() {
-            const boardId = this.getAttribute('data-id');
-            const board = boards.find(v => v["게시판 번호"] == boardId)
-            const boardName = board['게시판 명'];                      
-            window.location.href = `/postList.html?id=${boardId}&name=${boardName}`;
-        });
-    });
+    // 현재 페이지 기록
+    currentPage = page;
+    
+    $.ajax({
+        url : defaultUrl + `/with/board_list?option_type=${optionType}&option_value=${optionValue}&per_page=${itemsPerPage}&page=${currentPage}`,
+        method : 'GET',
+        headers : {
+            'Authorization' : `Bearer ${atoken}`
+        },
+        success : function(response) {
+            console.log('게시판 목록 데이터를 조회하는데 성공하였습니다.');
+            console.log('게시판 데이터: ', response.data);
 
+            // 로컬스토리지에 현재 페이지 저장
+            localStorage.setItem('currentPage', currentPage);
 
-    // 동적으로 생성된 팝업에 기존 데이터 맵핑
-    document.querySelectorAll('.boardModify').forEach(button => {
-        button.addEventListener('click', function () {
-            const boardId = this.getAttribute('data-id'); // 클릭 시 해당 게시판 idx 저장            
-            const board = boards.find(v => v["게시판 번호"] == boardId); // 해당 idx 일치하는 게시판 객체 저장
-            console.log("수정 board", board);
+            // 서버에서 받은 응답 데이터 전역변수 boards에 저장
+            boards = response.data;
+            totalPage = response.total_page || 1;
+            total_count = response.total_count;
 
-            // 해당 회사 객체로 팝업에 데이터 채우기
-            document.getElementById('regisName').value = board['게시판 명'];         
-
-            // 게시판 타입, 좋아요 라디오 버튼 설정
-            const boardTypeRadios = document.getElementsByName('boardType');
-            boardTypeRadios.forEach(v => {
-                v.checked = v.value === board["게시판 타입"];
-            });            
-            const likeFeatureRadios = document.getElementsByName('likeFeature');
-            likeFeatureRadios.forEach(v => {
-                v.checked = v.value === board["좋아요 유/무"];
-            });
-
-            document.getElementById('regisDate').textContent = board["게시판 생성일"].split(' ')[0];
-            document.getElementById('regisDesc').value = board["게시판 설명"];
-            // document.getElementById('regisOption').value = board.options
-
-            // 저장 버튼에 board_idx와 board_name data 속성으로 추가
-            document.getElementById('modifySaveBtn').setAttribute('data-board-idx', board['게시판 번호']);
-            document.getElementById('modifySaveBtn').setAttribute('data-origin-name', board['게시판 명']);
-            document.getElementById('modifyPopup').style.display = 'flex';                        
-        });
-    });
-
-
-    // 팝업 내 저장 버튼 클릭시 실행 될 이벤트 핸들러 
-    document.getElementById('modifySaveBtn').addEventListener('click', function () {
-        // 입력 필드에서 값 가져오기
-        const boardName = document.getElementById('regisName').value.trim();        
-        const boardType = document.querySelector('input[name="boardType"]:checked').value;
-        const boardLike = document.querySelector('input[name="likeFeature"]:checked').value;
-        const boardDesc = document.getElementById('regisDesc').value.trim();
-
-        const originBoardName = this.getAttribute('data-origin-name'); // 저장된 게시판 명 가져옴
-        const boardIdx = this.getAttribute('data-board-idx'); // 저장된 게시판 번호 가져옴
-        // const regisDynamicOption = document.getElementById('regisOption').value.trim(); // 게시판 옵션 가져오기
-
-        // 요청할 폼 데이터
-        const formData = new FormData();
-        formData.append('board_name', boardName);
-        formData.append('board_type', boardType);
-        formData.append('LikeSet', boardLike);
-        formData.append('board_desc', boardDesc);
-
-
-
-        const token = localStorage.getItem('accessToken');
-
-        // 수정 PUT 요청 보내기
-        axios.put(`${defaultUrl}/with/edit_board/${originBoardName}/${boardIdx}`, formData, {
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'multipart/form-data' // 폼데이터 전송 시 설정
-            }
-        })
-            .then(response => {
-                console.log('게시판 정보 수정 응답:', response.data);                
-                let title = "게시판 수정"
-                let body = "<p>게시판 정보가 수정되었습니다.</p>"                
-                showPopup(2, title, body, 'suc')
-                localStorage.setItem('currentPage', currentPage);
-                //페이지 새로 고침
-                location.reload();
-            })
-            .catch(error => {
-                console.error('게시판 정보 수정 오류:', error.response ? error.response.data : error.message);
-
-                if (error.response && error.response.status === 401) {
-                    // 401 에러 발생 시 로그아웃 함수 호출
-                    window.logout();
-                } else {
-                    // 기타 에러 처리
-                    alert('게시판 수정에 실패했습니다.');
-                }
-            });
-    });
-    // 팝업 내 취소 버튼 클릭 시 실행 될 이벤트 핸들러
-    document.querySelectorAll('.cancleBtn').forEach(cancelBtn => {
-        cancelBtn.addEventListener('click', () => {
-            cancelBtn.closest('.popup').style.display = 'none';
-        });
-    });
-    // 팝업 내 닫기 버튼 클릭 시 팝업 닫기
-    document.querySelectorAll('.popup .close').forEach(closeBtn => {
-        closeBtn.addEventListener('click', () => {
-            closeBtn.closest('.popup').style.display = 'none';
-        });
-    });
-
-
-
-
-    // 동적으로 생성된 이동
-
-    // 동적으로 생성된 개별 삭제
-    console.log(1);
-    document.querySelectorAll('.deleteBtn').forEach(button => {
-        button.addEventListener('click', function () {
-            const board_idx = this.getAttribute('data-board-idx');
-            const board_name = this.getAttribute('data-board-name');
-            console.log("게시판 삭제 버튼 동작 이벤트 테스트", board_idx, board_name);
-
-            deleteBoards([{ board_idx: board_idx, board_name: board_name }]);
-        })
-    });
-    console.log(2);
-    // 페이지 네이션
-    boardPagination()
-    console.log("pagination--------------------------------");
-}
-
-function showPopup(seq, title, content, status, istype) { 
-    const popup = new TimedPopup({
-
-        duration: seq * 1000,
-        title: title,
-        content: content,
-        backgroundColor: status,
-        type : istype,
-        onClose: () => console.log('팝업이 닫혔습니다.')
-    });
-    popup.show();
-}
-
-
-// 삭제 요청 함수
-function deleteBoards(boards) {
-    const token = localStorage.getItem('accessToken');
-
-    console.log('전송될 데이터:', JSON.stringify(boards));
-	console.log("del@@@@@@@@@@@@@@");
-	console.log(boards);
-    axios.delete(`${defaultUrl}/with/del_board`, {
-        data: boards,
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
+            renderBoardTable();
+            renderPagination();
+        },
+        error : function(e) {
+            console.log(e);
+            console.log("error :: 게시판 접속 에러");
         }
-    })
-        .then(response => {
-            console.log('게시판 삭제 응답:', response.data);                        
-            //showPopup(3, '게시판 삭제', "삭제 되었습니다.", 'suc')
-            //localStorage.setItem('currentPage', currentPage);
-            //페이지 새로 고침
-            location.reload();
-        })
-        .catch(error => {
-            console.error('게시판 삭제 오류:', error.response ? error.response.data : error.message);
-            if (error.response && error.response.status === 401) {
-                // 401에러 발생 시 로그아웃 함수 호출
-                //window.logout();
-            } else {
-                showPopup(3, '게시판 삭제', "삭제에 실패 하였습니다.")
-            }
-        });
+    });
+}
+
+// 게시판 목록 테이블 렌더링
+function renderBoardTable() {
+
+    $('.contentWrap p').text(`모든 게시판(${total_count})`);
+
+    const tableBody = $('#boardTableBody').empty();
+
+    boards.forEach(function(board) {
+
+        let boardType = (board.board_type === "P") ? "앨범형" : "리스트형";
+        let likeSet = (board.LikeSet === "Y") ? "사용" : "미사용";
+        let commentSet = (board.commentSet === "Y") ? "사용" : "미사용";
+        const row = $(`
+          <tr>
+                <td>
+                    <div class="d-flex align-items-center justify-content-center">
+                        <input type="checkbox" data-b-idx="${board.board_idx}" data-b-name="${board.board_name}">
+                    </div>
+                </td>
+                 <td style="text-align : left;">${board.board_idx}</td>
+                <td style="text-align : left;">
+                    <p class="moveBoardPage" data-b-idx="${board.board_idx}">${board.board_name}<img src="./images/link.svg"></p>
+                </td>
+                <td>${boardType}</td>
+                <td>${commentSet}</td>
+                <td>${likeSet}</td>
+                <td>${board.created_date.substring(0,10)}</td>
+                <td class="buttons center-align">
+                    <button class="modifyBtn" id="boardModify" data-b-idx="${board.board_idx}">수정</button>
+                    <button class="deleteBtn" data-b-idx="${board.board_idx}" data-b-name="${board.board_name}">삭제</button>
+                    <button class="moveBtn moveBoardPage" data-b-idx="${board.board_idx}">이동</button>
+                </td>
+            </tr>
+        `);
+
+        tableBody.append(row);
+    });
+    
+    // 체크박스 상태 초기화
+    $('thead input[type="checkbox"]').prop('checked', false);
+
+    // 동적으로 생성된 요소들에 이벤트 리스너 추가
+    $('#boardTableBody').on('click', '.modifyBtn', moveToPage('boardUpdate.html'));
+    $('#boardTableBody').on('click', '.deleteBtn', deleteBoard);
+    $('#boardTableBody').on('click', '.moveBoardPage', moveToPage('postList.html'));
 }
 
 // 페이지네이션 렌더링
-function boardPagination() {
-    const pagination = document.getElementById('pagination');
-    pagination.innerHTML = '';
-
-    // 첫 페이지로 이동 (<<)
-    const firstPage = document.createElement('li');
-    firstPage.className = 'page-item';
-    firstPage.innerHTML = `<a class="page-link" href="#"><<</a>`;
-    firstPage.onclick = (event) => {
+function renderPagination() {
+    const pagination = $('#pagination').empty();
+    const first = $('<li class="page-item"><a class="page-link" href="#"><<</a></li>');
+    first.on('click', function (event) {
         event.preventDefault();
-        loadBoardData(1);
-    };
-    pagination.appendChild(firstPage);
+        fetchBoardData(1);
+    });
+    pagination.append(first);
 
-    // 페이지 번호
-    const maxPagesToShow = 5; // 최대 페이지 버튼 수
+    const maxPagesToShow = 5;
     let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
     let endPage = Math.min(totalPage, startPage + maxPagesToShow - 1);
 
-    // 페이지 번호가 최소 범위를 초과하면 오른쪽으로 이동
     if (endPage - startPage + 1 < maxPagesToShow && startPage > 1) {
         startPage = Math.max(1, endPage - maxPagesToShow + 1);
     }
 
     for (let i = startPage; i <= endPage; i++) {
-        const pageItem = document.createElement('li');
-        pageItem.className = 'page-item' + (i === currentPage ? ' active' : '');
-
-        const pageButton = document.createElement('a');
-        pageButton.className = 'page-link';
-        pageButton.href = '#';
-        pageButton.textContent = i;
-        pageButton.onclick = (event) => {
+        const pageItem = $(`<li class="page-item${i === currentPage ? ' active' : ''}"><a class="page-link" href="#">${i}</a></li>`);
+        pageItem.on('click', function (event) {
             event.preventDefault();
-            loadBoardData(i);
-        };
-
-
-        pageItem.appendChild(pageButton);
-        pagination.appendChild(pageItem);
+            fetchBoardData(i);
+        });
+        pagination.append(pageItem);
     }
 
-    // 마지막 페이지로 이동 (>>)
-    const lastPage = document.createElement('li');
-    lastPage.className = 'page-item';
-    lastPage.innerHTML = `<a class="page-link" href="#">>></a>`;
-    lastPage.onclick = (event) => {
+    const last = $('<li class="page-item"><a class="page-link" href="#">>></a></li>');
+    last.on('click', function (event) {
         event.preventDefault();
-        loadBoardData(totalPage);
-    };
-    pagination.appendChild(lastPage);
+        fetchBoardData(totalPage);
+    });
+    pagination.append(last);
 }
 
+// 게시판 개별 삭제 함수
+function deleteBoard() {
+    const board_idx = $(this).data('b-idx');
+    const board_name = $(this).data('b-name');
+    deleteBoards([ { board_idx : board_idx, board_name: board_name } ]);
+}
 
+// 게시판 개별 및 다중 삭제 요청 함수
+function deleteBoards(boards) {
 
+    $.ajax({
+        url: defaultUrl + '/with/board_del',
+        method : 'DELETE',
+        headers : {
+            'Authorization': `Bearer ${atoken}`,
+            'Content-Type': 'application/json'
+        },
+        data : JSON.stringify(boards),
+        success : function(response) {
+            console.log('게시판 삭제 응답', response.data);
+            Swal.fire({
+                title: '삭제 완료',
+                text: '삭제되었습니다.',
+                icon: 'success',
+                confirmButtonText: '확인'
+            }).then(()=> {
+                fetchBoardData(currentPage);
+            });
+        },
+        error : function(e) {
+            console.log(e);
+            console.log("error :: 삭제 에러");
+        }
+    });
 
-// 게시판 생성 클릭 시 생성 페이지로 이동
-document.getElementById('createBoard').addEventListener('click', function () {
-    window.location.href = 'boardCreate.html';
+}
+
+// 페이지 이동 함수
+function moveToPage(page) {
+    return function() {
+        const board_idx = $(this).data('b-idx');
+        localStorage.setItem('board_idx', board_idx);
+
+        if(board_idx) {
+            // board_idx를 사용하여 동적으로 해당 페이지로 이동
+             window.location.href = `/${page}?board_idx=${board_idx}`;
+        } else {
+            console.error('board_idx를 찾을 수 없습니다.');
+        }
+    };
+}
+
+// 검색 실행 함수
+function executeSearch() {
+    const searchSelect = $('#searchSelect');
+    const searchInput = $('#searchInput');
+    
+    if (searchSelect.length) {
+        optionType = searchSelect.val();
+    }
+    
+    if (searchInput.length) {
+        optionValue = searchInput.val().trim();
+    }
+
+    // 검색 조건이 변경 될 때마다 페이지를 1로 설정하고 데이터를 가져옴
+    fetchBoardData(1);
+}
+
+$(function() {
+
+    // localStorage에서 현재 페이지 번호 가져오기
+    const savedPage = localStorage.getItem('currentPage');
+    currentPage = savedPage ? parseInt(savedPage, 10) : 1;
+    
+    // 페이지 데이터 로드
+    fetchBoardData(currentPage);
+
+    // 검색 버튼 클릭 및 엔터 입력 시 검색 함수 호출
+    $('#searchButton').on('click', executeSearch);
+    $('#searchInput').on('keydown', function (event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            executeSearch();
+        }
+    });
+    
+    // 검색 실행 함수
+    function executeSearch() {
+        optionType = $('#searchSelect').val();
+        optionValue = $('#searchInput').val().trim();
+        fetchBoardData(1);
+    }
+    
+    // 페이지 당 항목 수 변경
+    $('#itemCountSelect').on('change', function () {
+        itemsPerPage = parseInt($(this).val(), 10);
+        fetchBoardData(1);
+    });
+
+    // 체크박스 전체 선택
+    $('thead input[type="checkbox"]').on('change', function () {
+        const isChecked = $(this).is(':checked');
+        $('tbody input[type="checkbox"]').prop('checked', isChecked);
+    });
+    
+    // 체크박스 사용한 다중 삭제 기능
+    $('#deleteBtn').on('click', function() {
+        const selectedBoards = $('tbody input[type="checkbox"]:checked').map(function() {
+            return {
+                board_idx: $(this).data('b-idx'),
+                board_name: $(this).data('b-name')
+            };
+        }).get(); // 배열로 변환
+        
+        if (selectedBoards.length > 0) {
+            deleteBoards(selectedBoards);
+        } else {
+            Swal.fire({
+                // title: '경고',
+                text: '삭제할 사용자를 선택해 주세요.',
+                icon: 'warning',
+                confirmButtonText: '확인'
+            });
+        }
+    });
+    
+    // 게시판 생성 클릭 시 생성 페이지로 이동
+    $('#createBoard').on('click', function() {
+        window.location.href = 'boardCreate.html';
+    });
+
 });

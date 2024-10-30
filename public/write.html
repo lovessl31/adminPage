@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="ko">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,96 +17,10 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.10/dist/sweetalert2.min.css">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="./css/style.css">
-
     <link rel="stylesheet" href="/css/summernote/summernote-lite.css">
-</head>
-
-<style>
+    <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
     
-.file_attach_btn {
-display: flex;
-justify-content: space-between;
-align-items: center;
-}
-
-.file_attach_btn button {
-border: 1px solid #EEEEEE;
-background: #fff;
-color: #6F6F6F;
-width: 65px;
-height: 35px;
-border-radius: 5px;
-font-size: 14px;
-transition: ease 0.2s;
-}
-
-.file_attach_btn button:hover {
-background: #e8eff5;
-}
-
-.total_volume {
-color: #b3b3b3;
-letter-spacing: -0.2px;
-font-size: 14px;
-}
-
-.total_volume em {
-font-weight: bold;
-color: #1C9DEA;
-}
-
-.file_wrap {
-height: 115px;
-overflow-y: auto;
-border: 1px solid #d8d8d8;
-border-radius: 8px;
-margin: 15px 0px;
-}
-
-.file_wrap table {
-width: 100%;
-
-}
-
-.file_wrap table thead {
-font-size: 12px;
-border-bottom: 1px solid #d8d8d8;
-}
-
-.file_wrap table thead th {
-padding: 7px 5px;
-background: #f5f5f5;
-}
-
-.file_wrap table tbody td {
-font-size: 14px;
-padding: 6px 5px;
-}
-
-.file_wrap table tbody td span{
-padding-right: 6px;
-}
-
-.file_wrap table tbody button {
-border: none;
-background: transparent;
-}
-
-
-.text-right {
-text-align: right;
-}
-
-.col-1 {
-width: 25px;
-vertical-align: middle;
-}
-
-.col-1 button {
-margin-left: 5px;
-}
-
-</style>
+</head>
 
 <body>
     <div class="wrap">
@@ -134,11 +47,11 @@ margin-left: 5px;
         <!-- 사이드네비 -->
         <div class="sideNav">
             <ul>
-                <li><a href="company.html">회사관리</a></li>
-                <li><a href="user.html">사용자관리</a></li>
-                <li><a href="category.html">카테고리관리</a></li>
-                <li><a href="board.html">게시판관리</a></li>
-                <li><a href="organization.html">조직도관리</a></li>
+                <li><a href="company.html" class="resetPage">회사관리</a></li>
+                <li><a href="user.html" class="resetPage">사용자관리</a></li>
+                <li><a href="category.html" class="resetPage">카테고리관리</a></li>
+                <li><a href="board.html" class="resetPage">게시판관리</a></li>
+                <li><a href="organization.html" class="resetPage">조직도관리</a></li>
             </ul>
         </div>
         <!-- 메인 컨텐츠 -->
@@ -147,111 +60,130 @@ margin-left: 5px;
             <div class="contentInner">
                 <div class="contentWrap">
                     <div class="row">
-                        <div class="col-12">
-
-                            <div class="write_selectbox">
-                                <!-- 게시판 선택 -->
-                                <div class="write_post_name">게시판명</div>
-                                <br>
-                                <!-- 공개/비공개 설정 -->
-                                <div class="privacy_options">
-                                    <input type="radio" id="public" name="privacy" value="Y" checked>
-                                    <label for="public">공개</label>
-
-                                    <input type="radio" id="private" name="privacy" value="N">
-                                    <label for="private">비공개</label>
-                                </div>
-                                <!-- 공지글 Y/N 설정 -->
-                                <div class="notice_options">
-                                    <input type="radio" id="noticeY" name="notice" value="Y" checked>
-                                    <label for="noticeY">Y</label>
-
-                                    <input type="radio" id="noticeN" name="notice" value="N">
-                                    <label for="noticeN">N</label>
-                                </div>
-                            </div>
-                            <!-- 제목 입력받는 input창 -->
-                            <div class="title_box">
-                                <input type="text" placeholder="제목을 입력하세요">
-                            </div>
-                            <!-- 에디터 -->
-                            
-                        
-                        <!-- 첨부파일 -->
-                        <div class="file_attach_wrap">
-                            <div class="file_attach_btn">
-                                <div>
-                                <input type="file" id="fileInput" multiple style="display: none;" />
-                                <button id="fileBtn">파일첨부</button>
-                                <button id="deleteAllBtn" style="display: none;">전체삭제</button>
-                                </div>
-                                <p class="total_volume">첨부파일 <em>0</em>개 (0.0KB)</p>
-                            </div>
+                        <div class=" module_content col-12">
+                            <div class="module_wrap">
                     
-                            <div class="file_wrap">
-                                <table>
-                                <thead>
-                                    <th class="col-1"></th>
-                                    <th>파일명</th>
-                                    <th class="text-right">용량</th>
-                                    <th></th>
-                                </thead>
-                                <tbody id="fileList">
+                                <!-- 게시글 비공개 설정 -->
+                                <div class="modlue_item typeHide">
+                                    <input type="checkbox" id="visibleCheckbox" class="module_visible">
+                                    <label for="visibleCheckbox">게시글 비공개</label>
+                                </div>
+
+                                
+                                <!-- 드롭다운 모듈 -->
+                                <div class="modlue_item typeDropdown">
+                                    <h5 class="module_name">유형</h5>
+                                    <select>
+                                        <option value="">퍼블리싱</option>
+                                        <option value="">디자인</option>
+                                    </select>
+                                 </div>
+
+                                <!-- 입력 필드 모듈 -->
+                                 <div class="modlue_item typeInput">
+                                    <h5 class="module_name">제목</h5>
+                                    <input type="text" class="module_input">
+                                 </div>
+                                 
+                                <!-- 에디터 모듈 -->
+                                <div class="modlue_item typeEditor">
+                                    <h5 class="module_name">내용</h5>
+                                    <!-- <div class="editor_wrap" id="editor"></div> -->
                                     
-                                    <!-- <tr>
-                                    <td class="col-1"><button>x</button></td>
-                                    <td><span>아이콘</span>새폴더.zip</td>
-                                    <td class="text-right">270.86KB</td>
-                                    <td></td>
-                                    </tr>
-                                    <tr>
-                                    <td class="col-1"><button>x</button></td>
-                                    <td><span>아이콘</span>제작 관리 정산 비용.xls</td>
-                                    <td class="text-right">270.86KB</td>
-                                    <td></td>
-                                    </tr>
-                                    <tr>
-                                    <td class="col-1"><button>x</button></td>
-                                    <td><span>아이콘</span>위드챗 로고 디자인.ai</td>
-                                    <td class="text-right">270.86KB</td>
-                                    <td></td>
-                                    </tr>
-                                    <tr>
-                                    <td class="col-1"><button>x</button></td>
-                                    <td><span>아이콘</span>두번째.zip</td>
-                                    <td class="text-right">270.86KB</td>
-                                    <td></td>
-                                    </tr> -->
-                        
-                                </tbody>
-                                </table>
-                            </div>
-                            </div>
-                        
+                                </div>
 
+                                <!-- 날짜 모듈 -->
+                                 <div class="modlue_item typeDate">
+                                    <h5 class="module_name">완료기간</h5>
+                                    <input type="date" class="module_date">
+                                 </div>
 
+                                <!-- 멀티파일 첨부 모듈 -->
+                                <div class="modlue_item typeMultiFiles">
+                                    <h5 class="module_name">자격증 첨부</h5>
+                                    <div class="file_attach_wrap">
+                                        <div class="file_attach_btn">
+                                          <div>
+                                            <input type="file" id="fileInput" class="module_mutifiles" multiple style="display: none;" />
+                                            <button id="fileBtn">파일첨부</button>
+                                            <button id="deleteAllBtn" style="display: none;">전체삭제</button>
+                                          </div>
+                                          <p class="total_volume">첨부파일 <em>0</em>개 (0.0KB)</p>
+                                        </div>
+                                
+                                        <div class="file_wrap">
+                                          <table>
+                                            <thead>
+                                              <th class="col-1"></th>
+                                              <th>파일명</th>
+                                              <th class="text-right">용량</th>
+                                              <th></th>
+                                            </thead>
+                                            <tbody id="fileList">
+                                              
+                                              <!-- <tr>
+                                                <td class="col-1"><button>x</button></td>
+                                                <td><span>아이콘</span>새폴더.zip</td>
+                                                <td class="text-right">270.86KB</td>
+                                                <td></td>
+                                              </tr>
+                                              <tr>
+                                                <td class="col-1"><button>x</button></td>
+                                                <td><span>아이콘</span>제작 관리 정산 비용.xls</td>
+                                                <td class="text-right">270.86KB</td>
+                                                <td></td>
+                                              </tr>
+                                              <tr>
+                                                <td class="col-1"><button>x</button></td>
+                                                <td><span>아이콘</span>위드챗 로고 디자인.ai</td>
+                                                <td class="text-right">270.86KB</td>
+                                                <td></td>
+                                              </tr>
+                                              <tr>
+                                                <td class="col-1"><button>x</button></td>
+                                                <td><span>아이콘</span>두번째.zip</td>
+                                                <td class="text-right">270.86KB</td>
+                                                <td></td>
+                                              </tr> -->
+                                    
+                                            </tbody>
+                                          </table>
+                                        </div>
+                                      </div>
+                                </div>
 
+                                <!-- 파일 모듈 -->
+                                <div class="modlue_item typeFile">
+                                    <h5 class="module_name">사업자등록증</h5>
+                                    <div class="file_attach_wrap">
+                                        <div class="file_attach_btn">
+                                            <div>
+                                                <input type="file" class="module_file" style="display: none;">
+                                                <button id="fileUpload">파일첨부</button>
+                                            </div>
+                                        </div>
+                                        <div class="fileInfoWrap" style="display: none;">
+                                            <div class="fileInfoContent">
+                                                <div class="d-flex align-items-center">
+                                                    <span class="folder_img"><img src="/images/folder.svg"></span>
+                                                    <p class="file_name"></p>
+                                                </div>
+                                                <span class="file_size"></span>
+                                            </div>
+                                            <button class="file_delete_Btn"><img src="/images/trash.svg"></button>
+                                        </div>
+                                    </div>
+                                </div>
 
-                            <form class="write_edit" method="post">
-                                <textarea id="summernote" name="editordata"></textarea>
-                            </form>
-                            <!--                           
-                        <div >
-                            
-                        </div> -->
-
-                            <!-- 동적 옵션 -->
-                            <div class="module-wrap">
-                                <!-- 동적 옵션 나타는 곳 -->
-                            </div>
-
-
-                            <div class="regiBtn">
-                                <button>등록</button>
-                            </div>
-
-                            
+                                <!-- 텍스트영역 모듈 -->
+                                <div class="modlue_item typeTextArea">
+                                    <h5 class="module_name">간단한 설명</h5>
+                                    <textarea class="module_textArea"></textarea>
+                                </div>
                         </div>
+                    </div>
+                    <div class="regiBtn">
+                        <button id="saveButton">등록</button>
                     </div>
                 </div>
             </div>
@@ -291,7 +223,14 @@ margin-left: 5px;
     <!-- 썸머노트 부분 -->
     <script src="/js/summernote/summernote-lite.js"></script>
     <script src="/js/summernote/lang/summernote-ko-KR.js"></script>
-    <script src="/js/postWrite.js"></script>        
+    <script src="/js/postWrite.js"></script>       
+    <script src="/js/currentPage.js"></script> 
+    <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+
+    <script>
+
+    </script>
+
 </body>
 
 </html>

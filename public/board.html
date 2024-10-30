@@ -50,10 +50,11 @@
         <!-- 사이드네비 -->
         <div class="sideNav">
             <ul>
-                <li><a href="company.html">회사관리</a></li>
-                <li><a href="user.html">사용자관리</a></li>
-                <li><a href="category.html">카테고리관리</a></li>
-                <li><a href="board.html">게시판관리</a></li>
+                <li><a href="company.html" class="resetPage">회사관리</a></li>
+                <li><a href="user.html" class="resetPage">사용자관리</a></li>
+                <li><a href="category.html" class="resetPage">카테고리관리</a></li>
+                <li><a href="board.html" class="resetPage">게시판관리</a></li>
+                <li><a href="organization.html" class="resetPage">조직도관리</a></li>
             </ul>
         </div>
         <!-- 메인 컨텐츠 -->
@@ -61,7 +62,7 @@
             <h4>게시판관리</h4>
             <div class="contentInner">
                 <div class="contentWrap">
-                    <p id="board_count">모든 게시판(256)</p> <!-- 괄호 안 총 사용자 수 데이터 -->
+                    <p id="board_count"></p> <!-- 괄호 안 총 사용자 수 데이터 -->
                     <div class="searchContent">
                         <div class="searchWrap">
                             <select class="searchSelect" id="searchSelect">
@@ -85,7 +86,7 @@
                         </div>
                     </div>
 
-                    <table id="boardTableContainer">
+                    <table id="boardTableContainer" style="text-align: center;">
                         <thead>
                             <tr class="board_header">
                                 <th>
@@ -93,12 +94,11 @@
                                         <input type="checkbox">
                                     </div>
                                 </th>
-                                <th>No</th>
+                                <th style="text-align: left;">No</th>
                                 <th>게시판명</th>
                                 <th>게시판 유형</th>
+                                <th>댓글</th>
                                 <th>좋아요</th>
-                                <th>카테고리명</th>
-                                <th>카테고리 유형</th>
                                 <th>생성일</th>
                                 <th></th>
                             </tr>
@@ -134,8 +134,8 @@
                             </select>
                             <button id="deleteBtn">삭제</button>
                         </div>
-                        <!-- 페이지네이션 영역 -->
-                        <div class="pagination" id="pagination"></div>                                            
+                             <!-- 페이지네이션 영역 -->
+                    <div class="pagination" id="pagination"></div>                                        
                     </div>
                 </div>
             </div>
@@ -230,6 +230,7 @@
     <script src="./js/board.js"></script>    
     <!-- Sweetalert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script src="/js/currentPage.js"></script>
     <!-- <script type="module" src="./js/board.js"></script> -->
 </body>
 

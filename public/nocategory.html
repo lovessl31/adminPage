@@ -15,13 +15,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.10/dist/sweetalert2.min.css">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="./css/style.css">
-    <!-- jsTree CSS -->
-    <link rel="stylesheet" href="./css/jstree/themes/default/style.min.css">
-    <style>
-        hr {
-            margin-bottom: 15px;
-        }
-    </style>
+    <link rel="stylesheet" href="./images/downArrow.png">
 </head>
 <body>
     <div class="wrap">
@@ -51,84 +45,66 @@
                 </div>
             </div>
         </div>
-        +
         <!-- 사이드네비 -->
         <div class="sideNav">
             <ul>
-                <li><a href="company.html">회사관리</a></li>
-                <li><a href="user.html">사용자관리</a></li>
-                <li><a href="category.html">카테고리관리</a></li>
-                <li><a href="board.html">게시판관리</a></li>
-                <li><a href="organization.html">조직도관리</a></li>
+                <li><a href="company.html" class="resetPage">회사관리</a></li>
+                <li><a href="user.html" class="resetPage">사용자관리</a></li>
+                <li><a href="category.html" class="resetPage">카테고리관리</a></li>
+                <li><a href="board.html" class="resetPage">게시판관리</a></li>
+                <li><a href="organization.html" class="resetPage">조직도관리</a></li>
             </ul>
         </div>
-        
         <!-- 메인 컨텐츠 -->
         <div id="content">
             <h4>카테고리관리</h4>
+            <div class="contentInner">
+               <div class="contentWrap">
 
-            <div class="d-flex">
-                <div class="Oinner">
-                    <div class="d-flex justify-content-between align-items-center sticky-header org_sticky">
-                        <!-- <p>위드퍼스트(회사이름)</p> -->
-                        <div>
-                            <button id="addCate" class="cate_addBtn">카테고리추가</button>
+                <div class="categoryWrap">
+                    <div class="addWrap">
+                        <div class="add_img">
+                            <button id="addCategoryBtn">
+                                <img src="/images/add.svg">새 카테고리 추가
+                            </button>
                         </div>
-                        <div class="rightContent">
-                            <button id="modifyNode" class="modifyBtn">수정</button>
-                            <button id="confirmNode" class="confirmBtn" style="display: none;">확인</button>
-                            <button id="deleteNode" class="deleteBtn">삭제</button>
-                            <button id="cancleNode" class="cancleBtn"  style="display: none;">취소</button>
+                        <!-- <div class="addCateBtn">
+                            <button class="cancleBtn" id="cancleChangeBtn">취소</button>
+                            <button class="saveBtn" id="saveCategoriesBtn">저장</button>
+                        </div> -->
+                    </div>
+                    <div class="cateContentWrap">
+                        <div class="cateListWrap">
+                            <!-- #addCategoryBtn 새 카테고리 추가 버튼 누르면 최상위 li 추가-->
+                            <ul class="cateList" id="cateList">
+                               
+                            </ul>
+                        </div>
+    
+                        <div class="cateEx" id="cateEx">
+                            <!-- 카테고리 추가 전 초기 화면 -->
+                            <div id="explain" class="explain">
+                                <h5>카테고리 생성 안내</h5>
+                                <ul>
+                                    <li>상단의 새 카테고리 추가를 클릭하면 카테고리가 추가 됩니다.</li>
+                                    <li>최상위 카테고리는 상단의 메뉴가 됩니다.</li>
+                                    <li>추가된 최상위 카테고리의 + 버튼 클릭 시 하위 카테고리가 생성됩니다.
+                                    </li>
+                                    <li>생성된 카테고리는 오른쪽 필드에서 카테고리명 변경하실 수 있습니다.</li>
+                                </ul>
+                            </div>
+    
+                            <!-- 카테고리 추가 후 카테고리 선택 시 나타나는 화면 -->
+                            <div id="cateInputWrap" class="cateInputWrap" style="display:none;">
+                                <h5>카테고리명</h5>
+                                <div>
+                                    <input class="cateInput" type="text" id="cateInput">
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="Owrap">
-                   
-                   
-                        <hr>
-
-                        <div id="tree-container">
-                
-                        </div>
-                    </div>
-               
                 </div>
-                <div class="Oinner2">
-                    <div class="Owrap_user">
-                        <div class="d-flex justify-content-between">
-                            <div class="o-detail">
-                                <h5>게시판 목록</h5>
-                                <p>해당 게시판을 커서로 끌어 카테고리에 추가하실 수 있습니다.</p>
-                            </div>
-                            <div class="searchContent">
-                                <div class="searchInputWrapper d-flex align-items-center">
-                                    <div class="floatImg">
-                                        <img src="./images/search.svg">
-                                    </div>
-                                    <div class="searchInput">
-                                        <input type="text" id="searchInput" placeholder="검색어를 입력해주세요">
-                                        </div>
-                                        <div class="searchBtn"><button id="searchButton">검색</button></div>
-                                    </div>
-                            </div>
-                        </div>
-                        
-                    
-                        <table class="orgTable" style="text-align: center;">
-                            <thead>
-                                <tr>
-                                    <th></th>
-                                    <th>게시판명</th>
-                                    <th>게시판 유형</th>
-                                    <th>좋아요</th>
-                                    <th>생성일</th>
-                                </tr>
-                            </thead>
-                            <tbody id="boardTableBody">
-                            </tbody>
-                        </table>
-                        <div class="pagination mt-4 d-flex justify-content-end" id="pagination"></div>
-                    </div>
-                    
+
                 </div>
             </div>
         </div>
@@ -149,18 +125,23 @@
     
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
         <!-- jQuery -->
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
         <!-- Popper.js -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
         <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="./js/script.js"></script>
-    <!-- jsTree JS -->
-    <script src="./js/jstree/jstree.min.js"></script>
-    <script src="./js/newCategory.js"></script>
+    <script src="./js/category.js"></script>
+    <!-- Sweetalert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script src="/js/currentPage.js"></script>
     <script>
+
+    
     </script>
     </body>
     </html>
+    
 </body>
 </html>

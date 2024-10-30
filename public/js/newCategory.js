@@ -1051,4 +1051,14 @@ $('#tree-container').on('ready.jstree', function () {
     });
 
 
+        // 클릭 시 트리 외부 영역에서 선택 해제 및 변수 초기화
+        $(document).on('click', function(event) {
+            if (!$(event.target).closest('#tree-container').length) {
+                 $('#tree-container').jstree('deselect_all'); // 트리 선택 해제
+                selectedNodeId = null; // 선택된 노드 ID 초기화
+                console.log('Selected Node ID reset to null');
+            }
+        });
+        
+
 });
