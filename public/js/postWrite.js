@@ -9,35 +9,36 @@ const bidx = localStorage.getItem('board_idx');
 let singleFile = []; // 단일 파일 담을 배열
 let multiFilesInput = {}; // ol_idx를 키로 하는 객체
 let filesArray = []; // 파일 배열
+let editor;
 
 // 전역 변수를 객체로 묶어 관리
 const state = {
     options: [],
     uploadedFileIds: [],
     filesArray: [],
-    group_idx : null
+    group_idx: null
 };
 
 // 게시판 디테일 정보 서버에서 받아오기
 function fetchBoardDetailData() {
-	$.ajax({
-		url: defaultUrl + `/with/board_detail?bidx=${bidx}`,
-		method: 'GET',
-		headers: {
-			'Authorization': `Bearer ${atoken}`,
-		},
-		success: function(response) {
-			console.log('옵션 데이터 조회 성공', response);
-			const boardDeatail = response.data;
+    $.ajax({
+        url: defaultUrl + `/with/board_detail?bidx=${bidx}`,
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${atoken}`,
+        },
+        success: function (response) {
+            console.log('옵션 데이터 조회 성공', response);
+            const boardDeatail = response.data;
             // options와 group_idx를 추출해 state에 할당
             state.options = boardDeatail.options;
             state.group_idx = boardDeatail.group_idx;
             renderModules(state.options); // options 기반으로 모듈 렌더링		
-		},
-		error: function(e) {
-			console.log('error :: 옵션 조회 에러', e);
-		}
-	});
+        },
+        error: function (e) {
+            console.log('error :: 옵션 조회 에러', e);
+        }
+    });
 }
 
 // options 데이터를 기반으로 동적으로 모듈을 렌더링하는 함수
@@ -46,21 +47,21 @@ function renderModules(options) {
     const moduleWrap = $('.module_wrap');   // 모듈들이 들어갈 컨테이너
     moduleWrap.empty(); // 기존의 모든 모듈을 비우기
 
-  // 게시글 비공개 설정 모듈 (조건 없이 항상 렌더링)
+    // 게시글 비공개 설정 모듈 (조건 없이 항상 렌더링)
     const visibilityModule = `
         <div class="modlue_item typeHide">
             <input type="checkbox" id="visibleCheckbox" class="module_visible">
             <label for="visibleCheckbox">게시글 비공개</label>
         </div>
     `;
-    moduleWrap.append(visibilityModule); 
+    moduleWrap.append(visibilityModule);
 
     // 옵션별 모듈 생성
     options.forEach((option, index) => {
         let moduleElement;
 
         const requiredClass = option.required === 'Y' ? 'required' : ''; // required 값에 따라 클래스 결정
-        
+
         // ol_type에 따라 필요한 모듈을 생성
         switch (option.ol_type) {
 
@@ -74,7 +75,7 @@ function renderModules(options) {
                         </select>
                     </div>
                     `;
-            break;
+                break;
 
             // 데이터 입력 필드 모듈
             case 'dataInput':
@@ -84,7 +85,7 @@ function renderModules(options) {
                         <input type="text" id="dataInput_${index}" class="module_input">
                     </div>
                     `;
-            break;
+                break;
 
             // 날짜 입력 필드 모듈
             case 'dateInput':
@@ -94,8 +95,8 @@ function renderModules(options) {
                         <input type="date" id="dateInput_${index}" class="module_date">
                     </div>
                     `;
-            break;
-                
+                break;
+
             // 멀티 파일 모듈
             case 'files':
                 moduleElement = `
@@ -124,7 +125,7 @@ function renderModules(options) {
                         </div>
                     </div>
                     `;
-            break;
+                break;
 
             // 전체 파일 모듈
             case 'file':
@@ -151,10 +152,10 @@ function renderModules(options) {
                         </div>
                     </div>
                     `;
-            break;
+                break;
 
             // 이미지 전용 파일 모듈
-            case 'file_img': 
+            case 'file_img':
                 moduleElement = `
                     <div class="modlue_item typeFile">
                         <h5 class="module_name ${requiredClass}">${option.ol_name}</h5>
@@ -178,10 +179,10 @@ function renderModules(options) {
                         </div>
                     </div>
                     `;
-            break;
+                break;
 
             // 비디오 전용 파일 모듈
-            case 'file_video': 
+            case 'file_video':
                 moduleElement = `
                     <div class="modlue_item typeFile">
                         <h5 class="module_name ${requiredClass}">${option.ol_name}</h5>
@@ -205,7 +206,7 @@ function renderModules(options) {
                         </div>
                     </div>
                     `;
-            break;
+                break;
 
             // 텍스트 영역 모듈
             case 'textArea': // 텍스트 영역 모듈
@@ -215,7 +216,7 @@ function renderModules(options) {
                         <textarea id="textArea_${index}" class="module_textArea"></textarea>
                     </div>
                     `;
-            break;     
+                break;
 
             // 에디터 영역 모듈
             case 'editor':
@@ -225,18 +226,18 @@ function renderModules(options) {
                         <div id="editor_${index}"></div>
                     </div>
                     `;
-            break;
+                break;
 
             // 그 외
             default:
                 moduleElement = `<div><p>알 수 없는 모듈 유형: ${option.ol_type}</p></div>`;
         }
-        
+
         // 생성된 모듈을 컨테이너에 추가
         moduleWrap.append(moduleElement);
 
     });
-    
+
     // 에디터 모듈 초기화 (모듈이 렌더링된 후 실행)
     options.forEach((option, index) => {
         if (option.ol_type === 'editor') {
@@ -249,8 +250,8 @@ function renderModules(options) {
 
     // type_img 일 경우 허용 가능한 이미지 확장자
     const allowedImageTypes = [
-        'image/jpeg', 'image/png', 'image/gif', 
-        'image/bmp', 'image/webp', 'image/svg+xml', 
+        'image/jpeg', 'image/png', 'image/gif',
+        'image/bmp', 'image/webp', 'image/svg+xml',
         'image/tiff', 'image/x-icon'
     ];
 
@@ -278,14 +279,41 @@ function renderModules(options) {
 // 에디터 설정 함수
 function initializeEditor(editorSelector) {
     const editorElement = document.querySelector(editorSelector);
-    
-    // 에디터가 적용될 DOM 요소가 존재하는지 확인
+
     if (editorElement) {
-        new toastui.Editor({
+        editor = new toastui.Editor({
             el: editorElement,
             height: '600px',
             initialEditType: 'wysiwyg',
-            hideModeSwitch: true // 모드 전환 버튼 숨기기
+            hideModeSwitch: true,
+            hooks: {
+                addImageBlobHook: (blob, callback) => {
+                    const formData = new FormData();
+                    formData.append('file', blob);            
+                    $.ajax({
+                        url: `${defaultUrl}/with/temp_editor_add`,
+                        headers: {
+                            'Authorization': `Bearer ${atoken}`
+                        },
+                        method : 'POST',
+                        data: formData,                                                
+                        contentType: false,
+                        processData: false,                                        
+                        success: function(res) {
+                            console.log("에디터 데이터 확인:", res);
+                            
+                            // 이미지 URL에 서버 도메인 추가 (필요한 경우)
+                            const imageUrl = 'http://' + res.path                                                        
+                            callback(imageUrl, '이미지');
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('이미지 업로드 중 오류 발생:', error);
+                            console.error('상태 코드:', xhr.status);
+                            alert('이미지 업로드에 실패했습니다.');
+                        }
+                    });
+                }
+            }
         });
     } else {
         console.error(`에디터 요소를 찾을 수 없습니다: ${editorSelector}`);
@@ -308,19 +336,19 @@ function initializeMultiFileUpload(fileInputId, fileBtnId, deleteAllBtnId, fileL
     }
 
     // 파일 선택 창 오픈
-    fileBtn.on('click', function() {
+    fileBtn.on('click', function () {
         fileInput.trigger('click');
     });
 
     // 파일 선택 후 배열에 저장
-    fileInput.on('change', function(event) {
+    fileInput.on('change', function (event) {
         const newFiles = Array.from(event.target.files);
 
         // 기존의 filesArray와 새로 선택된 newFiles 배열을 합쳐서 할당
         filesArray = [...filesArray, ...newFiles];
 
         newFiles.forEach((file) => {
-    
+
             // 각 파일을 객체로 구성하여 배열에 추가
             multiFilesInput[olIdx].push({
                 file: file,
@@ -336,7 +364,7 @@ function initializeMultiFileUpload(fileInputId, fileBtnId, deleteAllBtnId, fileL
     });
 
     // 전체 삭제 버튼 클릭 시 실행
-    deleteAllBtn.on('click', function() {
+    deleteAllBtn.on('click', function () {
         multiFilesInput[olIdx] = [];
         renderFileList(olIdx, fileList, deleteAllBtn);
         updateTotalVolume(olIdx, totalVolumeElement, totalVolumeText);
@@ -362,7 +390,7 @@ function renderFileList(olIdx, fileList, deleteAllBtn) {
             </tr>
         `);
 
-        fileRow.find('.remove-btn').on('click', function() {
+        fileRow.find('.remove-btn').on('click', function () {
             removeFile(olIdx, index, fileList, deleteAllBtn);
         });
 
@@ -392,24 +420,24 @@ function updateTotalVolume(olIdx, totalVolumeElement, totalVolumeText) {
 
 // 개별 파일 업로드
 function initializeSingleFileUpload(fileInputId, fileBtnId, fileInfoWrapId, allowedTypes = []) {
-    const fileInput = $(fileInputId); 
-    const fileBtn = $(fileBtnId); 
+    const fileInput = $(fileInputId);
+    const fileBtn = $(fileBtnId);
     const fileInfoWrap = $(fileInfoWrapId); // 선택된 파일 정보가 표시 되는 영역
     const fileNameElement = fileInfoWrap.find('.file_name');
     const fileSizeElement = fileInfoWrap.find('.file_size');
     const deleteBtn = fileInfoWrap.find('.file_delete_Btn');
 
     // 파일 첨부 버튼 클릭 시 파일 선택 창 열기
-    fileBtn.on('click', function() {
+    fileBtn.on('click', function () {
         fileInput.trigger('click'); // 숨겨진 파일 input 요소에 클릭 이벤트 발생
     });
 
     // 파일 선택 시 파일 정보 업데이트
-    fileInput.on('change', function(event) {
+    fileInput.on('change', function (event) {
         const selectedFile = event.target.files[0]; // 첫 번째 선택한 파일
 
-         // 파일 타입 체크
-         if (selectedFile && allowedTypes.length > 0 && !allowedTypes.includes(selectedFile.type)) {
+        // 파일 타입 체크
+        if (selectedFile && allowedTypes.length > 0 && !allowedTypes.includes(selectedFile.type)) {
 
             Swal.fire({
                 title: '경고',
@@ -432,7 +460,7 @@ function initializeSingleFileUpload(fileInputId, fileBtnId, fileInfoWrapId, allo
             fileSizeElement.text(fileSizeInKB);
 
             // 파일 삭제 버튼 활성화 및 파일 제거 이벤트 추가
-            deleteBtn.show().on('click', function() {
+            deleteBtn.show().on('click', function () {
                 // 영역 없애기
                 fileInfoWrap.hide();
                 fileInput.val(''); // 파일 input 초기화
@@ -447,16 +475,16 @@ function initializeSingleFileUpload(fileInputId, fileBtnId, fileInfoWrapId, allo
 // 입력된 모듈 데이터 값 수집하는 함수
 function collectModuleData() {
 
-    const collectedData  = [];
+    const collectedData = [];
 
     state.options.forEach((option, index) => {
         let value;
         let eachVal = false; // 파일일 경우 옵션 데이터 보내지 않기 위한 변수
 
         let file;
-            
-        switch (option.ol_type) {                        
-            case 'dropdown': 
+
+        switch (option.ol_type) {
+            case 'dropdown':
                 const selectedValue = $(`#dropdown_${index}`).val(); // 선택된 ol_value 값
                 const selectedOption = option.ol_value.find(v => v.ol_value === selectedValue); // 선택된 값에 해당하는 옵션 객체 찾기
 
@@ -477,6 +505,12 @@ function collectModuleData() {
                 value = $(`#dateInput_${index}`).val();
                 eachVal = true;
                 break;
+            
+            case 'editor': // 여러 개의 에디터 필드                
+                value = editor.getHTML().replace(/&amp;/g, '&');
+                console.log(value);                
+                eachVal = true;
+                break;
 
             // case 'files': // 다중 파일 입력 모듈
             // const specificFilesArray  = []; // 각 파일 모듈에 대한 파일 배열 생성
@@ -494,7 +528,7 @@ function collectModuleData() {
             //     };
             //     specificFilesArray.push(fileObj);
             // }
-            
+
             // if (specificFilesArray.length > 0) {
             //     // ol_idx별로 파일 그룹화
             //     multiFilesInput[option.ol_idx] = specificFilesArray;
@@ -503,10 +537,10 @@ function collectModuleData() {
             // // multiFilesInput.push(...specificFileArray);
             // value = specificFilesArray.map(file => ({ name: file.name, size: file.size }));
             // break;
-     
+
             case 'file': // 단일 파일 입력 모듈
 
-            const singleFileInput = $(`#fileInput_${index}`).get(0);
+                const singleFileInput = $(`#fileInput_${index}`).get(0);
                 if (singleFileInput && singleFileInput.files.length > 0) {
                     file = singleFileInput.files[0];
                     singleFile.push({ file: file, action: 'add', ol_idx: option.ol_idx, attribute: '1' });
@@ -519,7 +553,7 @@ function collectModuleData() {
                 }
                 break;
 
-                case 'file_img': // 이미지 파일만 허용
+            case 'file_img': // 이미지 파일만 허용
                 const imgFileInput = $(`#fileImgInput_${index}`).get(0);
                 if (imgFileInput && imgFileInput.files.length > 0) {
                     file = imgFileInput.files[0];
@@ -548,8 +582,8 @@ function collectModuleData() {
                 break;
 
             case 'textArea': // 텍스트 영역
-            value = $(`#textArea_${index}`).val();
-            break;
+                value = $(`#textArea_${index}`).val();
+                break;
 
             case 'checkbox':
                 value = $('#visibleCheckbox').is(':checked');
@@ -559,38 +593,38 @@ function collectModuleData() {
                 value = null; // 알 수 없는 유형 처리
         }
 
-        if( eachVal === true ) {
+        if (eachVal === true) {
             collectedData.push({
                 ol_idx: option.ol_idx, // 옵션의 고유 식별자
                 ol_type: option.ol_type, // 옵션 유형
                 ol_value: value           // 수집된 값
             });
-        }   
+        }
 
-        eachVal = false;     
+        eachVal = false;
     });
 
     return collectedData; // 수집된 데이터 반환
 }
 
 
-$(function() {
-    
+$(function () {
+
     fetchBoardDetailData();
-    
-    $('#saveButton').on('click', function() {
+
+    $('#saveButton').on('click', function () {
 
         const moduleData = collectModuleData(); // 동적으로 생성된 모듈에서 값을 수집
 
         console.log('수집된 데이터:', moduleData);
         console.log('수집된 단일 파일 배열:', singleFile);
         console.log('수집된 멀티 파일 배열:', multiFilesInput);
-        
+
         const p_seq = $('#visibleCheckbox').is(':checked') ? "N" : "Y";
-        const p_notice =  "N" ;
-        
+        const p_notice = "N";
+
         const formData = new FormData();
-        
+
         if (singleFile.length > 0) {
             singleFile.forEach((item, index) => {
                 formData.append(`files[${index}][file]`, item.file);
@@ -603,7 +637,7 @@ $(function() {
         // 다중 파일 배열 추가
         if (multiFilesInput && Object.keys(multiFilesInput).length > 0) {
             let startIndex = singleFile.length;
-            
+
             for (const [ol_idx, fileArray] of Object.entries(multiFilesInput)) {
                 fileArray.forEach((item, index) => {
                     const formDataIndex = startIndex++;
@@ -619,7 +653,7 @@ $(function() {
         formData.append('p_notice', p_notice);
         formData.append('group_idx', state.group_idx);
         formData.append('board_idx', bidx);
-        formData.append('option', JSON.stringify(moduleData)); 
+        formData.append('option', JSON.stringify(moduleData));
 
         // FormData 내용 콘솔에 출력
         for (let [key, value] of formData.entries()) {
@@ -627,26 +661,26 @@ $(function() {
         }
 
         $.ajax({
-            url : defaultUrl + '/with/post_add',
-            method : 'POST',
-            data : formData,
-            processData : false,
-            contentType : false,
-            headers : {
-                'Authorization' : `Bearer ${atoken}` 
+            url: defaultUrl + '/with/post_add',
+            method: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            headers: {
+                'Authorization': `Bearer ${atoken}`
             },
-            success : function(response) {
+            success: function (response) {
                 console.log('게시글 등록 응답:', response.data);
                 Swal.fire({
                     title: '게시글 등록',
                     text: '게시글이 등록되었습니다.',
                     icon: 'success',
                     confirmButtonText: '확인'
-                }).then(()=> {
+                }).then(() => {
                     window.location.href = `/postList.html?board_idx=${bidx}`;  // 이전 board.html 페이지로 이동
                 });
             },
-            error: function(error) {
+            error: function (error) {
                 console.error('게시글 등록 오류:', error.response ? error.response.data : error.message);
             }
         });
