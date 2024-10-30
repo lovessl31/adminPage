@@ -74,7 +74,7 @@ function fetchPostData(page = 1 ) {
             // 로컬스토리지에 현재 페이지 저장
             localStorage.setItem('currentPage', currentPage);
 
-            users = response.data;
+            posts = response.data;
             totalPage = response.total_page || 1;
             total_count = response.total_count;
 
@@ -88,6 +88,7 @@ function fetchPostData(page = 1 ) {
             console.log(" error :: 사용자 접속 에러");
         }
     });
+
 
 }
 
@@ -112,7 +113,7 @@ function renderlistTable() {
          noPostsMessageContainer.empty();
 
          // 게시글 목록 렌더링
-         posts.forEach( function(user, index) {
+         posts.forEach( function(post, index) {
             const row = $(`
                 <tr>
                     <td>
@@ -137,7 +138,9 @@ function renderlistTable() {
                     </td>
                 </tr>
                 `);
-         })
+         });
+
+         tableBody.append(row);
 
     }
 }
@@ -278,7 +281,6 @@ $(function() {
         itemsPerPage = parseInt($(this).val(), 10);
         fetchPostData(1);
     });
-
 
 });
 
