@@ -362,9 +362,25 @@ document.addEventListener('DOMContentLoaded', () => {
         event.preventDefault();
         
         const board_idx = localStorage.getItem('board_idx');
-
         if(board_idx) {
-            document.location.href=`write.html?idx=${board_idx}&mode=create`;
+            $.ajax({
+                url: `${defaultUrl}/with/temp_clear`,
+                headers: {
+                    'Authorization': `Bearer ${atoken}`
+                },
+                method : 'GET',                                                
+                contentType: false,
+                processData: false,                                        
+                success: function(res) {
+                    console.log("서버로그:", res);                                
+                    document.location.href=`write.html?idx=${board_idx}&mode=create`;
+                },
+                error: function(xhr, status, error) {
+                    console.error('임시폴더 삭제 중 오류 발생:', error);
+                    console.error('상태 코드:', xhr.status);  
+                    showPopup(2, '페이지 전환', "페이지 전환에 실패 하였습니다.")              
+                }
+            });                        
         } else {
             console.log("ID가 localstorage에 없습니다.");            
             showPopup(2, '페이지 전환', "페이지 전환에 실패 하였습니다.")
