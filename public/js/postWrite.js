@@ -583,10 +583,12 @@ function collectModuleData() {
 
             case 'textArea': // 텍스트 영역
                 value = $(`#textArea_${index}`).val();
+                eachVal = true;
                 break;
 
             case 'checkbox':
                 value = $('#visibleCheckbox').is(':checked');
+                eachVal = true;
                 break;
 
             default:

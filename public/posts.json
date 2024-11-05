@@ -1,0 +1,87 @@
+{
+    "options": [
+        {
+            "ol_idx": 221,
+            "ol_name": "유형",
+            "ol_type": "dropdown",
+            "view_sts": "1"
+        },
+        {
+            "ol_idx": 222,
+            "ol_name": "상태",
+            "ol_type": "text",
+            "view_sts": "1"
+        },
+        {
+            "ol_idx": 223,
+            "ol_name": "우선순위",
+            "ol_type": "priority",
+            "view_sts": "1"
+        }
+    ],
+    "posts": [
+        {
+            "post_idx":1,
+            "author": "송수련",
+            "date": "2024-10-31 18:06",
+            "views": 105,
+            "likes": 3,
+            "options": [
+                {
+                    "ol_type": "dropdown",
+                    "value": "시작"
+                },
+                {
+                    "ol_type": "text",
+                    "value": "진행 중"
+                },
+                {
+                    "ol_type": "priority",
+                    "value": "높음"
+                }
+            ]
+        },
+        {
+            "post_idx":2,
+            "author": "김철수",
+            "date": "2024-10-30 15:22",
+            "views": 87,
+            "likes": 5,
+            "options": [
+                {
+                    "ol_type": "dropdown",
+                    "value": "완료"
+                },
+                {
+                    "ol_type": "text",
+                    "value": "종료됨"
+                },
+                {
+                    "ol_type": "priority",
+                    "value": "낮음"
+                }
+            ]
+        },
+        {
+            "post_idx":3,
+            "author": "이영희",
+            "date": "2024-10-29 09:45",
+            "views": 200,
+            "likes": 10,
+            "options": [
+                {
+                    "ol_type": "dropdown",
+                    "value": "진행"
+                },
+                {
+                    "ol_type": "text",
+                    "value": "대기 중"
+                },
+                {
+                    "ol_type": "priority",
+                    "value": "중간"
+                }
+            ]
+        }
+    ]
+}

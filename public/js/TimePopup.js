@@ -156,7 +156,7 @@ class TimedPopup {
                     // 선택하지 않았고 시간이 초과된 경우 "아니오" 선택       
                     this.onClose();
                     this.clearState();
-                    history.back();
+                    window.location.href = document.referrer;
                 }
                 this.onClose();
                 this.clearState();

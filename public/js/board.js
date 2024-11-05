@@ -68,7 +68,7 @@ function renderBoardTable() {
                         <input type="checkbox" data-b-idx="${board.board_idx}" data-b-name="${board.board_name}">
                     </div>
                 </td>
-                 <td style="text-align : left;">${board.board_idx}</td>
+                <td style="text-align : left;">${board.board_idx}</td>
                 <td style="text-align : left;">
                     <p class="moveBoardPage" data-b-idx="${board.board_idx}">${board.board_name}<img src="./images/link.svg"></p>
                 </td>
