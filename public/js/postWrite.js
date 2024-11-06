@@ -673,14 +673,14 @@ $(function () {
             },
             success: function (response) {
                 console.log('게시글 등록 응답:', response.data);
-                Swal.fire({
-                    title: '게시글 등록',
-                    text: '게시글이 등록되었습니다.',
-                    icon: 'success',
-                    confirmButtonText: '확인'
-                }).then(() => {
-                    window.location.href = `/postList.html?board_idx=${bidx}`;  // 이전 board.html 페이지로 이동
-                });
+                // Swal.fire({
+                //     title: '게시글 등록',
+                //     text: '게시글이 등록되었습니다.',
+                //     icon: 'success',
+                //     confirmButtonText: '확인'
+                // }).then(() => {
+                //     window.location.href = `/postList.html?board_idx=${bidx}`;  // 이전 board.html 페이지로 이동
+                // });
             },
             error: function (error) {
                 console.error('게시글 등록 오류:', error.response ? error.response.data : error.message);

@@ -1,4 +1,3 @@
-
 // url 
 const defaultUrl = "http://safe.withfirst.com:28888"
 const params = new URL(document.location.href).searchParams;
@@ -20,7 +19,7 @@ const pidx = urlParams.get('id');
 // 전역 변수
 let postDetail = [];
 let optionData = [];
-
+let commentsData = [];
 
 function fetchDetailData() {
 
@@ -43,6 +42,27 @@ function fetchDetailData() {
         }
     });
 
+}
+
+function fetchCommentData() {
+    $.ajax({
+        url : defaultUrl + `/with/comment_list?post_idx=${pidx}`,
+        method : 'GET',
+        headers : {
+            'Authorization' : `Bearer ${atoken}`
+        },
+        success : function(response) {
+            console.log('댓글 데이터 로드하는데 성공하였습니다.');
+            console.log('댓글 데이터 : ' , response.data);
+            commentsData = response.data;
+
+            renderComment();
+    
+        },
+        error : function(e) {
+            console.log('error :: 댓글 데이터 로드 에러', e);
+        }
+    });
 }
 
 function renderDetail() {
@@ -153,6 +173,18 @@ function generateHTMLForOption(option) {
                   </div>
                 </div>                
             `;
+
+        case 'dateInput':
+                return `
+                    <div class="module-container">
+                      <div class="module-content" id="module-dateinput">
+                        <h4>${option.ol_name}</h4>
+                        <div class="module-value">
+                            <p>${option.selected_value ? option.selected_value.value : '데이터 없음'}</p>
+                        </div>
+                      </div>
+                    </div>                
+                `;
 
         case 'file':
         case 'file_img':
@@ -344,9 +376,119 @@ function downloadFile(event) {
     xhr.send();
 }
 
+
+function renderComment() {
+
+    const cmtTitle = $('.cmt_title');
+    cmtTitle.empty();
+    cmtTitle.html(`<p>${commentsData.length}개의 댓글</p>`);
+
+
+    const cmtContainer = $('.cmt_container');
+    cmtContainer.empty();
+
+    commentsData.forEach(comment => {
+        const commentHtml = `
+                    <div class="cmt_item">
+                <div class="cmt_tit_wrap">
+                    <div class="cmt_tit_content">
+                        <div class="cmt_user_img">
+                            <img src="/images/default-profile.png'}" alt="User Image">
+                        </div>
+                        <div class="cmt_tit_info">
+                            <h5>${comment.user_name}</h5>
+                            <span>${comment.created_date}</span>
+                        </div>
+                    </div>
+                    <div class="cmt_more">
+                        <button>:</button>
+                    </div>
+                </div>
+                <div class="cmt_content">
+                    <p>${comment.cm_content}</p>
+                </div>
+                <div class="reply_btn">
+                    <button>답글</button>
+                </div>
+            </div>
+        `;
+        cmtContainer.append(commentHtml);
+    });
+}
+
+function replyOn() {
+    const replyButton = $(this);
+    const commentItem = replyButton.closest('.cmt_item'); // 클릭한 댓글 아이템
+    const existingReplyBox = commentItem.find('#reply_write'); // 현재 댓글에 열린 답글 작성창 있는지 확인
+
+    // 이미 답글 창이 열려 있으면 닫기
+    if (existingReplyBox.length) {
+        existingReplyBox.remove();
+    } else {
+        // 다른 곳에 열린 답글 창 닫기
+        $('#reply_write').remove();
+
+        // 답글 작성창 HTML 생성
+        const replyBoxHtml = `
+            <div class="cmt_write_wrap" id="reply_write">
+              <div class="cmt_write">
+                <div class="cmt_textarea">
+                  <textarea id="repplyTextArea" placeholder="댓글을 입력하세요.."></textarea>
+                </div>
+                
+                <div class="attach_area">
+                  <!-- 답글 사진 첨부 -->
+                  <div class="thumb_box_wrap" style="display: none;">
+                    <div class="thumb_box">
+                      <div class="img_cover">
+                        <span class="thumbnail"><img src="" alt="첨부 이미지" class="thumbnail-img"/></span>
+                        <button class="remove_img">
+                          <img src="/images/close.svg">
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- 답글 파일 첨부 -->
+                  <div class="file_cover" style="display: none;">
+                    <div class="cmt_fileList">
+                      <div>
+                        <span><img src="/images/folder.svg"></span>
+                        <span class="fine_name">
+                          <i class="file_name_img"></i>
+                          <button type="button" class="file_name_text">관리자페이지.zip</button>
+                        </span>
+                        <span class="file_size">(552B)</span>
+                      </div>
+                      <button class="btn_fine_del"><img src="/images/close_black.svg"></button>
+                    </div>
+                  </div>
+
+                  <div class="cmt_bottom">
+                    <input type="file" id="fileInputReply" multiple style="display:none">
+                    <button class="cmt_pic_wrap" id="fileButton">
+                      <img src="/images/pic.svg">
+                    </button>
+                    <div class="cmt_reg">
+                      <span>0/600</span>
+                      <button id="submitReply">등록</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+        `;
+
+        // 답글 작성창을 클릭한 댓글 아이템의 하단에 추가
+        commentItem.append(replyBoxHtml);
+    }
+}
+
+
 $(function() {
     
     fetchDetailData();
+    fetchCommentData()
 
     $('.confirmDeleteBtn').on('click', function() {
         $('.drop_content').toggle();
@@ -371,6 +513,48 @@ $(function() {
     });
 
 
+
+  // 답글 버튼 클릭 시 답글 작성창 표시
+  $(document).on('click', '.reply_btn button', replyOn);
+
+  // 댓글 등록
+  $(document).on('click', '#submitComment', function (e) {
+    event.preventDefault(); // 기본 제출 동작 방지
+
+    // 댓글 내용 가져오기
+    const content = $('#commentTextArea').val().trim();
+
+
+    const formData = new FormData();
+    formData.append('post_idx', pidx);
+    formData.append('content', content);
+
+
+    // AJAX 요청 설정
+    $.ajax({
+        url: `${defaultUrl}/with/comment_add`,
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${atoken}`
+        },
+        data: formData,
+        contentType: false,
+        processData: false,
+        success: function (response) {
+            // 댓글 추가 성공 시 처리 (예: 화면에 댓글 추가, 입력창 비우기)
+            alert('댓글이 등록되었습니다.');
+            $('#commentTextArea').val(''); // 입력창 초기화
+            // 댓글 목록 다시 불러오기
+            fetchCommentData();
+        },
+        error: function (error) {
+            console.error("댓글 등록 실패:", error);
+            alert("댓글 등록에 실패했습니다.");
+        }
+    });
+});
+
+  
 });
 
 
