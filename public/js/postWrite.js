@@ -474,114 +474,71 @@ function initializeSingleFileUpload(fileInputId, fileBtnId, fileInfoWrapId, allo
 
 // 입력된 모듈 데이터 값 수집하는 함수
 function collectModuleData() {
-
     const collectedData = [];
 
-    state.options.forEach((option, index) => {
+    for (const [index, option] of state.options.entries()) {
+        const isRequired = option.required === 'Y';
         let value;
         let eachVal = false; // 파일일 경우 옵션 데이터 보내지 않기 위한 변수
-
         let file;
 
         switch (option.ol_type) {
             case 'dropdown':
-                const selectedValue = $(`#dropdown_${index}`).val(); // 선택된 ol_value 값
-                const selectedOption = option.ol_value.find(v => v.ol_value === selectedValue); // 선택된 값에 해당하는 옵션 객체 찾기
-
-                if (selectedOption) {
-                    value = selectedOption.ov_idx;
-                } else {
-                    value = null;
-                }
+                const selectedValue = $(`#dropdown_${index}`).val();
+                const selectedOption = option.ol_value.find(v => v.ol_value === selectedValue);
+                value = selectedOption ? selectedOption.ov_idx : null;
                 eachVal = true;
                 break;
 
-            case 'dataInput': // 여러 개의 텍스트 입력 필드
+            case 'dataInput':
                 value = $(`#dataInput_${index}`).val();
                 eachVal = true;
                 break;
 
-            case 'dateInput': // 여러 개의 날짜 입력 필드
+            case 'dateInput':
                 value = $(`#dateInput_${index}`).val();
                 eachVal = true;
                 break;
-            
-            case 'editor': // 여러 개의 에디터 필드                
+
+            case 'editor':
                 value = editor.getHTML().replace(/&amp;/g, '&');
-                console.log(value);                
                 eachVal = true;
                 break;
 
-            // case 'files': // 다중 파일 입력 모듈
-            // const specificFilesArray  = []; // 각 파일 모듈에 대한 파일 배열 생성
-            // const specificFiles = $(`#multiFileInput_${index}`).get(0).files;
-
-            // for (let i = 0; i < specificFiles.length; i++) {
-            //     const file = specificFiles[i];
-            //     const fileObj = {
-            //         file: file,
-            //         name: file.name,
-            //         size: file.size,
-            //         action: 'add',
-            //         ol_idx: option.ol_idx,
-            //         attribute: '4'
-            //     };
-            //     specificFilesArray.push(fileObj);
-            // }
-
-            // if (specificFilesArray.length > 0) {
-            //     // ol_idx별로 파일 그룹화
-            //     multiFilesInput[option.ol_idx] = specificFilesArray;
-            // }
-            // // // 모듈마다의 파일 리스트로 multiFilesInput에 추가
-            // // multiFilesInput.push(...specificFileArray);
-            // value = specificFilesArray.map(file => ({ name: file.name, size: file.size }));
-            // break;
-
-            case 'file': // 단일 파일 입력 모듈
-
+            case 'file':
                 const singleFileInput = $(`#fileInput_${index}`).get(0);
                 if (singleFileInput && singleFileInput.files.length > 0) {
                     file = singleFileInput.files[0];
-                    singleFile.push({ file: file, action: 'add', ol_idx: option.ol_idx, attribute: '1' });
-                    value = {
-                        name: file.name,
-                        size: file.size
-                    }; // 단일 파일 수집
+                    singleFile.push({ file, action: 'add', ol_idx: option.ol_idx, attribute: '1' });
+                    value = { name: file.name, size: file.size };
                 } else {
-                    value = null; // 파일이 없을 경우 null
+                    value = null;
                 }
                 break;
 
-            case 'file_img': // 이미지 파일만 허용
+            case 'file_img':
                 const imgFileInput = $(`#fileImgInput_${index}`).get(0);
                 if (imgFileInput && imgFileInput.files.length > 0) {
                     file = imgFileInput.files[0];
                     singleFile.push({ file, action: 'add', ol_idx: option.ol_idx, attribute: '2' });
-                    value = {
-                        name: file.name,
-                        size: file.size
-                    };
+                    value = { name: file.name, size: file.size };
                 } else {
                     value = null;
                 }
                 break;
 
-            case 'file_video': // 비디오 파일만 허용
+            case 'file_video':
                 const videoFileInput = $(`#fileVideoInput_${index}`).get(0);
                 if (videoFileInput && videoFileInput.files.length > 0) {
                     file = videoFileInput.files[0];
                     singleFile.push({ file, action: 'add', ol_idx: option.ol_idx, attribute: '3' });
-                    value = {
-                        name: file.name,
-                        size: file.size
-                    };
+                    value = { name: file.name, size: file.size };
                 } else {
                     value = null;
                 }
                 break;
 
-            case 'textArea': // 텍스트 영역
+            case 'textArea':
                 value = $(`#textArea_${index}`).val();
                 eachVal = true;
                 break;
@@ -592,22 +549,171 @@ function collectModuleData() {
                 break;
 
             default:
-                value = null; // 알 수 없는 유형 처리
+                value = null;
         }
 
+        // 필수값이 비어 있을 경우 경고 표시
+        if (isRequired && (!value || (typeof value === 'string' && value.trim() === ''))) {
+            Swal.fire({
+                title: '필수값 입력',
+                text: `필수 입력 항목을 채워주세요: ${option.ol_name}`,
+                icon: 'warning',
+                confirmButtonText: '확인'
+            });
+            return false; // 필수값이 비어 있으면 함수 실행 중단
+        }
+
+        // 값이 수집된 경우에만 데이터를 추가
         if (eachVal === true) {
             collectedData.push({
-                ol_idx: option.ol_idx, // 옵션의 고유 식별자
-                ol_type: option.ol_type, // 옵션 유형
-                ol_value: value           // 수집된 값
+                ol_idx: option.ol_idx,
+                ol_type: option.ol_type,
+                ol_value: value
             });
         }
+    }
 
-        eachVal = false;
-    });
-
-    return collectedData; // 수집된 데이터 반환
+    return collectedData; // 모든 필수값이 입력된 경우 수집된 데이터 반환
 }
+
+// function collectModuleData() {
+    
+//     const collectedData = [];
+    
+//     state.options.forEach((option, index) => {
+//         const isRequired = option.required === 'Y';
+//         console.log('필수값이야??????????????????????????', isRequired);
+        
+//         let value;
+//         let eachVal = false; // 파일일 경우 옵션 데이터 보내지 않기 위한 변수
+
+//         let file;
+
+//         switch (option.ol_type) {
+//             case 'dropdown':
+//                 const selectedValue = $(`#dropdown_${index}`).val(); // 선택된 ol_value 값
+//                 const selectedOption = option.ol_value.find(v => v.ol_value === selectedValue); // 선택된 값에 해당하는 옵션 객체 찾기
+
+//                 if (selectedOption) {
+//                     value = selectedOption.ov_idx;
+//                 } else {
+//                     value = null;
+//                 }
+//                 eachVal = true;
+//                 break;
+
+//             case 'dataInput': // 여러 개의 텍스트 입력 필드
+//                 value = $(`#dataInput_${index}`).val();
+//                 eachVal = true;
+//                 break;
+
+//             case 'dateInput': // 여러 개의 날짜 입력 필드
+//                 value = $(`#dateInput_${index}`).val();
+//                 eachVal = true;
+//                 break;
+            
+//             case 'editor': // 여러 개의 에디터 필드                
+//                 value = editor.getHTML().replace(/&amp;/g, '&');
+//                 console.log(value);                
+//                 eachVal = true;
+//                 break;
+
+//             // case 'files': // 다중 파일 입력 모듈
+//             // const specificFilesArray  = []; // 각 파일 모듈에 대한 파일 배열 생성
+//             // const specificFiles = $(`#multiFileInput_${index}`).get(0).files;
+
+//             // for (let i = 0; i < specificFiles.length; i++) {
+//             //     const file = specificFiles[i];
+//             //     const fileObj = {
+//             //         file: file,
+//             //         name: file.name,
+//             //         size: file.size,
+//             //         action: 'add',
+//             //         ol_idx: option.ol_idx,
+//             //         attribute: '4'
+//             //     };
+//             //     specificFilesArray.push(fileObj);
+//             // }
+
+//             // if (specificFilesArray.length > 0) {
+//             //     // ol_idx별로 파일 그룹화
+//             //     multiFilesInput[option.ol_idx] = specificFilesArray;
+//             // }
+//             // // // 모듈마다의 파일 리스트로 multiFilesInput에 추가
+//             // // multiFilesInput.push(...specificFileArray);
+//             // value = specificFilesArray.map(file => ({ name: file.name, size: file.size }));
+//             // break;
+
+//             case 'file': // 단일 파일 입력 모듈
+
+//                 const singleFileInput = $(`#fileInput_${index}`).get(0);
+//                 if (singleFileInput && singleFileInput.files.length > 0) {
+//                     file = singleFileInput.files[0];
+//                     singleFile.push({ file: file, action: 'add', ol_idx: option.ol_idx, attribute: '1' });
+//                     value = {
+//                         name: file.name,
+//                         size: file.size
+//                     }; // 단일 파일 수집
+//                 } else {
+//                     value = null; // 파일이 없을 경우 null
+//                 }
+//                 break;
+
+//             case 'file_img': // 이미지 파일만 허용
+//                 const imgFileInput = $(`#fileImgInput_${index}`).get(0);
+//                 if (imgFileInput && imgFileInput.files.length > 0) {
+//                     file = imgFileInput.files[0];
+//                     singleFile.push({ file, action: 'add', ol_idx: option.ol_idx, attribute: '2' });
+//                     value = {
+//                         name: file.name,
+//                         size: file.size
+//                     };
+//                 } else {
+//                     value = null;
+//                 }
+//                 break;
+
+//             case 'file_video': // 비디오 파일만 허용
+//                 const videoFileInput = $(`#fileVideoInput_${index}`).get(0);
+//                 if (videoFileInput && videoFileInput.files.length > 0) {
+//                     file = videoFileInput.files[0];
+//                     singleFile.push({ file, action: 'add', ol_idx: option.ol_idx, attribute: '3' });
+//                     value = {
+//                         name: file.name,
+//                         size: file.size
+//                     };
+//                 } else {
+//                     value = null;
+//                 }
+//                 break;
+
+//             case 'textArea': // 텍스트 영역
+//                 value = $(`#textArea_${index}`).val();
+//                 eachVal = true;
+//                 break;
+
+//             case 'checkbox':
+//                 value = $('#visibleCheckbox').is(':checked');
+//                 eachVal = true;
+//                 break;
+
+//             default:
+//                 value = null; // 알 수 없는 유형 처리
+//         }
+
+//         if (eachVal === true) {
+//             collectedData.push({
+//                 ol_idx: option.ol_idx, // 옵션의 고유 식별자
+//                 ol_type: option.ol_type, // 옵션 유형
+//                 ol_value: value           // 수집된 값
+//             });
+//         }
+
+//         eachVal = false;
+//     });
+
+//     return collectedData; // 수집된 데이터 반환
+// }
 
 
 $(function () {
@@ -617,6 +723,19 @@ $(function () {
     $('#saveButton').on('click', function () {
 
         const moduleData = collectModuleData(); // 동적으로 생성된 모듈에서 값을 수집
+
+               
+        // 필수값이 입력되지 않은 경우, false 반환하도록
+        if (!moduleData) {
+            Swal.fire({
+                title: '필수값 입력',
+                text: '필수값을 모두 입력해 주세요.',
+                icon: 'warning',
+                confirmButtonText: '확인'
+            });
+            return; // 필수값이 비어 있으면 서버로 전송하지 않음
+        }
+
 
         console.log('수집된 데이터:', moduleData);
         console.log('수집된 단일 파일 배열:', singleFile);
@@ -673,14 +792,14 @@ $(function () {
             },
             success: function (response) {
                 console.log('게시글 등록 응답:', response.data);
-                // Swal.fire({
-                //     title: '게시글 등록',
-                //     text: '게시글이 등록되었습니다.',
-                //     icon: 'success',
-                //     confirmButtonText: '확인'
-                // }).then(() => {
-                //     window.location.href = `/postList.html?board_idx=${bidx}`;  // 이전 board.html 페이지로 이동
-                // });
+                Swal.fire({
+                    title: '게시글 등록',
+                    text: '게시글이 등록되었습니다.',
+                    icon: 'success',
+                    confirmButtonText: '확인'
+                }).then(() => {
+                    window.location.href = `/postList.html?board_idx=${bidx}`;  // 이전 board.html 페이지로 이동
+                });
             },
             error: function (error) {
                 console.error('게시글 등록 오류:', error.response ? error.response.data : error.message);
