@@ -1,125 +1,129 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AMDIN - 관리자페이지</title>
-    <link rel="icon" href="./images/favicon.png" type="image/png">
-    <!-- Reset CSS -->
-    <link rel="stylesheet" href="./css/reset.css">
-    <!-- Pretendard Font -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css">
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <!-- sweetalert2 CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.10/dist/sweetalert2.min.css">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="./css/style.css">
-    <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
-    
-    <!-- <link rel="stylesheet" href="./css/post.css"> -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AMDIN - 관리자페이지</title>
+  <link rel="icon" href="./images/favicon.png" type="image/png">
+  <!-- Reset CSS -->
+  <link rel="stylesheet" href="./css/reset.css">
+  <!-- Pretendard Font -->
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css">
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <!-- sweetalert2 CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.10/dist/sweetalert2.min.css">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="./css/style.css">
+  <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
+
+  <!-- <link rel="stylesheet" href="./css/post.css"> -->
 </head>
+
 <body>
-    <div class="wrap">
-        <!-- 헤더 -->
-        <div id="header">
-            <div class="headerWrap">
-                <div class="leftHeader">
-                    <img src="">
-                    <a href="index.html">ADMIN</a>
-                </div>
-                <div class="rightHeader">
-                    <div id="loginButtons">
-                        <ul>
-                            <li><a href="login.html">LOGIN</a></li> <!-- 최고 관리자 로그인 페이지 -->
-                            <!-- 회사관리자 로그인 페이지 -->
-                            <!-- <li><a href="com_login.html">슈퍼</a></li> -->
-                        </ul>
-                    </div>
-                    
-                    <button id="logoutButton" style="display: none;">LOGOUT</button>
-                    <div id="userInfo" style="display: none;"> <!-- 로그인 성공 시 로그인 사용자 정보-->
-                        <!-- <div class="d-flex align-items-center">
+  <div class="wrap">
+    <!-- 헤더 -->
+    <div id="header">
+      <div class="headerWrap">
+        <div class="leftHeader">
+          <img src="">
+          <a href="index.html">ADMIN</a>
+        </div>
+        <div class="rightHeader">
+          <div id="loginButtons">
+            <ul>
+              <li><a href="login.html">LOGIN</a></li> <!-- 최고 관리자 로그인 페이지 -->
+              <!-- 회사관리자 로그인 페이지 -->
+              <!-- <li><a href="com_login.html">슈퍼</a></li> -->
+            </ul>
+          </div>
+
+          <button id="logoutButton" style="display: none;">LOGOUT</button>
+          <div id="userInfo" style="display: none;"> <!-- 로그인 성공 시 로그인 사용자 정보-->
+            <!-- <div class="d-flex align-items-center">
                             <span>guest</span>
                             <div class="imgBg"></div>
                         </div> -->
-                    </div>
-                </div>
-            </div>
+          </div>
         </div>
-        <!-- 사이드네비 -->
-        <div class="sideNav">
-            <ul>
-              <li><a href="company.html" class="resetPage">회사관리</a></li>
-              <li><a href="user.html" class="resetPage">사용자관리</a></li>
-              <li><a href="category.html" class="resetPage">카테고리관리</a></li>
-              <li><a href="board.html" class="resetPage">게시판관리</a></li>
-              <li><a href="organization.html" class="resetPage">조직도관리</a></li>
-            </ul>
-        </div>
-        <!-- 메인 컨텐츠 -->
-        <div id="content">
-            <div class="postContentInner">
-                         <!-- 내가 좋아요 눌렀을 때 -->
-                         <div class="post_side_icon">
-                          <div class="likesWrap">
-                            <!-- <button><img src="/images/fillheart.png"></button>
+      </div>
+    </div>
+    <!-- 사이드네비 -->
+    <div class="sideNav">
+      <ul>
+        <li><a href="company.html" class="resetPage">회사관리</a></li>
+        <li><a href="user.html" class="resetPage">사용자관리</a></li>
+        <li><a href="category.html" class="resetPage">카테고리관리</a></li>
+        <li><a href="board.html" class="resetPage">게시판관리</a></li>
+        <li><a href="organization.html" class="resetPage">조직도관리</a></li>
+      </ul>
+    </div>
+    <!-- 메인 컨텐츠 -->
+    <div id="content">
+      <div class="postContentInner">
+        <!-- 내가 좋아요 눌렀을 때 -->
+        <div class="post_side_icon">
+          <div class="likesWrap">
+            <!-- <button><img src="/images/fillheart.png"></button>
                              <span>30</span> -->
-                          </div>
-                          <div class="cmtWrap">
-                            <!-- <button><img src="/images/Comments.png"></button>
+          </div>
+          <div class="cmtWrap">
+            <!-- <button><img src="/images/Comments.png"></button>
                             <span>8</span> -->
-                          </div>
-                
-                        </div>
-                        
-               <div class="postContentWrap">
-     
+          </div>
 
-              <!-- 내가 좋아요 안누르고, 아무도 안눌렀을 때 -->
-              <!-- <div class="likesWrap">
+        </div>
+
+        <div class="postContentWrap">
+
+
+          <!-- 내가 좋아요 안누르고, 아무도 안눌렀을 때 -->
+          <!-- <div class="likesWrap">
                   <button><img src="/images/heart.png"></button>
                   <p>좋아요 <span class="likes_count">0</span></p>
               </div> -->
 
-              <!-- 내가 안눌렀지만, 다른 사람들이 눌렀을 때 -->
-              <!-- <div class="likesWrap">
+          <!-- 내가 안눌렀지만, 다른 사람들이 눌렀을 때 -->
+          <!-- <div class="likesWrap">
                   <button><img src="/images/heart.png"></button>
                   <p>좋아요 <span class="likes_count">4</span></p>
               </div> -->
-   
-                
-                <div class="post-header">
-                    <p></p><!-- 클릭한 게시판 명 -->
-                    <button class="postListBtn">목록</button>
-                </div>
-
-                <div class="post-title">
-                  <div class="d-flex justify-content-between align-items-center mt-2">
-                    <div class="write-info">
-                        <span>송수련</span>
-                        <span>2024. 7. 31. 16:33</span>
-                        <span>조회 23</span>
-                    </div>
-                    <div class="modify-drop">
-                        <button class="confirmDeleteBtn"><img src="/images/confrimpic.png"></button>
-                        <ul class="drop_content">
-                            <li><button>수정</button></li>
-                            <li><button>삭제</button></li>
-                            <li><button>비공개</button></li>
-                        </ul>
-                    </div>
-                  </div>
-                </div>
-                
-                <hr>
 
 
-                <div id="optionsContainer">
-                  <!-- 옵션 모듈들이 여기에 추가됩니다. -->
-                </div>
+          <div class="post-header">
+            <p></p><!-- 클릭한 게시판 명 -->
+            <button class="postListBtn">목록</button>
+          </div>
 
-                <!-- <div class="module-container">
+          <div class="post-title">
+            <div class="d-flex justify-content-between align-items-center mt-2">
+              <div class="write-info">
+                <span>송수련</span>
+                <span>2024. 7. 31. 16:33</span>
+                <span>조회 23</span>
+              </div>
+              <div class="modify-drop">
+                <button class="confirmDeleteBtn"><img src="/images/confrimpic.png"></button>
+                <ul class="drop_content">
+                  <li><button>수정</button></li>
+                  <li><button>삭제</button></li>
+                  <li><button>비공개</button></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <hr>
+
+
+          <div id="optionsContainer">
+            <!-- 옵션 모듈들이 여기에 추가됩니다. -->
+          </div>
+
+          <!-- <div class="module-container">
                   <div class="module-content" id="module-dropdown">
                     <h4>유형</h4>
                     <div class="selectedOption">
@@ -169,7 +173,7 @@
                           <button class="toggle-file-wrap">
                                 <img id="toggle-icon" src="/images/attach-dropright.png">
                                 <!-- 첨부파일 닫혀있을경우 -->
-                                <!-- <img src="/images/attach-dropright.png"> 
+          <!-- <img src="/images/attach-dropright.png"> 
                           </button>
                           <p>목록열기 <span class="fileCount">3</span>개<span class="total-c">(134.5KB)</span></p>
                         </div>
@@ -258,17 +262,17 @@
                 </div> -->
 
 
-                <hr>
+          <hr>
 
-                <div class="post-content">
+          <div class="post-content">
 
-                    <!-- 게시글에 첨부된 첨부파일 -->
-                    <!-- <div class="attach-content">
+            <!-- 게시글에 첨부된 첨부파일 -->
+            <!-- <div class="attach-content">
                         <div class="d-flex align-items-center">
                           <button class="toggle-file-wrap">
                                 <img id="toggle-icon" src="/images/attach-dropright.png">
                                 <!-- 첨부파일 닫혀있을경우 -->
-                                <!-- <img src="/images/attach-dropright.png"> 
+            <!-- <img src="/images/attach-dropright.png"> 
                             </button>
              
                             <p>첨부파일 <span class="fileCount">2</span>개<span class="total-c">(134.5KB)</span></p>
@@ -285,173 +289,56 @@
                         </div>
                     </div> -->
 
-                    <div class="post_content my-5">
-                        <!-- 사용자가 에디터에 입력한 게시글 내용 -->
-                         <p></p>
-                    </div>
-
-
-                </div>
-
-                <div class="cmt_title">
-                  <p>8개의 댓글</p>
-                </div>
-
-                <hr class="cmt_line">
-
-                <div class="cmt_container"></div>
-                <!-- 댓글일 때-->
-                <div class="cmt_item">
-
-                  <div class="cmt_tit_wrap">
-                    <div class="cmt_tit_content">
-                      <div class="cmt_user_img"></div>
-                      <div class="cmt_tit_info">
-                        <h5>송수련</h5>
-                        <span>12:34</span>
-                      </div>
-                    </div>
-                    <div class="cmt_more">
-                      <button>:</button>
-                    </div>
-                  </div> <!-- cmt_tit_Wrap -->
-
-                  <div class="cmt_content">
-                    <p>항상 홍보가 어렵다고 생각했는데 덕분에 좋은 방법을 찾은 것 같아요 👍👍 
-                      링크드인 일촌 신청하러 갑니다~~</p>
-                  </div>
-
-                  <div class="reply_btn">
-                    <button>답글</button>
-                  </div>
-
-                  
-            <!-- 답글 작성창 -->
-            <div class="cmt_write_wrap" id="reply_write">
-              <div class="cmt_write">
-                <div class="cmt_textarea">
-                  <textarea id="commentTextArea" placeholder="댓글을 입력하세요.."></textarea>
-                </div>
-                
-                <div class="attach_area">
-                        
-                <!-- 답글 사진 첨부 -->
-                <div class="thumb_box_wrap" style="display: none;">
-                  <div class="thumb_box">
-                    <div class="img_cover">
-                      <span class="thumbnail"><img src="" alt="첨부 이미지" class="thumbnail-img"/></span>
-                      <button class="remove_img">
-                      <img src="/images/close.svg">
-                      </button>
-                    </div>
-                  </div>
-
-                  <div class="thumb_box">
-                    <div class="img_cover">
-                      <span class="thumbnail"><img src="" alt="첨부 이미지" class="thumbnail-img"/></span>
-                      <button class="remove_img">
-                      <img src="/images/close.svg">
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                <!-- 딥글 사진 첨부 끝 -->
-                  
-                <!-- 답글 파일 첨부 -->
-                <div class="file_cover" style="display: none;">
-                  <div class="cmt_fileList">
-                    <div>
-                      <span><img src="/images/folder.svg"></span>
-                      <span class="fine_name">
-                        <i class="file_name_img"></i>
-                        <button type="button" class="file_name_text">관리자페이지.zip</button>
-                      </span>
-                      <span class="file_size">(552B)</span>
-                    </div>
-                    <button class="btn_fine_del"><img src="/images/close_black.svg"></button>
-                  </div>
-                </div>
-                <!-- 답글 파일 첨부 끝 -->
-                  
-                      <div class="cmt_bottom">
-                        <input type="file" id="fileInputReply" multiple style="display:none">
-                        <button class="cmt_pic_wrap" id="fileButton">
-                            <img src="/images/pic.svg">
-                        </button>
-                        <div class="cmt_reg">
-                          <span>0/600</span>
-                          <button id="submitComment">등록</button>
-                        </div>
-                      </div>
-              </div>
-
-            </div> 
-
-          </div>
-                  <!-- 답글 작성창 끝 -->
-
-                </div> <!-- cmt_item -->
-
-                
-                <!-- 답글일 때 -->
-                <div class="cmt_item cmt_reply_item">
-                  <div class="cmt_tit_wrap">
-                    <div class="cmt_tit_content">
-                      <div class="cmt_user_img"></div>
-                      <div class="cmt_tit_info">
-                        <h5>송수련</h5>
-                        <span>12:34</span>
-                      </div>
-                    </div>
-                    <div class="cmt_more">
-                      <button>:</button>
-                    </div>
-                  </div> <!-- cmt_tit_Wrap -->
-
-                  <div class="cmt_content">
-                    <p>항상 홍보가 어렵다고 생각했는데 덕분에 좋은 방법을 찾은 것 같아요 👍👍 
-                      링크드인 일촌 신청하러 갑니다~~</p>
-                  </div>
-
-                  <div class="reply_btn">
-                    <button>답글</button>
-                  </div>
+            <div class="post_content my-5">
+              <!-- 사용자가 에디터에 입력한 게시글 내용 -->
+              <p></p>
             </div>
 
 
-            <!-- 댓글 작성창 -->
-            <div class="cmt_write_wrap" id="comment_write">
-              <div class="cmt_write">
-                <div class="cmt_textarea">
-                  <textarea id="commentTextArea" placeholder="댓글을 입력하세요.."></textarea>
-                </div>
-                
-                <div class="attach_area">
-                        
+          </div>
+
+          <div class="cmt_title">
+            <p>8개의 댓글</p>
+          </div>
+
+          <hr class="cmt_line">
+
+          <div class="cmt_container"></div>
+   
+
+          <!-- 댓글 작성창 -->
+          <div class="cmt_write_wrap" id="comment_write">
+            <div class="cmt_write">
+              <div class="cmt_textarea">
+                <textarea id="commentTextArea" placeholder="댓글을 입력하세요.."></textarea>
+              </div>
+
+              <div class="attach_area">
+
                 <!-- 댓글 사진 첨부 -->
-                <div class="thumb_box_wrap" >
+                <div class="thumb_box_wrap" style="display: none;">
                   <div class="thumb_box">
                     <div class="img_cover">
-                      <span class="thumbnail"><img src="" alt="첨부 이미지" class="thumbnail-img"/></span>
+                      <span class="thumbnail"><img src="" alt="첨부 이미지" class="thumbnail-img" /></span>
                       <button class="remove_img">
-                      <img src="/images/close.svg">
+                        <img src="/images/close.svg">
                       </button>
                     </div>
                   </div>
 
-                  <div class="thumb_box">
+                  <div class="thumb_box  style="display: none;"">
                     <div class="img_cover">
-                      <span class="thumbnail"><img src="" alt="첨부 이미지" class="thumbnail-img"/></span>
+                      <span class="thumbnail"><img src="" alt="첨부 이미지" class="thumbnail-img" /></span>
                       <button class="remove_img">
-                      <img src="/images/close.svg">
+                        <img src="/images/close.svg">
                       </button>
                     </div>
                   </div>
                 </div>
                 <!-- 댓글 사진 첨부 끝 -->
-                  
+
                 <!-- 댓글 파일 첨부 -->
-                <div class="file_cover">
+                <div class="file_cover"  style="display: none;">
                   <div class="cmt_fileList">
                     <div>
                       <span><img src="/images/folder.svg"></span>
@@ -478,58 +365,62 @@
 
                 </div>
 
-                
+
                 <!-- 댓글 파일 첨부 끝 -->
-                  
-                      <div class="cmt_bottom">
-                        <input type="file" id="fileInputComment" multiple style="display:none">
-                        <button class="cmt_pic_wrap" id="fileButton">
-                            <img src="/images/pic.svg">
-                        </button>
-                        <div class="cmt_reg">
-                          <span>0/600</span>
-                          <button id="submitComment">등록</button>
-                        </div>
-                      </div>
+
+                <div class="cmt_bottom">
+                  <input type="file" id="fileInputComment" multiple style="display:none">
+                  <button class="cmt_pic_wrap" id="fileButton">
+                    <img src="/images/pic.svg">
+                  </button>
+                  <div class="cmt_reg">
+                    <span>0/600</span>
+                    <button id="submitComment">등록</button>
+                  </div>
+                </div>
               </div>
 
-            </div> 
+            </div>
 
           </div>
 
-            <div class="post-footer">
-              <a href="write.html"><button class="writeBtn">글쓰기</button></a>
-              <div>
-                  <button class="postListBtn">목록</button>
-                  <button id="goTop">TOP</button>
-              </div>
+          <div class="post-footer">
+            <a href="write.html"><button class="writeBtn">글쓰기</button></a>
+            <div>
+              <button class="postListBtn">목록</button>
+              <button id="goTop">TOP</button>
+            </div>
           </div>
-          
-</div>
+
+        </div>
 
 
-</div>
-</div>
-        <!-- 푸터 -->
-        <div id="footer">
-          <div class="footerWrap">
-              <div>
-                  <span>문의사항</span>
-                  <span>wants@withfirst.com</span>
-              </div>
-              <div>
-                  <p>©withfirst All rights reserved.</p>
-              </div>
-          </div>
       </div>
-    
+    </div>
+    <!-- 푸터 -->
+    <div id="footer">
+      <div class="footerWrap">
+        <div>
+          <span>문의사항</span>
+          <span>wants@withfirst.com</span>
+        </div>
+        <div>
+          <p>©withfirst All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-latest.min.js"></script>
     <!-- Popper.js -->
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
+      integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p"
+      crossorigin="anonymous"></script>
     <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"
+      integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF"
+      crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="./js/script.js"></script>
     <!-- Sweetalert2 JS -->
@@ -539,4 +430,5 @@
     <script src="/js/currentPage.js"></script>
 
 </body>
+
 </html>

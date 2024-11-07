@@ -389,11 +389,11 @@ function renderComment() {
 
     commentsData.forEach(comment => {
         const commentHtml = `
-                    <div class="cmt_item">
+            <div class="cmt_item">
                 <div class="cmt_tit_wrap">
                     <div class="cmt_tit_content">
                         <div class="cmt_user_img">
-                            <img src="/images/default-profile.png'}" alt="User Image">
+                            <img src="/images/user.svg" alt="User Image">
                         </div>
                         <div class="cmt_tit_info">
                             <h5>${comment.user_name}</h5>
@@ -408,18 +408,67 @@ function renderComment() {
                     <p>${comment.cm_content}</p>
                 </div>
                 <div class="reply_btn">
-                    <button>답글</button>
+                    <button data-p-idx="${comment.cm_idx}" data-user-name="${comment.user_name}" data-depth="${comment.depth}">답글</button>
                 </div>
             </div>
         `;
         cmtContainer.append(commentHtml);
+
+        // 하위 댓글이 있을 경우 호출
+        if (comment.하위댓글 && comment.하위댓글.length > 0) {
+            comment.하위댓글.forEach(reply => {
+                renderReplyComments(reply, cmtContainer, comment.user_name, reply.depth);
+            });
+        }
     });
 }
 
-function replyOn() {
-    const replyButton = $(this);
-    const commentItem = replyButton.closest('.cmt_item'); // 클릭한 댓글 아이템
+function renderReplyComments(reply, container, parentUserName = null, depth) {
+      // 조건: 상위 depth가 1이고, 현재 depth가 2일 때만 @username을 추가
+      const userTagHtml = (depth === 2 && parentUserName) ? `<strong class="user-tag">@${parentUserName}</strong> ` : '';
+
+
+    const replyHtml = `
+    <div class="cmt_item cmt_reply_item">
+            <div class="cmt_tit_wrap">
+                <div class="cmt_tit_content">
+                    <div class="cmt_user_img">
+                        <img src="/images/user.svg" alt="User Image">
+                    </div>
+                    <div class="cmt_tit_info">
+                        <h5>${reply.user_name}</h5>
+                        <span>${reply.created_date}</span>
+                    </div>
+                </div>
+                <div class="cmt_more">
+                    <button>:</button>
+                </div>
+            </div>
+            <div class="cmt_content">
+            ${userTagHtml}
+                <p>${reply.rp_content}</p>
+            </div>
+            <div class="reply_btn">
+                <button data-p-idx="${reply.rp_p_idx}" data-user-name="${reply.user_name}" data-depth="${reply.depth}">답글</button>
+            </div>
+        </div>
+    `;
+container.append(replyHtml);
+
+}
+
+function replyOn(buttonElement) {
+    const replyButton = $(buttonElement);
+    const userName = replyButton.data('user-name'); // 선택된 댓글의 유저 이름 가져오기
+    const depth = replyButton.data('depth') + 1; // depth 값을 1 증가
+    const commentItem = $(replyButton).closest('.cmt_item');  // 클릭한 댓글 아이템
     const existingReplyBox = commentItem.find('#reply_write'); // 현재 댓글에 열린 답글 작성창 있는지 확인
+
+       // depth가 3 이상일 경우 답글 작성창을 생성하지 않음
+       if (depth > 3) {
+        alert("답글은 최대 3단계까지 가능합니다.");
+        return;
+    }
 
     // 이미 답글 창이 열려 있으면 닫기
     if (existingReplyBox.length) {
@@ -428,12 +477,18 @@ function replyOn() {
         // 다른 곳에 열린 답글 창 닫기
         $('#reply_write').remove();
 
+          // depth에 따라 placeholder 설정
+          const placeholderText = depth === 1
+          ? "댓글을 입력해주세요"
+          : `${userName}님께 답글쓰기`;
+        
+
         // 답글 작성창 HTML 생성
         const replyBoxHtml = `
             <div class="cmt_write_wrap" id="reply_write">
               <div class="cmt_write">
                 <div class="cmt_textarea">
-                  <textarea id="repplyTextArea" placeholder="댓글을 입력하세요.."></textarea>
+                  <textarea id="repplyTextArea" placeholder="${placeholderText}"></textarea>
                 </div>
                 
                 <div class="attach_area">
@@ -471,7 +526,7 @@ function replyOn() {
                     </button>
                     <div class="cmt_reg">
                       <span>0/600</span>
-                      <button id="submitReply">등록</button>
+                    <button id="submitReply" data-depth="${depth}">등록</button>
                     </div>
                   </div>
                 </div>
@@ -514,8 +569,19 @@ $(function() {
 
 
 
-  // 답글 버튼 클릭 시 답글 작성창 표시
-  $(document).on('click', '.reply_btn button', replyOn);
+    $(document).on('click', '.reply_btn button', function() {
+        const g_idx = $(this).data('p-idx'); // 상위 댓글의 post_idx 가져오기
+
+        console.log('ddddddsfdsfsdfsdfs', g_idx);
+
+        replyOn(this); // 답글 작성창 열기
+
+        $('#submitReply').data('g-idx', g_idx); // submitReply 버튼에 저장
+
+          // 저장된 데이터 확인
+    console.log('Stored g-idx on #submitReply:', $('#submitReply').data('g-idx'));
+    
+    });
 
   // 댓글 등록
   $(document).on('click', '#submitComment', function (e) {
@@ -524,13 +590,16 @@ $(function() {
     // 댓글 내용 가져오기
     const content = $('#commentTextArea').val().trim();
 
-
     const formData = new FormData();
     formData.append('post_idx', pidx);
     formData.append('content', content);
 
-
-    // AJAX 요청 설정
+    // FormData 내용 콘솔에 출력
+    for (let [key, value] of formData.entries()) {
+        console.log(`${key}: ${value}`);
+    }
+    
+    //AJAX 요청 설정
     $.ajax({
         url: `${defaultUrl}/with/comment_add`,
         method: 'POST',
@@ -552,6 +621,56 @@ $(function() {
             alert("댓글 등록에 실패했습니다.");
         }
     });
+});
+
+// 답글 등록
+$(document).on('click', '#submitReply', function(e) {
+    event.preventDefault();
+
+    const replyContent = $('#repplyTextArea').val().trim();
+    const depth =2;
+    const g_idx = $(this).data('g-idx'); // 상위 댓글의 g-idx 가져오기
+
+    console.log('ddddddd',g_idx);
+
+    const formData = new FormData();
+
+    formData.append('post_idx', pidx);
+    formData.append('content', replyContent);
+    formData.append('depth', depth);
+    formData.append('g_idx', g_idx);
+    formData.append('p_idx', g_idx);
+
+
+    // FormData 내용 콘솔에 출력
+    for (let [key, value] of formData.entries()) {
+            console.log(`${key}: ${value}`);
+    }
+        
+        //AJAX 요청 설정
+        $.ajax({
+            url: `${defaultUrl}/with/comment_add`,
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${atoken}`
+            },
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function (response) {
+                console.log(response);
+                // 댓글 추가 성공 시 처리 (예: 화면에 댓글 추가, 입력창 비우기)
+                alert('댓글이 등록되었습니다.');
+                $('#commentTextArea').val(''); // 입력창 초기화
+                // 댓글 목록 다시 불러오기
+                fetchCommentData();
+            },
+            error: function (error) {
+                console.error("댓글 등록 실패:", error);
+                alert("댓글 등록에 실패했습니다.");
+            }
+        });
+
 });
 
   

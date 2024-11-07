@@ -1020,6 +1020,29 @@ $(function () {
         history.back();  // 이전 페이지로 돌아감
     });
 
+    $(document).on('input', '.sortNum', function () {
+        const value = parseInt($(this).val(), 10);
+
+        // 0보다 큰 값이 아닐 경우 값을 비워줌
+        if (isNaN(value) || value <= 0) {
+            $(this).val('');
+            return;
+        }
+        // 중복 값 체크
+        let isDuplicate = false;
+        $('.sortNum').not(this).each(function () {
+            if (parseInt($(this).val(), 10) === value) {
+                isDuplicate = true;
+                return false; // 중복이 있으면 반복 종료
+            }
+        });
+
+        // 중복일 경우 경고 표시 및 입력 필드 비움
+        if (isDuplicate) {
+            alert("출력 순번은 중복될 수 없습니다. 다른 값을 입력해주세요.");
+            $(this).val('');
+        }
+    });
 });
 
 function showPopup(seq, title, content, status, type) {

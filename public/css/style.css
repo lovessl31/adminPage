@@ -1862,6 +1862,9 @@ hr {
 
 /* 댓글 작성창 */
 
+.user-tag {
+  color: #1C9DEA;
+}
 .cmt_write_wrap {
   margin-bottom: 20px;
 }
@@ -1934,7 +1937,7 @@ hr {
 .reply_btn button {
   border: none;
   background: transparent;
-  color: #1C9DEA;
+  /* color: #1C9DEA; */
   font-weight: 700;
 }
 
