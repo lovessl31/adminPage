@@ -15,6 +15,9 @@ let filesArray = []; // 파일 배열
 let editor;
 const editorInstances = {};
 
+
+
+
 const state = {
     options: [],
     uploadedFileIds: [],
@@ -289,7 +292,11 @@ function renderModules(options) {
 function fillValues(options) {
     options.forEach(option => {
         let selectedValue = option.selected_value;
-        const index = option.sort_num - 1; // sort_num을 0 기반 인덱스로 변환
+        console.log("111111111111111111111111");
+        
+        console.log(option);
+        console.log(option.sort_num);
+        const index = option.sort_num-1; // sort_num을 0 기반 인덱스로 변환
 
         if (selectedValue === null) {
             selectedValue = '';
@@ -298,16 +305,20 @@ function fillValues(options) {
         switch (option.ol_type) {
             case 'dropdown':
                 // 드롭다운 메뉴의 선택된 값을 설정
+                console.log(index + 'drop');
                 $(`#dropdown_${index}`).val(selectedValue.value);
                 break;
 
             case 'dataInput':
                 // 텍스트 입력 필드의 값을 설정
+                console.log(index + 'datainput');
+                
                 $(`#dataInput_${index}`).val(selectedValue.value);
                 break;
 
             case 'dateInput':
                 // 날짜 입력 필드의 값을 설정
+                console.log(index + 'datee');
                 $(`#dateInput_${index}`).val(selectedValue.value);
                 break;
 
@@ -396,20 +407,22 @@ function fillValues(options) {
 
             case 'textArea':
                 // 텍스트 영역의 값을 설정
+                console.log(index + 'textArea_');
                 $(`#textArea_${index}`).val(selectedValue.value);
                 break;
 
-            // case 'editor':
-            //     const editorInstance = editorInstances[`editor_${index}`];
-            //     if (editorInstance) {
-            //         // WYSIWYG 모드로 전환
-            //         editorInstance.changeMode('wysiwyg', true);
-
-            //         // HTML을 직접 wysiwyg 편집 영역에 삽입
-            //         const wysiwygEditor = editorInstance.getCurrentModeEditor();
-            //         wysiwygEditor.setHTML(selectedValue.value);
-            //     }
-            //     break;
+            case 'editor':
+                // 에디터 인스턴스 저장
+                    editorInstances[`editor_${index}`] = editor;
+                                                
+                try {
+                    if (selectedValue.value) {
+                        setEditorContent(index, selectedValue.value);
+                    }
+                } catch (error) {
+                    console.error('에디터 내용 설정 중 오류 발생:', error);
+                }
+                break;
 
             default:
                 console.log(`알 수 없는 모듈 유형: ${option.ol_type}`);
@@ -487,8 +500,22 @@ function collectModuleData() {
                 eachVal = true;
                 break;
 
-            case 'editor': // 여러 개의 에디터 필드                
-                value = editor.getHTML().replace(/&amp;/g, '&');
+            case 'editor': // 여러 개의 에디터 필드        
+                opt_value = editor.getHTML().replace(/&amp;/g, '&');
+                // HTML 태그를 제거하고 순수 텍스트만 추출
+                const plainText = opt_value.replace(/<[^>]*>/g, '').trim();
+                console.log("opt_value", opt_value);
+                
+                if (isRequired && !plainText) {
+                    Swal.fire('경고', `${option.ol_name}을(를) 선택해주세요.`, 'warning');
+                    missingRequiredField = true;
+                    return;
+                }
+                if (selectedValue) {
+                    action = opt_value !== selectedValue.value ? (opt_value ? 'update' : 'delete') : null;
+                } else if (opt_value) {
+                    action = 'add';
+                }                                                        
                 eachVal = true;
                 break;
 
@@ -753,11 +780,24 @@ function initializeEditor(editorSelector) {
                     });
                 }
             }
-        });
+        });        
+
     } else {
         console.error(`에디터 요소를 찾을 수 없습니다: ${editorSelector}`);
+        return null;
     }
 }
+
+// 내용 설정을 위한 함수
+function setEditorContent(index, content) {
+    const editorInstance = editorInstances[`editor_${index}`];
+    if (editorInstance) {
+        editorInstance.setMarkdown(content);
+    } else {
+        console.error(`에디터 인스턴스를 찾을 수 없습니다: editor_${index}`);
+    }
+}
+
 
 // 멀티 파일 모듈 설정 함수
 function initializeMultiFileUpload(fileInputId, fileBtnId, deleteAllBtnId, fileListId) {
