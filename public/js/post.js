@@ -408,7 +408,7 @@ function renderComment() {
                     <p>${comment.cm_content}</p>
                 </div>
                 <div class="reply_btn">
-                    <button data-p-idx="${comment.cm_idx}" data-user-name="${comment.user_name}" data-depth="${comment.depth}">답글</button>
+                    <button data-g-idx="${comment.cm_idx}" data-user-name="${comment.user_name}" data-depth="${comment.depth}">답글</button>
                 </div>
             </div>
         `;
@@ -424,9 +424,13 @@ function renderComment() {
 }
 
 function renderReplyComments(reply, container, parentUserName = null, depth) {
+
       // 조건: 상위 depth가 1이고, 현재 depth가 2일 때만 @username을 추가
       const userTagHtml = (depth === 2 && parentUserName) ? `<strong class="user-tag">@${parentUserName}</strong> ` : '';
-
+    console.log("================================================");
+    
+    console.log(reply);
+    
 
     const replyHtml = `
     <div class="cmt_item cmt_reply_item">
@@ -444,12 +448,11 @@ function renderReplyComments(reply, container, parentUserName = null, depth) {
                     <button>:</button>
                 </div>
             </div>
-            <div class="cmt_content">
-            ${userTagHtml}
+            <div class="cmt_content">            
                 <p>${reply.rp_content}</p>
             </div>
-            <div class="reply_btn">
-                <button data-p-idx="${reply.rp_p_idx}" data-user-name="${reply.user_name}" data-depth="${reply.depth}">답글</button>
+            <div class="sub_reply_btn">
+                <button data-g-idx="${reply.rp_g_idx}" data-p-idx="${reply.rp_idx}" data-user-name="${reply.user_name}" data-depth="${reply.depth}">답글</button>
             </div>
         </div>
     `;
@@ -570,9 +573,9 @@ $(function() {
 
 
     $(document).on('click', '.reply_btn button', function() {
-        const g_idx = $(this).data('p-idx'); // 상위 댓글의 post_idx 가져오기
+        const g_idx = $(this).data('g-idx'); // 상위 댓글의 post_idx 가져오기
 
-        console.log('ddddddsfdsfsdfsdfs', g_idx);
+        console.log('___reply_btn!!!!!!', g_idx);
 
         replyOn(this); // 답글 작성창 열기
 
@@ -580,6 +583,22 @@ $(function() {
 
           // 저장된 데이터 확인
     console.log('Stored g-idx on #submitReply:', $('#submitReply').data('g-idx'));
+    
+    });
+    $(document).on('click', '.sub_reply_btn button', function() {
+        const p_idx = $(this).data('p-idx'); // 태그 댓글의 parent idx 가져오기
+        const g_idx = $(this).data('g-idx'); // 태그 댓글의 group idx 가져오기
+        const userName = $(this).data('user-name'); // 태그 댓글의 user_name 가져오기
+        console.log('sub___reply_btn!!!!!!', p_idx);
+
+        replyOn(this); // 답글 작성창 열기
+
+        $('#submitReply').data('p-idx', p_idx); // submitReply 버튼에 저장
+        $('#submitReply').data('g-idx', g_idx); // submitReply 버튼에 저장
+        $('#submitReply').data('userName', userName); // submitReply 버튼에 저장
+
+          // 저장된 데이터 확인
+    console.log('Stored g-idx on #submitReply:', $('#submitReply').data('p-idx'));
     
     });
 
@@ -625,12 +644,16 @@ $(function() {
 
 // 답글 등록
 $(document).on('click', '#submitReply', function(e) {
-    event.preventDefault();
+    e.preventDefault();
 
-    const replyContent = $('#repplyTextArea').val().trim();
+    let replyContent = $('#repplyTextArea').val().trim();
     const depth =2;
     const g_idx = $(this).data('g-idx'); // 상위 댓글의 g-idx 가져오기
-
+    const p_idx = $(this).data('p-idx'); // 상위 댓글의 g-idx 가져오기
+    const userName  = $(this).data('userName');
+    if (userName){
+        replyContent = `<p class="user-tag">@${userName}</p>` + replyContent 
+    }    
     console.log('ddddddd',g_idx);
 
     const formData = new FormData();
@@ -639,7 +662,7 @@ $(document).on('click', '#submitReply', function(e) {
     formData.append('content', replyContent);
     formData.append('depth', depth);
     formData.append('g_idx', g_idx);
-    formData.append('p_idx', g_idx);
+    formData.append('p_idx', p_idx);
 
 
     // FormData 내용 콘솔에 출력
