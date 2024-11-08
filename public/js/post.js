@@ -21,7 +21,7 @@ let postDetail = [];
 let optionData = [];
 let commentsData = [];
 
-function fetchDetailData() {
+function fetchDetailData(callback) {
 
     $.ajax({
         url: defaultUrl + `/with/post_detail?bidx=${bidx}&pidx=${pidx}`,
@@ -36,6 +36,10 @@ function fetchDetailData() {
             optionData = response.data.options;
             renderDetail();
             renderOptions();
+
+            // 데이터 로드 완료 후 콜백 실행
+            if (callback) callback();
+
         },
         error: function (e) {
             console.log('error :: 상세페이지 데이터 로드 에러', e);
@@ -388,7 +392,15 @@ function renderComment() {
     cmtContainer.empty();
 
     commentsData.forEach(comment => {
-        const commentHtml = `
+        const commentHtml = comment.del_yn === 'Y'
+            ? `
+                <div class="cmt_item">
+                    <div class="cmt_content">
+                        <p>댓글이 삭제되었습니다</p>
+                    </div>
+                </div>
+            `
+            : `
             <div class="cmt_item">
                 <div class="cmt_tit_wrap">
                     <div class="cmt_tit_content">
@@ -405,7 +417,7 @@ function renderComment() {
                     </div>
                 </div>
                 <ul class="cmt_drop">
-                    <li><button class="cmt_modify">수정</button></li>
+                    <li><button class="cmt_modify" data-cm-idx="${comment.cm_idx}" data-u-idx="${comment.user_idx} " data-c-content="${comment.cm_content}" data-u-name="${comment.user_name}">수정</button></li>
                     <li><button class="cmt_delete" data-cm-idx="${comment.cm_idx}" data-u-idx="${comment.user_idx}">삭제</button></li>
                 </ul>
                 <div class="cmt_content">
@@ -430,7 +442,6 @@ function renderComment() {
 // renderComment 외부에서 이벤트 핸들러 추가
 $(document).on('click', '.cmt_delete', deleteCmt);
 
-
 // 답글 렌더링
 function renderReplyComments(reply, container, parentUserName = null, depth) {
 
@@ -451,9 +462,19 @@ function renderReplyComments(reply, container, parentUserName = null, depth) {
                 </div>
             </div>
             <ul class="cmt_reply_drop">
-                <li><button class="cmt_modify">수정</button></li>
+                <li>
+                  <button class="reply_modify" 
+                        data-rp-idx="${reply.rp_idx}" 
+                        data-u-idx="${reply.user_idx}" 
+                        data-u-name="${reply.user_name}"
+                        data-rp-p-idx="${reply.rp_p_idx}"
+                        data-rp-g-idx="${reply.rp_g_idx}"
+                        >
+                    수정
+                </button>
+                </li>
                 <li><button class="cmt_delete" data-u-idx="${reply.user_idx}" data-rp-idx="${reply.rp_idx
-                }">삭제</button></li>
+        }">삭제</button></li>
             </ul>
             <div class="cmt_content">            
                 <p>${reply.rp_content}</p>
@@ -541,14 +562,14 @@ function replyOn(buttonElement) {
         // 답글 작성창을 클릭한 댓글 아이템의 하단에 추가
         commentItem.append(replyBoxHtml);
 
-            // 답글 작성 시 파일 첨부 초기화
-            initializeFileUpload(
-                '#reply_write',          // 답글 작성창의 컨테이너
-                '#fileInputReply',       // 답글 작성창의 파일 입력 필드
-                '.thumb_box_wrap_reply', // 답글 작성창의 이미지 미리보기 영역
-                '.file_cover_reply'      // 답글 작성창의 일반 파일 첨부 영역
-            );
-            
+        // 답글 작성 시 파일 첨부 초기화
+        initializeFileUpload(
+            '#reply_write',          // 답글 작성창의 컨테이너
+            '#fileInputReply',       // 답글 작성창의 파일 입력 필드
+            '.thumb_box_wrap_reply', // 답글 작성창의 이미지 미리보기 영역
+            '.file_cover_reply'      // 답글 작성창의 일반 파일 첨부 영역
+        );
+
     }
 }
 
@@ -560,10 +581,10 @@ function deleteCmt() {
 
     if (cm_idx) {
         // 상위 댓글 삭제
-        deleteCmts([{ isComment:'TOP', cm_idx: cm_idx, user_idx: user_idx}]);
+        deleteCmts([{ isComment: 'TOP', cm_idx: cm_idx, user_idx: user_idx }]);
     } else if (rp_idx) {
         // 하위 댓글 삭제
-        deleteCmts([{ isComment:'SUB', cm_idx: rp_idx, user_idx: user_idx}]);
+        deleteCmts([{ isComment: 'SUB', cm_idx: rp_idx, user_idx: user_idx }]);
     }
 }
 
@@ -572,35 +593,339 @@ function deleteCmts(cmts) {
     console.log('전송될 데이터:', JSON.stringify(cmts));
 
     $.ajax({
-        url : defaultUrl + '/with/comment_del',
+        url: defaultUrl + '/with/comment_del',
         method: 'DELETE',
-        headers : {
+        headers: {
             'Authorization': `Bearer ${atoken}`,
             'Content-Type': 'application/json'
         },
-        data : JSON.stringify(cmts),
-        success : function(response) {
+        data: JSON.stringify(cmts),
+        success: function (response) {
             console.log('댓글 삭제 응답', response.data);
             alert('삭제되었습니다.');
             fetchCommentData();
         },
-        error : function(e) {
+        error: function (e) {
             console.log(e);
             console.log("errpr :: delete error");
         }
-    })
+    });
 }
+
+
+function submitCommentEdit(cmIdx, updatedContent, userIdx, userName) {
+
+    const formData = new FormData();
+
+    formData.append('post_idx', pidx);
+    formData.append('content', updatedContent);
+    formData.append('idx', cmIdx);
+    formData.append('user_idx', userIdx);
+    formData.append('user_name', userName);
+    formData.append('depth', '1');
+
+    console.log('idx', updatedContent);
+    console.log('idx', cmIdx);
+    console.log('idx', userIdx);
+    console.log('idx', userName );
+
+
+    // FormData 내용 콘솔에 출력
+    for (let [key, value] of formData.entries()) {
+        console.log(`${key}: ${value}`);
+    }
+
+    $.ajax({
+        url : defaultUrl + '/with/comment_edit',
+        method: 'POST',
+        headers : {
+            'Authorization': `Bearer ${atoken}`,
+        },
+        processData: false, // FormData 사용 시 필요
+        contentType: false, // FormData 사용 시 필요
+        data: formData,
+        success : function(response) {
+            console.log('댓글 수정 응답', response.data);
+            fetchCommentData();
+        },
+        error : function(e) {
+            console.log(e);
+            console.log("errpr :: MODIFY error");
+        }
+    });
+}
+
+
+function  submitReplyEdit(rpIdx, updatedContent, userIdx, userName, rpPIdx, rpGIdx) {
+    const formData = new FormData();
+
+    formData.append('post_idx', pidx);
+    formData.append('content', updatedContent);
+    formData.append('idx', rpIdx);
+    formData.append('user_idx', userIdx);
+    formData.append('user_name', userName);
+    formData.append('depth', '2');
+
+    formData.append('p_idx', rpPIdx);
+    formData.append('g_idx', rpGIdx);
+
+    console.log('idx', updatedContent);
+    console.log('idx', rpIdx);
+    console.log('idx', userIdx);
+    console.log('idx', userName );
+
+
+    // FormData 내용 콘솔에 출력
+    for (let [key, value] of formData.entries()) {
+        console.log(`${key}: ${value}`);
+    }
+
+    $.ajax({
+        url : defaultUrl + '/with/comment_edit',
+        method: 'POST',
+        headers : {
+            'Authorization': `Bearer ${atoken}`,
+        },
+        processData: false, // FormData 사용 시 필요
+        contentType: false, // FormData 사용 시 필요
+        data: formData,
+        success : function(response) {
+            console.log('댓글 수정 응답', response.data);
+            fetchCommentData();
+        },
+        error : function(e) {
+            console.log(e);
+            console.log("errpr :: MODIFY error");
+        }
+    });
+}
+
+
+// 댓글 수정 버튼 클릭 시 editComment 함수 실행
+$(document).on('click', '.cmt_modify', function () {
+    editComment(this);
+});
+
+// 댓글 수정 버튼 클릭 시 editComment 함수 실행
+$(document).on('click', '.reply_modify', function () {
+    
+    const rpIdx = $(this).data('rp-idx');
+    const userIdx = $(this).data('u-idx');
+    const userName = $(this).data('u-name');
+
+    // .html()로 HTML 구조 유지하여 가져오기
+    const rpContent = $(this).closest('.cmt_item').find('.cmt_content').html(); 
+
+    editReplyComment(this, rpContent);
+});
+
+
+function editComment(buttonElement) {
+    const editButton = $(buttonElement);
+    const commentItem = $(editButton).closest('.cmt_item');
+    const commentContentDiv = commentItem.find('.cmt_content');
+    const commentContent = commentContentDiv.find('p').text();
+    const cmIdx = $(buttonElement).data('cm-idx');
+    const userIdx = $(buttonElement).data('u-idx');
+    const userName = $(buttonElement).data('u-name');
+
+    commentContentDiv.hide();
+
+    const editBoxHtml = `
+        <div class="edit_write_wrap" id="edit_write_${cmIdx}">
+            <div class="cmt_write">
+                <div class="cmt_textarea">
+                    <textarea id="editTextArea_${cmIdx}">${commentContent}</textarea>
+                </div>
+
+                <div class="attach_area">
+                    <div class="thumb_box_wrap_edit" style="display: none;" id="thumb_box_wrap_edit_${cmIdx}">
+                        <div class="thumb_box_edit">
+                            <div class="img_cover_edit">
+                                <span class="thumbnail_edit"><img src="" alt="첨부 이미지" class="thumbnail-img-edit"/></span>
+                                <button class="remove_img_edit"><img src="/images/close.svg"></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="file_cover_edit" style="display: none;" id="file_cover_edit_${cmIdx}">
+                        <div class="cmt_fileList_edit">
+                            <div>
+                                <span><img src="/images/folder.svg"></span>
+                                <span class="fine_name_edit">
+                                    <i class="file_name_img_edit"></i>
+                                    <button type="button" class="file_name_text_edit">관리자페이지.zip</button>
+                                </span>
+                                <span class="file_size_edit">(552B)</span>
+                            </div>
+                            <button class="btn_fine_del_edit"><img src="/images/close_black.svg"></button>
+                        </div>
+                    </div>
+
+                    <div class="cmt_bottom">
+                        <input type="file" id="fileInputEdit_${cmIdx}" multiple style="display:none">
+                        <button class="cmt_pic_wrap_edit" id="fileButtonEdit_${cmIdx}"><img src="/images/pic.svg"></button>
+                        <div class="cmt_reg">
+                            <span>0/600</span>
+                            <button id="submitEdit_${cmIdx}" data-cm-idx="${cmIdx}" data-u-idx="${userIdx}" data-u-name="${userName}">수정</button>
+                            <button id="cancelEdit_${cmIdx}">취소</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    commentContentDiv.after(editBoxHtml);
+
+    initializeFileUpload(`#edit_write_${cmIdx}`, `#fileInputEdit_${cmIdx}`, `#thumb_box_wrap_edit_${cmIdx}`, `#file_cover_edit_${cmIdx}`);
+
+    $(`#submitEdit_${cmIdx}`).on('click', function () {
+        const updatedContent = $(`#editTextArea_${cmIdx}`).val().trim();
+
+        if (updatedContent) {
+            submitCommentEdit(cmIdx, updatedContent, userIdx, userName);
+        } else {
+            alert('내용을 입력해주세요.');
+        }
+    });
+
+    $(`#cancelEdit_${cmIdx}`).on('click', function () {
+        $(`#edit_write_${cmIdx}`).remove();
+        commentContentDiv.show();
+    });
+}
+
+function editReplyComment(buttonElement, rp_content) {
+    const editButton = $(buttonElement);
+    const commentItem = $(editButton).closest('.cmt_item');
+    const commentContentDiv = commentItem.find('.cmt_content');
+ 
+    const rpIdx = $(buttonElement).data('rp-idx');
+    const userIdx = $(buttonElement).data('u-idx');
+    const userName = $(buttonElement).data('u-name');
+    const rpPIdx = $(buttonElement).data('rp-p-idx'); // 새로운 data 속성
+    const rpGIdx = $(buttonElement).data('rp-g-idx'); // 새로운 data 속성
+
+    console.log('ddd', rpPIdx);
+    console.log('zzzzzzzzzzzzzzzzddd', rpGIdx);
+
+
+    rp_content = rp_content.replace(/<p class="user-tag">.*?<\/p>/g, '');
+    rp_content = $('<div>').html(rp_content).text().trim(); // 남은 태그 제거 및 앞뒤 공백 제거
+
+    console.log('rp_content:', rp_content);
+
+    commentContentDiv.hide();
+
+    const editBoxHtml = `
+        <div class="edit_reply_wrap" id="edit_reply_${rpIdx}">
+            <div class="cmt_write">
+                <div class="cmt_textarea">
+                    <textarea id="editReplyTextArea_${rpIdx}">${rp_content}</textarea>
+                </div>
+
+                <div class="attach_area">
+                    <div class="thumb_box_wrap_edit_reply" style="display: none;" id="thumb_box_wrap_edit_reply_${rpIdx}">
+                        <div class="thumb_box_edit_reply">
+                            <div class="img_cover_edit_reply">
+                                <span class="thumbnail_edit_reply"><img src="" alt="첨부 이미지" class="thumbnail-img-edit-reply"/></span>
+                                <button class="remove_img_edit_reply"><img src="/images/close.svg"></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="file_cover_edit_reply" style="display: none;" id="file_cover_edit_reply_${rpIdx}">
+                        <div class="cmt_fileList_edit_reply">
+                            <div>
+                                <span><img src="/images/folder.svg"></span>
+                                <span class="fine_name_edit_reply">
+                                    <i class="file_name_img_edit_reply"></i>
+                                    <button type="button" class="file_name_text_edit_reply">관리자페이지.zip</button>
+                                </span>
+                                <span class="file_size_edit_reply">(552B)</span>
+                            </div>
+                            <button class="btn_fine_del_edit_reply"><img src="/images/close_black.svg"></button>
+                        </div>
+                    </div>
+
+                    <div class="cmt_bottom">
+                        <input type="file" id="fileInputEditReply_${rpIdx}" multiple style="display:none">
+                        <button class="cmt_pic_wrap_edit_reply" id="fileButtonEditReply_${rpIdx}"><img src="/images/pic.svg"></button>
+                        <div class="cmt_reg">
+                            <span>0/600</span>
+                            <button id="submitEditReply_${rpIdx}" data-rp-idx="${rpIdx}" data-u-idx="${userIdx}" data-u-name="${userName}">수정</button>
+                            <button id="cancelEditReply_${rpIdx}">취소</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    commentContentDiv.after(editBoxHtml);
+
+
+    console.log("editReplyComment 호출됨:", `#edit_reply_${rpIdx}`, `#fileInputEditReply_${rpIdx}`, `#thumb_box_wrap_edit_reply_${rpIdx}`, `#file_cover_edit_reply_${rpIdx}`);
+
+
+    initializeFileUpload(`#edit_reply_${rpIdx}`, `#fileInputEditReply_${rpIdx}`, `#thumb_box_wrap_edit_reply_${rpIdx}`, `#file_cover_edit_reply_${rpIdx}`);
+
+    $(`#submitEditReply_${rpIdx}`).on('click', function () {
+
+        
+        const updatedContent = $(`#editReplyTextArea_${rpIdx}`).val().trim();
+
+        if (updatedContent) {
+            submitReplyEdit(rpIdx, updatedContent, userIdx, userName, rpPIdx, rpGIdx);
+        } else {
+            alert('내용을 입력해주세요.');
+        }
+    });
+
+    $(`#cancelEditReply_${rpIdx}`).on('click', function () {
+        $(`#edit_reply_${rpIdx}`).remove();
+        commentContentDiv.show();
+    });
+}
+
 
 function initializeFileUpload(containerSelector, fileInputSelector, thumbBoxWrapSelector, fileCoverSelector) {
     const maxFiles = 5;
 
     // 파일 버튼 클릭 시 파일 선택 창 열기
-    $(containerSelector).on("click", ".cmt_pic_wrap, .cmt_pic_wrap_reply", function () {
-        $(fileInputSelector).click();
-    });
+    // $(containerSelector).on("click", ".cmt_pic_wrap, .cmt_pic_wrap_reply, .cmt_pic_wrap_edit", function () {
+    //     $(fileInputSelector).click();
+    // });
 
+        // 파일 버튼 클릭 시 파일 선택 창 열기 (이벤트 위임 사용)
+        // $(document).on("click", `${containerSelector} .cmt_pic_wrap, ${containerSelector} .cmt_pic_wrap_reply, ${containerSelector} .cmt_pic_wrap_edit`, function () {
+
+        //     console.log("파일 선택 버튼이 클릭되었습니다."); // 선택 여부 확인
+        //     console.log("containerSelector:", containerSelector); // containerSelector 확인
+        //     console.log("fileInputSelector:", fileInputSelector); // fileInputSelector 확인
+
+            
+        //     $(this).closest(containerSelector).find(fileInputSelector).trigger('click');
+        // });
+
+       // 각 파일 첨부 버튼에 클릭 이벤트를 중복 없이 한 번만 등록
+        $(document).off("click", ".cmt_pic_wrap, .cmt_pic_wrap_reply, .cmt_pic_wrap_edit, .cmt_pic_wrap_edit_reply");
+        $(document).on("click", ".cmt_pic_wrap, .cmt_pic_wrap_reply, .cmt_pic_wrap_edit, .cmt_pic_wrap_edit_reply", function () {
+            const containerSelector = $(this).closest('.edit_write_wrap, .edit_reply_wrap, #comment_write, #reply_write');
+            const fileInput = containerSelector.find('input[type="file"]');
+
+            // 중복 방지를 위해 클릭 이벤트가 호출될 때마다 확인 로그를 남기기
+            console.log(`이벤트 발생 컨테이너: ${containerSelector.attr('id')}`);
+            console.log(`파일 선택기: ${fileInput.attr('id')}`);
+            
+            // 파일 선택기 클릭 이벤트 트리거
+            fileInput.trigger('click');
+        });
+                
     // 파일 선택 시 이벤트 처리
     $(fileInputSelector).on("change", function (event) {
+        console.log("파일이 선택되었습니다."); // 파일 선택 확인
         const files = Array.from(event.target.files);
         const $thumbBoxWrap = $(thumbBoxWrapSelector).empty(); // 기존 이미지를 초기화
         const $fileCover = $(fileCoverSelector).empty(); // 기존 파일 리스트 초기화
@@ -668,15 +993,18 @@ function initializeFileUpload(containerSelector, fileInputSelector, thumbBoxWrap
     });
 }
 
-  
+
 
 $(function () {
 
-    fetchDetailData();
-    fetchCommentData()
+    fetchDetailData(function () {
+        // fetchDetailData 호출 후 데이터가 로드되면 fetchCommentData 실행
+        fetchCommentData();
+        renderComment(); // 여기서 postDetail 사용 가능
+    });
 
-      // 댓글 작성 시 파일 첨부 초기화
-      initializeFileUpload(
+    // 댓글 작성 시 파일 첨부 초기화
+    initializeFileUpload(
         '#comment_write',           // 댓글 작성창의 컨테이너
         '#fileInputComment',        // 댓글 작성창의 파일 입력 필드
         '.thumb_box_wrap',          // 댓글 작성창의 이미지 미리보기 영역
@@ -746,6 +1074,11 @@ $(function () {
         formData.append('post_idx', pidx);
         formData.append('content', content);
 
+        // 파일 추가
+        const commentFiles = $('#fileInputComment')[0].files;
+        console.log('ㄴㄴㄴㄴㄴㄴㄴ파일ㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴ', commentFiles);
+
+
         // FormData 내용 콘솔에 출력
         for (let [key, value] of formData.entries()) {
             console.log(`${key}: ${value}`);
@@ -773,6 +1106,7 @@ $(function () {
                 alert("댓글 등록에 실패했습니다.");
             }
         });
+
     });
 
     // 답글 등록
@@ -783,6 +1117,9 @@ $(function () {
         const depth = 2;
         const g_idx = $(this).data('g-idx'); // 상위 댓글의 g-idx 가져오기
         const p_idx = $(this).data('p-idx'); // 상위 댓글의 g-idx 가져오기
+
+        p_idx == null ? 0 : p_idx;
+
         const userName = $(this).data('userName');
         if (userName) {
             replyContent = `<p class="user-tag">@${userName}</p>` + replyContent
@@ -832,89 +1169,89 @@ $(function () {
     });
 
 
-//     const maxFiles = 5;
+    //     const maxFiles = 5;
 
-//     // 파일 버튼 클릭 시 파일 선택 창 열기
-//     $("#fileButton").on("click", function () {
-//         $("#fileInputComment").click();
-//       });
+    //     // 파일 버튼 클릭 시 파일 선택 창 열기
+    //     $("#fileButton").on("click", function () {
+    //         $("#fileInputComment").click();
+    //       });
 
-//       // 파일 선택 시 이벤트 처리
-//   $("#fileInputComment").on("change", function (event) {
-//     const files = Array.from(event.target.files);
+    //       // 파일 선택 시 이벤트 처리
+    //   $("#fileInputComment").on("change", function (event) {
+    //     const files = Array.from(event.target.files);
 
-//     console.log("선택된 파일 정보:", files); // 파일 정보 콘솔에 출력
+    //     console.log("선택된 파일 정보:", files); // 파일 정보 콘솔에 출력
 
-//     const $thumbBoxWrap = $(".thumb_box_wrap").empty(); // 기존 이미지를 초기화
-//     const $fileCover = $(".file_cover").empty(); // 기존 파일 리스트 초기화
+    //     const $thumbBoxWrap = $(".thumb_box_wrap").empty(); // 기존 이미지를 초기화
+    //     const $fileCover = $(".file_cover").empty(); // 기존 파일 리스트 초기화
 
-//     // 현재 첨부된 파일 개수 확인
-//     const currentFileCount = $thumbBoxWrap.find(".thumb_box").length + 
-//                              $fileCover.find(".cmt_fileList").length;
+    //     // 현재 첨부된 파일 개수 확인
+    //     const currentFileCount = $thumbBoxWrap.find(".thumb_box").length + 
+    //                              $fileCover.find(".cmt_fileList").length;
 
-//     if (currentFileCount + files.length > maxFiles) {
-//       alert("최대 5개의 파일만 첨부할 수 있습니다.");
-//       return;
-//     }
+    //     if (currentFileCount + files.length > maxFiles) {
+    //       alert("최대 5개의 파일만 첨부할 수 있습니다.");
+    //       return;
+    //     }
 
-//     files.forEach(function (file) {
-//       if (file.type.startsWith("image/")) {
-//         // 이미지 파일일 경우 thumb_box_wrap에 추가
-//         const $thumbBox = $(`
-//           <div class="thumb_box">
-//             <div class="img_cover">
-//               <span class="thumbnail"><img src="" alt="첨부 이미지" class="thumbnail-img" /></span>
-//               <button class="remove_img"><img src="/images/close.svg"></button>
-//             </div>
-//           </div>
-//         `);
-        
-//         // 이미지 파일 URL 설정
-//         const reader = new FileReader();
-//         reader.onload = function (e) {
-//           $thumbBox.find(".thumbnail-img").attr("src", e.target.result);
-//         };
-//         reader.readAsDataURL(file);
+    //     files.forEach(function (file) {
+    //       if (file.type.startsWith("image/")) {
+    //         // 이미지 파일일 경우 thumb_box_wrap에 추가
+    //         const $thumbBox = $(`
+    //           <div class="thumb_box">
+    //             <div class="img_cover">
+    //               <span class="thumbnail"><img src="" alt="첨부 이미지" class="thumbnail-img" /></span>
+    //               <button class="remove_img"><img src="/images/close.svg"></button>
+    //             </div>
+    //           </div>
+    //         `);
 
-//         // 이미지 제거 버튼 클릭 시 삭제
-//         $thumbBox.find(".remove_img").on("click", function () {
-//           $thumbBox.remove();
-//           if ($thumbBoxWrap.find(".thumb_box").length === 0) {
-//             $thumbBoxWrap.hide(); // 이미지가 모두 삭제되면 숨기기
-//         }
-//         });
+    //         // 이미지 파일 URL 설정
+    //         const reader = new FileReader();
+    //         reader.onload = function (e) {
+    //           $thumbBox.find(".thumbnail-img").attr("src", e.target.result);
+    //         };
+    //         reader.readAsDataURL(file);
 
-//         $thumbBoxWrap.append($thumbBox);
-//         $thumbBoxWrap.show();
-//       } else {
-//         // 이미지 외 파일일 경우 file_cover에 추가
-//         const $fileItem = $(`
-//           <div class="cmt_fileList">
-//             <div>
-//               <span><img src="/images/folder.svg"></span>
-//               <span class="fine_name">
-//                 <i class="file_name_img"></i>
-//                 <button type="button" class="file_name_text">${file.name}</button>
-//               </span>
-//               <span class="file_size">(${(file.size / 1024).toFixed(1)} KB)</span>
-//             </div>
-//             <button class="btn_fine_del"><img src="/images/close_black.svg"></button>
-//           </div>
-//         `);
+    //         // 이미지 제거 버튼 클릭 시 삭제
+    //         $thumbBox.find(".remove_img").on("click", function () {
+    //           $thumbBox.remove();
+    //           if ($thumbBoxWrap.find(".thumb_box").length === 0) {
+    //             $thumbBoxWrap.hide(); // 이미지가 모두 삭제되면 숨기기
+    //         }
+    //         });
 
-//         // 파일 제거 버튼 클릭 시 삭제
-//         $fileItem.find(".btn_fine_del").on("click", function () {
-//           $fileItem.remove();
-//           if ($fileCover.find(".cmt_fileList").length === 0) {
-//             $fileCover.hide(); // 모든 파일이 삭제되면 숨기기
-//         }
-//         });
+    //         $thumbBoxWrap.append($thumbBox);
+    //         $thumbBoxWrap.show();
+    //       } else {
+    //         // 이미지 외 파일일 경우 file_cover에 추가
+    //         const $fileItem = $(`
+    //           <div class="cmt_fileList">
+    //             <div>
+    //               <span><img src="/images/folder.svg"></span>
+    //               <span class="fine_name">
+    //                 <i class="file_name_img"></i>
+    //                 <button type="button" class="file_name_text">${file.name}</button>
+    //               </span>
+    //               <span class="file_size">(${(file.size / 1024).toFixed(1)} KB)</span>
+    //             </div>
+    //             <button class="btn_fine_del"><img src="/images/close_black.svg"></button>
+    //           </div>
+    //         `);
 
-//         $fileCover.append($fileItem);
-//         $fileCover.show();
-//       }
-//     });
-//   });
+    //         // 파일 제거 버튼 클릭 시 삭제
+    //         $fileItem.find(".btn_fine_del").on("click", function () {
+    //           $fileItem.remove();
+    //           if ($fileCover.find(".cmt_fileList").length === 0) {
+    //             $fileCover.hide(); // 모든 파일이 삭제되면 숨기기
+    //         }
+    //         });
+
+    //         $fileCover.append($fileItem);
+    //         $fileCover.show();
+    //       }
+    //     });
+    //   });
 
 });
 
