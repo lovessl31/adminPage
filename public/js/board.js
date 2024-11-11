@@ -262,5 +262,4 @@ $(function() {
     $('#createBoard').on('click', function() {
         window.location.href = 'boardCreate.html';
     });
-
 });

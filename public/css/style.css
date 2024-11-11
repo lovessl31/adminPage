@@ -1505,6 +1505,14 @@ table td {
   font-size: 14px;
 }
 
+.fileInfo {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+
+}
+
 .file-down-btn {
   border: none;
   background: transparent;
@@ -1861,6 +1869,10 @@ hr {
   font-size: 18px;
 }
 
+.cmt_content p {
+  margin-bottom: 10px;
+}
+
 /* 댓글 작성창 */
 
 .user-tag {
@@ -1913,10 +1925,9 @@ hr {
 
 }
 
-.cmt_pic_wrap {
+.cmt_pic_wrap, .cmt_pic_wrap_edit, .cmt_pic_wrap_reply, .cmt_pic_wrap_edit_reply {
   display: flex;
   align-items: center;
-
   border: none;
   background: transparent;
 }
@@ -1956,7 +1967,7 @@ hr {
 
 /* 댓글 사진 첨부 */
 
-.thumb_box_wrap {
+.thumb_box_wrap, .thumb_box_wrap_edit, .thumb_box_wrap_reply, .thumb_box_wrap_edit_reply {
   display: flex;
 }
 
@@ -2017,16 +2028,14 @@ hr {
   position: absolute;
   top: 4px;
   right: 3px;
-  padding: 4px;
   border-radius: 4px;
-  background-color: rgba(32, 33, 36, 0.493);
   line-height: 0;
 }
 
 /* 댓글 파일 첨부 */
 
-.file_cover {
-  width: 350px;
+.file_cover, .file_cover_edit, .file_cover_reply, .file_cover_edit_reply {
+  width: 500px;
   position: relative;
 
   -webkit-box-sizing: border-box;
@@ -2046,6 +2055,12 @@ hr {
   justify-content: space-between;
 }
 
+.cmt_fileList>div {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
 
 .file_name_text  {
   font-size: 14px;
@@ -3402,4 +3417,102 @@ em {
   width: 100%;
   min-height: 500px;
   padding: 20px;
+}
+
+
+.cmt_imgbox {
+  display: inline-block;
+  gap: 10px;              /* 이미지 사이의 간격 */
+  margin-top: 10px;
+}
+
+.cmt_imgbox .cmt_img_link {
+  display: inline-block;
+  vertical-align: top;
+  color: #555;
+  text-align: left;
+}
+
+.cmt_imgbox .cmt_img_link .image {
+  width: 128px;
+  height: 125px;
+  border-radius: 12px;
+  background-color: #242424;
+  object-fit: cover; /* 이미지가 정사각형으로 채워지도록 */
+}
+
+.cmt_filebox {
+  width: 500px;
+  margin-top: 10px;
+  border: 1px solid #cccccc;
+  border-radius: 10px;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.file_namebox {
+  font-size: 14px;
+  white-space: nowrap; /* 한 줄로 표시 */
+  overflow: hidden; /* 넘치는 텍스트 숨기기 */
+  text-overflow: ellipsis; /* 줄임말로 표시 */
+  max-width: 100%; /* 부모 요소의 너비를 넘어가지 않도록 제한 */
+}
+
+.file_namebox span {
+  color: #8F8F8F;
+}
+
+.cmt_filebox button {
+  border: none;
+  background: transparent;
+}
+
+.thumbnail_edit {
+  position: relative;
+  display: block;
+  width: 90px;
+  height: 90px;
+  top: 0;
+  left: 0;
+  border-radius: 8px;
+  background-color: #fff;
+  text-align: center;
+  overflow: hidden;
+  
+}
+
+.thumbnail_edit img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.thumbnail_edit::after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: auto;
+  height: auto;
+  right: 0;
+  bottom: 0;
+  border: 1px solid rgba(44, 50, 68, 0.1);
+  border-radius: 8px;
+  content: "";
+}
+
+.remove_img_edit {
+  color: #ff0606;
+  height: 0px;
+  border: 0;
+  border-radius: 0;
+  background-color: transparent;
+  position: absolute;
+  top: 4px;
+  right: 3px;
+  padding: 4px;
+  border-radius: 4px;
+  background-color: rgba(32, 33, 36, 0.493);
+  line-height: 0;
 }
