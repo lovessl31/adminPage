@@ -1,3 +1,4 @@
+const protocol = "http://"
 // url 
 const defaultUrl = "http://safe.withfirst.com:28888"
 const params = new URL(document.location.href).searchParams;
@@ -399,6 +400,7 @@ function renderComment() {
     const cmtContainer = $('.cmt_container');
     cmtContainer.empty();
 
+    const imagePath = protocol 
     commentsData.forEach(comment => {
 
         let attachmentsHtml = '';
@@ -409,7 +411,7 @@ function renderComment() {
             // 먼저 이미지 파일을 렌더링
             comment.첨부파일.forEach(file => {
                 if (file.f_type && file.f_type.startsWith('image/')) {
-                    const imagePath = `http://${file.domain}/with/comment/file/view?file=${file.s_f_name}&gubun=firstcore/${pidx}&content_type=${file.f_type}`;
+                    const imagePath = `${protocol}${file.domain}/with/${file.f_path}`;
                     attachmentsHtml += `
                         <div class="cmt_imgbox">
                             <a class="cmt_img_link" href="${imagePath}" target="_blank">
@@ -423,7 +425,7 @@ function renderComment() {
             // 그 다음, 이미지가 아닌 파일을 렌더링
             comment.첨부파일.forEach(file => {
                 if (!file.f_type.startsWith('image/')) {
-                    const filePath = `http://${file.domain}${file.f_path}`;
+                    const filePath = `${protocol}${file.domain}/with/${file.f_path}`;
                     attachmentsHtml += `
                         <div class="cmt_filebox">
                             <div class="file_namebox">
@@ -524,7 +526,7 @@ function renderReplyComments(reply, container, parentUserName = null, depth) {
     if (reply.첨부파일 && reply.첨부파일.length > 0) {
             reply.첨부파일.forEach(file => {
                 if (file.f_type && file.f_type.startsWith('image/')) {
-                    const imagePath = `http://${file.domain}/with/comment/file/view?file=${file.s_f_name}&gubun=firstcore/${pidx}&content_type=${file.f_type}`;
+                    const imagePath = `${protocol}${file.domain}/with/${file.f_path}`;
                     attachmentsHtml += `
                         <div class="cmt_imgbox">
                             <a class="cmt_img_link" href="${imagePath}" target="_blank">
@@ -538,7 +540,7 @@ function renderReplyComments(reply, container, parentUserName = null, depth) {
             // 그 다음, 이미지가 아닌 파일을 렌더링
             reply.첨부파일.forEach(file => {
                 if (!file.f_type.startsWith('image/')) {
-                    const filePath = `http://${file.domain}${file.f_path}`;
+                    const filePath = `http://${file.domain}/with/${file.f_path}`;
                     attachmentsHtml += `
                         <div class="cmt_filebox">
                             <div class="file_namebox">
@@ -921,7 +923,7 @@ function editComment(buttonElement) {
         }).map(fileObj => {
             const file = fileObj.data;
             const imagePath = fileObj.type === 'existing' 
-                ? `http://${file.domain}/with/comment/file/view?file=${file.s_f_name}&gubun=firstcore/${pidx}&content_type=${file.f_type}`
+                ? `${protocol}${file.domain}/with/${file.f_path}`
                 : URL.createObjectURL(file);
 
             return `
@@ -1139,7 +1141,7 @@ function editReplyComment(buttonElement, rp_content) {
         }).map(fileObj => {
             const file = fileObj.data;
             const imagePath = fileObj.type === 'existing'
-                ? `http://${file.domain}/with/comment/file/view?file=${file.s_f_name}&gubun=firstcore/${pidx}&content_type=${file.f_type}`
+                ? `${protocol}${file.domain}/with/${file.f_path}`
                 : URL.createObjectURL(file);
 
             return `

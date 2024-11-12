@@ -76,6 +76,7 @@ function renderUserTable() {
                 <td><div class="d-flex align-items-center justify-content-center">
                     <input type="checkbox" data-u-idx="${user.user_idx}" data-u-id="${user.user_id}">
                 </div></td>
+                <td>${user.user_idx}</td>
                 <td class="userName" data-u-idx="${user.user_idx}">${user.user_name}</td>
                 <td>${user.user_id}</td>
                 <td>${user.c_name}</td>
@@ -108,7 +109,13 @@ function renderUserTable() {
         const userIdx = $(this).data('u-idx'); // 버튼의 data-u-idx 속성에서 userIdx 추출
         detailUser(userIdx); // 추출한 userIdx를 함수에 전달
     });
-    $('#userTableBody').on('click', '.modifyBtn', modifyUser);
+ // 수정 버튼 클릭 시 userIdx 확인 후 modifyUser 함수 실행
+$('#userTableBody').on('click', '.modifyBtn', function() {
+    editingUserId = $(this).data('u-idx'); // data 속성에서 userIdx 가져오기
+    console.log('수정 버튼 클릭됨. userIdx:', editingUserId); // userIdx 확인을 위한 콘솔 출력
+    
+    modifyUser(); // userIdx를 전역 변수로 활용
+});
     $('#userTableBody').on('click', '.deleteBtn', deleteUser);
 }
 
@@ -203,6 +210,9 @@ function detailUser(userIdx) {
     });
     // 팝업 표시
     $('#userDetail').css('display', 'flex');
+
+    // goToChange 버튼에 userIdx를 동적으로 data 속성으로 추가
+    $('.goToChange').data('u-idx', userIdx);
 }
 
 function renderUserDetail(user) {
@@ -218,12 +228,17 @@ function renderUserDetail(user) {
     $('#userPosition').text(user.user_position || '없음');
 }
 
-// 사용자 수정 팝업 열기 함수
-function modifyUser() {
-    
-    const userIdx = $(this).data('u-idx');
-    editingUserId = userIdx; // 사용자 수정 시 사용할 userIdx 저장
-    const com_idx = localStorage.getItem('com_idx');
+function modifyUser(userIdx = null) {
+    // userIdx가 전달되지 않은 경우 전역 변수 editingUserId에서 가져오기
+    if (userIdx) {
+        editingUserId = userIdx;
+    } else if (editingUserId) {
+        userIdx = editingUserId;
+    } else {
+        console.error('수정할 사용자 ID가 설정되지 않았습니다.');
+        return;
+    }
+
 
      // 팝업 열 때 비밀번호 입력창 초기화
      $('#newUserPassword').hide();  // 비밀번호 입력창 숨기기
@@ -593,11 +608,32 @@ $(function() {
 
 
    // 비밀번호 변경 버튼 클릭 시 이벤트 처리
-    $('.pwChangeWrap').on('click', '.pwChangeBtn', function() {
+   $(document).on('click', '.pwChangeBtn', function() {
+
+    console.log('비밀번호 변경 버튼 클릭됨');
+
         // 비밀번호 입력창 표시
-        $('#newUserPassword').show();
+        $('#newUserPassword').css('display', 'block'); // display 속성 강제 적용
         // 비밀번호 변경 버튼이 있는 div (pwChangeWrap) 숨기기
-        $(this).closest('.pwChangeWrap').hide();
+        $(this).closest('.pwChangeWrap').css('display', 'none');
+
     });
+
+    $(document).on('click', '.goToChange', function() {
+
+        $('#userDetail').css('display', 'none');
+
+            // 사용자 ID나 기타 필요한 정보를 가져오기 위해 data-* 속성 활용
+            const userIdx = $(this).data('u-idx'); // 필요한 경우 사용자의 고유 ID를 가져옴
+            
+            if (userIdx) {
+                modifyUser.call(this, userIdx); // 수정 함수에 userIdx 전달
+            } else {
+                console.error('userIdx 값이 설정되지 않았습니다.');
+            }
+
+   
+    });
+
 
 });

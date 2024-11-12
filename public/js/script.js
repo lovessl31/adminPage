@@ -15,7 +15,7 @@ function updateUI() {
         document.getElementById('logoutButton').style.display = 'block';
         document.getElementById('userInfo').style.display = 'block';
     } else {
-        document.getElementById('loginButtons').style.display = 'block';
+        document.getElementById('loginButtons').style.display = 'none';
         document.getElementById('logoutButton').style.display = 'none';
         document.getElementById('userInfo').style.display = 'none';
     }
@@ -31,7 +31,7 @@ function logout() {
     updateUI();
 
     // 페이지 리디렉션
-    window.location.href = 'login.html';
+    window.location.href = '/index.html';
 }
 
 // 페이지 로드 시 UI 업데이트

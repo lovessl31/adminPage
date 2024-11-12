@@ -89,7 +89,7 @@ function renderTable() {
                     <input type="checkbox" data-com-idx="${company.com_idx}" data-c-id="${company.c_id}">
                 </div>
             </td>
-            <td>${startIndex + index + 1}</td>
+            <td>${company.com_idx}</td>
             <td>${company.c_name}</td>
             <td>${company.owner_name}</td>
             <td>${company.c_id}</td>
@@ -227,8 +227,14 @@ function approveCompany() {
         processData: false,
         data : formData,
         success : function(response) {
-            alert('승인되었습니다.');
-            location.reload();
+            Swal.fire({
+                title: '승인 완료',
+                text: '승인되었습니다.',
+                icon: 'success',
+                confirmButtonText: '확인'
+            }).then(()=> {
+                location.reload();
+            });
         },
         error : function(e) {
             console.log(e)
@@ -255,7 +261,18 @@ function addCompany() {
     const fileInputs = $('#registerRealFileInput')[0].files; // 파일들을 배열로 가져옴
 
     console.log('파일 확인',fileInputs);
-    
+
+    // 사업자등록증 숫자만 입력 받을 수 있게 설정
+    if (!/^\d+$/.test(businessNumber)) {
+        Swal.fire({
+            title: '경고',
+            html: '사업자등록증 번호는 <br> 숫자만 입력할 수 있습니다.',
+            icon: 'warning',
+            confirmButtonText: '확인'
+        });
+        return; // 숫자 형식이 아닐 경우 함수 실행 중단
+    }
+
     // 요청할 폼 데이터
     const formData = new FormData();
     formData.append('c_name', companyName);
