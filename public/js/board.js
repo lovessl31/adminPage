@@ -79,7 +79,7 @@ function renderBoardTable() {
                 <td class="buttons center-align">
                     <button class="modifyBtn" id="boardModify" data-b-idx="${board.board_idx}">수정</button>
                     <button class="deleteBtn" data-b-idx="${board.board_idx}" data-b-name="${board.board_name}">삭제</button>
-                    <button class="moveBtn moveBoardPage" data-b-idx="${board.board_idx}">이동</button>
+                    <button class="moveBtn moveBoardPage" data-b-idx="${board.board_idx}" data-b-type="${board.board_type}">이동</button>
                 </td>
             </tr>
         `);
@@ -91,7 +91,7 @@ function renderBoardTable() {
     $('thead input[type="checkbox"]').prop('checked', false);
 
     // 동적으로 생성된 요소들에 이벤트 리스너 추가
-    $('#boardTableBody').on('click', '.modifyBtn', moveToPage('boardUpdate.html'));
+    $('#boardTableBody').on('click', '.modifyBtn', moveToUpdate('boardUpdate.html'));
     $('#boardTableBody').on('click', '.deleteBtn', deleteBoard);
     $('#boardTableBody').on('click', '.moveBoardPage', moveToPage('postList.html'));
 }
@@ -169,14 +169,29 @@ function deleteBoards(boards) {
 }
 
 // 페이지 이동 함수
+function moveToUpdate(page) {
+    return function() {
+        const board_idx = $(this).data('b-idx');
+        const board_type = $(this).data('b-type');
+        localStorage.setItem('board_idx', board_idx);
+
+        window.location.href = `/${page}?board_idx=${board_idx}`;
+    };
+}
+
 function moveToPage(page) {
     return function() {
         const board_idx = $(this).data('b-idx');
+        const board_type = $(this).data('b-type');
         localStorage.setItem('board_idx', board_idx);
 
-        if(board_idx) {
-            // board_idx를 사용하여 동적으로 해당 페이지로 이동
-             window.location.href = `/${page}?board_idx=${board_idx}`;
+        if (board_idx) {
+            // board_type이 'L'이면 page로 이동, 아니면 albumList.html로 이동
+            if (board_type === 'L') {
+                window.location.href = `/${page}?board_idx=${board_idx}`;
+            } else {
+                window.location.href = `/albumList.html?board_idx=${board_idx}`;
+            }
         } else {
             console.error('board_idx를 찾을 수 없습니다.');
         }

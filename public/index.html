@@ -57,20 +57,12 @@
         </div>
         <!-- 메인 컨텐츠 -->
         <div id="loginC">
-            <div class="loginWrap">
-                <div class="loginContent">
-                    <div class="contentBox">
-                        <h4>LOGIN</h4>
-                        <input type="text" id="username" placeholder="아이디">
-                        <input type="password" id="password" placeholder="비밀번호">
-                        <button id="login-button">Login</button>
-                    </div>
-                    </div>
+            <div class="loginsWrap">
+               <button class="custom-btn btn-16" id="companyLogin">회사 로그인</button>
+               <button class="custom-btn btn-16" id="adminLogin">관리자 로그인</button>
             </div>
         </div>
-        <div>
-            
-        </div>
+     
 
         <!-- 푸터 -->
         <div id="footer">
@@ -100,5 +92,19 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <script type="module" src="./js/board.js"></script>    
     <script src="/js/currentPage.js"></script>
+
+    <script>
+        
+        $(function() {
+            $('#adminLogin').on('click', function() {
+                window.location.href='login.html';
+            });
+
+            $('#companyLogin').on('click', function() {
+                window.location.href='companyLogin.html';
+            });
+        });
+    </script>
+
 </body>
 </html>

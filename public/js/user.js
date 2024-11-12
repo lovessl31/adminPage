@@ -256,8 +256,9 @@ function modifyUser() {
             $(`input[name="modifyStatus"][value="${userDetail.status}"]`).prop('checked', true);
     
             // 회사 리스트 로드 (수정 팝업)
-            loadCompanyList('modifyCompanySelect', com_idx); // 수정 시 선택된 회사 ID 전달
-    
+            // 선택된 회사의 c_name을 loadCompanyList에 전달
+            loadCompanyList('modifyCompanySelect', userDetail.c_name);
+            
             // 팝업 표시
              $('#modifyPopupLayer').css('display', 'flex');
     
@@ -281,6 +282,7 @@ function updateUserData() {
     }
 
     // 값 가져오기
+    const com_idx = $('#modifyCompanySelect').val(); // 수정 팝업에서 선택된 회사 com_idx 가져오기
     const userName = $('#modifyUserName').val().trim();
     const userId = $('#modifyUserId').val().trim();
     const newPassword = $('#newUserPassword').val().trim();
@@ -307,6 +309,7 @@ function updateUserData() {
     formData.append('user_pw', userPassword);
     formData.append('user_name', userName);
     formData.append('status', status);
+    formData.append('com_idx', com_idx); // 선택한 회사의 com_idx 추가
     // 객체를 JSON 문자열로 변환하여 추가
     formData.append('option', JSON.stringify(option_obj));
 
@@ -429,7 +432,7 @@ function addUserData() {
 }
 
 // 등록/수정 팝업에서 회사 리스트 목록 요청 함수
-function loadCompanyList(selectElementId, selectedComIdx = null) {
+function loadCompanyList(selectElementId, selectedCompanyName  = null) {
 
     $.ajax({
         url: defaultUrl + '/with/sub_com_list',
@@ -455,7 +458,7 @@ function loadCompanyList(selectElementId, selectedComIdx = null) {
             selectElement.empty();
             
             // 선택된 회사가 없을 때 , 기본 메시지 초기화
-            if (selectedComIdx === null) {
+            if (selectedCompanyName === null) {
                 selectElement.html('<option value="" disabled selected hidden>회사를 선택해주세요.</option>'); 
             }
 
@@ -465,15 +468,15 @@ function loadCompanyList(selectElementId, selectedComIdx = null) {
                 .val(company.com_idx) // 옵션값으로 회사 IDX 설정
                 .text(company.c_name); // 옵션에 표시할 텍스트로 회사 이름 설정
                 
-                // 수정 시 사용자가 소속된 회사가 있으면 기본 선택되도록 설정
-                if (selectedComIdx && company.com_idx == selectedComIdx) {
-                    option.prop('selected', true);
+              // c_name이 선택된 회사와 일치하면 기본 선택
+              if (selectedCompanyName && company.c_name === selectedCompanyName) {
+                option.prop('selected', true);
                 }
                 
                 selectElement.append(option); // select 요소에 option 추가
             });
 
-            if (selectedComIdx === null && selectElement.val() === "") {
+            if (!selectedCompanyName && selectElement.val() === "") {
                 selectElement.val("");
             }
         },

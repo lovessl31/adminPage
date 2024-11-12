@@ -37,11 +37,18 @@ function fetchCompanyData(page = 1) {
         },
         success : function(response) {
             console.log('회사 목록 데이터를 조회하는데 성공하였습니다.');
-            console.log('회사 데이터 : ', response.data);
+            console.log('회사 데이터 ddd: ', response.data);
             console.log('회사 데이터 : ', response);
 
             // 로컬스토리지에 현재 페이지 저장
             localStorage.setItem('currentPage', currentPage);
+
+            console.log('dd', response.data[0].com_idx);
+            
+             // com_idx가 있을 경우 로컬스토리지에 저장
+             if (response.data[0].com_idx) {
+                localStorage.setItem('com_idx', response.data[0].com_idx);
+            }
 
             companies = response.data;
             totalPage = response.total_page || 1;
@@ -86,6 +93,7 @@ function renderTable() {
             <td>${company.c_name}</td>
             <td>${company.owner_name}</td>
             <td>${company.c_id}</td>
+
             <td>${company.created_date.split(' ')[0]}</td>
             <td class="table-cell-ellipsis">${fileLink}</td>
             <td class="buttons"><button class="userBtn moveBtn" data-com-idx="${company.com_idx}" data-c-id="${company.c_id}">이동</button></td>
@@ -97,6 +105,7 @@ function renderTable() {
                 <button class="modifyBtn comModify" data-id="${company.com_idx}">수정</button>
                 <button class="deleteBtn" data-com-idx="${company.com_idx}" data-c-id="${company.c_id}">삭제</button>
             </td>
+
         </tr>`;
         tableBody.append(row);
     });

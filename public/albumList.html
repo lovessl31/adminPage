@@ -74,15 +74,11 @@
                             <div class="searchInput">
                                 <input type="text" placeholder="검색어를 입력해주세요">
                             </div>
+                            <div class="searchBtn"><button id="searchButton">검색</button></div>
                         </div>
                     </div>
                     <div class="d-flex align-items-center">
-                        <div class="sort_form">
-                            <!-- 앨범형식일 경우 -->
-                            <a href="albumList.html"><button><img src="/images/album_selected.svg"></button></a>
-                            <a href="postList.html"><button><img src="/images/list.svg"></button></a>
-                        </div>
-                        <button>글쓰기</button>
+                        <button class="writeBtn">글쓰기</button>
                     </div>
                 </div>
 
@@ -122,18 +118,22 @@
                     </div>
                 </div>
 
-                <div class="albumBottomContent">
-                    <div class="pagination page-m" id="pagination">
-                        <a href="#">&laquo;</a>
-                        <a href="#" class="active">1</a>
-                        <a href="#">2</a>
-                        <a href="#">3</a>
-                        <a href="#">4</a>
-                        <a href="#">5</a>
-                        <a href="#">6</a>
-                        <a href="#">&raquo;</a>
+        
+                <div class="bottomContent">
+                    <div>
+                        <select class="countSelect" id="itemCountSelect">
+                            <option value="10">10개</option>
+                            <option value="30">30개</option>
+                            <option value="50">50개</option>
+                            <option value="100">100개</option>
+                        </select>
+                        <!-- <button id="deleteBtn">삭제</button> -->
                     </div>
+                         <!-- 페이지네이션 영역 -->
+                <div class="pagination" id="pagination"></div>                                        
                 </div>
+
+    
                </div>
             </div>
         </div>

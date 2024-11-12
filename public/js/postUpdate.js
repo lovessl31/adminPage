@@ -14,16 +14,14 @@ let multiFilesInput = {}; // ol_idx를 키로 하는 객체
 let filesArray = []; // 파일 배열
 let editor;
 const editorInstances = {};
-
-
-
-
 const state = {
     options: [],
     uploadedFileIds: [],
     filesArray: [],
     group_idx: null
 };
+
+let boardDetail = [];
 
 function fetchBoardDetailData() {
     $.ajax({
@@ -34,7 +32,7 @@ function fetchBoardDetailData() {
         },
         success: function (response) {
             console.log('옵션 데이터 조회 성공', response);
-            const boardDetail = response.data;
+            boardDetail = response.data;
             state.options = boardDetail.options;
             state.group_idx = boardDetail.group_idx;
 
@@ -1089,7 +1087,11 @@ $(function () {
                     icon: 'success',
                     confirmButtonText: '확인'
                 }).then(() => {
-                    window.location.href = `/postList.html?board_idx=${bidx}`;  // 이전 board.html 페이지로 이동
+                    if (boardDetail.board_type === 'L') {
+                        window.location.href = `/postList.html?board_idx=${bidx}`;  // 이전 board.html 페이지로 이동
+                    } else {
+                        window.location.href = `/albumList.html?board_idx=${bidx}`;  // 이전 board.html 페이지로 이동
+                    }
                 });
             },
             error: function (error) {

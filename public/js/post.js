@@ -86,7 +86,7 @@ function renderDetail() {
     dropContent.empty();
 
     dropContent.html(`
-        <li><button class="modify-btn" data-post-idx="${postDetail.post_idx}" data-user-idx="${postDetail.user_idx}">수정</button></li>
+        <li><button class="modify-btn" data-p-idx="${postDetail.post_idx}" data-user-idx="${postDetail.user_idx}">수정</button></li>
         <li><button class="delete-btn" data-post-idx="${postDetail.post_idx}" data-user-idx="${postDetail.user_idx}">삭제</button></li>
         <li><button>비공개</button></li>
     `);
@@ -1520,13 +1520,13 @@ $(function () {
 
     // 수정 버튼 클릭 시 게시글 수정 페이지로 이동
     $('.drop_content').on('click', '.modify-btn', function() {
-        const board_idx = localStorage.getItem('board_idx');
+   
+        const post_idx = $(this).data('p-idx');
 
-        if(board_idx) {
-            // board_idx를 사용하여 동적으로 해당 페이지로 이동
-             window.location.href = `/boardUpdate.html?board_idx=${board_idx}`;
+        if(post_idx) {
+             window.location.href = `/postUpdate.html?id=${post_idx}`;
         } else {
-            console.error('board_idx를 찾을 수 없습니다.');
+            console.error('post_idx 찾을 수 없습니다.');
         }
     });
 
@@ -1721,6 +1721,27 @@ $(document).on('click', '#submitReply', function (e) {
         }
     });
 });
+
+
+// 목록 이동
+$('.postListBtn').on('click', function() {
+
+    const board_idx = postDetail.board_idx;
+
+    if(postDetail.board_type === 'L') {
+        window.location.href = `/postList.html?board_idx=${board_idx}`;
+    } else {
+        window.location.href = `/albumList.html?board_idx=${board_idx}`;
+    }
+});
+
+// 최상위로 이동
+
+$('.goTop').on('click', function () {
+    console.log(this);
+    $('#content').animate({ scrollTop: 0 }, 'slow');
+});
+
 
     // // 답글 등록
     // $(document).on('click', '#submitReply', function (e) {

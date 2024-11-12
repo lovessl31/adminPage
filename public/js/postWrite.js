@@ -11,6 +11,8 @@ let multiFilesInput = {}; // ol_idx를 키로 하는 객체
 let filesArray = []; // 파일 배열
 let editor;
 
+let boardDetail = [];
+
 // 전역 변수를 객체로 묶어 관리
 const state = {
     options: [],
@@ -29,10 +31,10 @@ function fetchBoardDetailData() {
         },
         success: function (response) {
             console.log('옵션 데이터 조회 성공', response);
-            const boardDeatail = response.data;
+            boardDetail = response.data;
             // options와 group_idx를 추출해 state에 할당
-            state.options = boardDeatail.options;
-            state.group_idx = boardDeatail.group_idx;
+            state.options = boardDetail.options;
+            state.group_idx = boardDetail.group_idx;
             renderModules(state.options); // options 기반으로 모듈 렌더링		
         },
         error: function (e) {
@@ -781,6 +783,8 @@ $(function () {
             console.log(`${key}: ${value}`);
         }
 
+        console.log('boardDetail.board_type', boardDetail.board_type);
+
         $.ajax({
             url: defaultUrl + '/with/post_add',
             method: 'POST',
@@ -798,7 +802,15 @@ $(function () {
                     icon: 'success',
                     confirmButtonText: '확인'
                 }).then(() => {
-                    window.location.href = `/postList.html?board_idx=${bidx}`;  // 이전 board.html 페이지로 이동
+
+                    if (boardDetail.board_type === 'L') {
+                        window.location.href = `/postList.html?board_idx=${bidx}`;  // 이전 board.html 페이지로 이동
+                    } else {
+                        window.location.href = `/albumList.html?board_idx=${bidx}`;  // 이전 board.html 페이지로 이동
+                    }
+
+
+
                 });
             },
             error: function (error) {

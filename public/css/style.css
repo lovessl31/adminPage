@@ -265,6 +265,69 @@ h6 {
   font-size: 14px;
 }
 
+.loginsWrap {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+}
+
+.custom-btn {
+  width: 180px;
+  height: 50px;
+  color: #fff;
+  border-radius: 5px;
+  padding: 10px 25px;
+  font-family: 'Lato', sans-serif;
+  font-weight: 500;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  display: inline-block;
+   box-shadow:inset 2px 2px 2px 0px rgba(255,255,255,.5),
+   7px 7px 20px 0px rgba(0,0,0,.1),
+   4px 4px 5px 0px rgba(0,0,0,.1);
+  outline: none;
+}
+
+.btn-16 {
+  border: none;
+  color: #000;
+}
+
+.btn-16:after {
+  position: absolute;
+  content: "";
+  width: 0;
+  height: 100%;
+  top: 0;
+  left: 0;
+  direction: rtl;
+  box-shadow:
+   -7px -7px 20px 0px rgba(255, 255, 255, 0.6),
+   -4px -4px 5px 0px #fff9,
+   7px 7px 20px 0px #0002,
+   4px 4px 5px 0px #0001;
+  transition: all 0.3s ease;
+}
+
+.btn-16:hover {
+  color: #000;
+}
+
+.btn-16:hover:after {
+  left: auto;
+  right: 0;
+  width: 100%;
+}
+
+.btn-16:active {
+  top: 2px;
+}
+
 /* user.html */
 
 .contentWrap {
@@ -889,6 +952,34 @@ table td {
   max-width: 150px; /* 원하는 최대 너비 설정 */
 }
 
+.popup-content-com {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 450px;
+  min-height: 300px;
+  overflow-y: auto;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.contentPadding2 {
+  padding: 0;
+}
+
+.popup-content h4 {
+  font-size: 20px;
+  font-weight: 800;
+  margin-bottom: 20px;
+}
+
+.popup-close {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  font-size: 24px;
+  cursor: pointer;
+}
+
 
 /* 게시판 목록 */
 .boardTable {
@@ -1373,6 +1464,8 @@ table td {
 .border-t {
   border-top: 1px solid #EBECF0;
   padding-top: 50px;
+  padding-bottom: 40px;
+  border-bottom: 1px solid #EBECF0;
 }
 
 .image-container {
@@ -1391,6 +1484,10 @@ table td {
   height: 100%;
   object-fit: cover;
   /* 이미지를 컨테이너에 맞춰서 채우면서 비율 유지 */
+}
+
+.card {
+  cursor: pointer;
 }
 
 .card-title {
@@ -1440,7 +1537,7 @@ table td {
 }
 
 .container-w {
-  width: 80%;
+  width: 100%;
   margin: 0 auto;
 }
 
@@ -1449,6 +1546,18 @@ table td {
   font-size: 14px;
 }
 
+.custom-card {
+  flex: 0 0 19%; /* 카드가 5개 들어가도록 너비를 19%로 설정 */
+  max-width: 19%;
+  margin-left: 0.1%; /* 카드 간격 조정 */
+  margin-right: 0.1%; /* 카드 간격 조정 */
+}
+
+.image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* 이미지가 카드 내에서 잘 맞도록 조정 */
+}
 
 /* 상세페이지 (post.html) */
 
@@ -3373,10 +3482,9 @@ em {
 
 .popup-content {
   background-color: white;
-  padding: 20px;
   border-radius: 8px;
-  width: 400px;
-  min-height: 600px;
+  width: 550px;
+  min-height: 500px;
   overflow-y: auto;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
@@ -3386,6 +3494,7 @@ em {
   font-weight: 800;
   margin-bottom: 20px;
 }
+
 .popup-close {
   position: absolute;
   top: 10px;

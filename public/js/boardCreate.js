@@ -582,6 +582,18 @@ function showPopup(seq, title, content, status, type) {
     }
 }
 
+function checkRepresentativePhoto() {
+    // 동적 옵션 데이터를 수집하여 파일 모듈 확인
+    const dynamicOptions = collectDynamicOptions();
+    
+    // file_img 타입에서 view_sts가 3인 대표사진이 있는지 확인
+    const hasRepresentativePhoto = dynamicOptions.some(option => 
+        option.type === 'file_img' && option.view_sts === '3'
+    );
+
+    return hasRepresentativePhoto;
+}
+
 $(function() {
 	// 선택된 카테고리
 	let selectedCategory = null;
@@ -658,6 +670,18 @@ $(function() {
 	const commentSet  = $("input[name='cmtOption']:checked").val();
     // 동적 옵션 정보 수집
     const dynamicOptions = collectDynamicOptions();
+
+    const hasRepresentativePhoto = checkRepresentativePhoto(); // file_img 모듈에 view_sts 3 여부 확인
+
+    if (boardType === 'P' && !hasRepresentativePhoto) {
+            Swal.fire({
+                title: '대표사진 필요',
+                text: '앨범형 게시판을 생성하려면 파일 모듈의 대표사진을 설정해야 합니다.',
+                icon: 'warning',
+                confirmButtonText: '확인'
+            });
+            return; // 대표사진 설정 전까지 저장 진행 안됨
+        }
 
     // 요청할 폼 데이터
     const formData = new FormData();
