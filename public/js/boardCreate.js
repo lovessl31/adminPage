@@ -152,7 +152,9 @@ function createDropdownContent(dropDownCnt,name) {
 	html += `                    <input type="text" data-type='dropdown' value="${name}" placeholder="속성명을 입력하세요." class="attributeName">`;
 	html += `                    <div class="hiddenCheck">`;
 	html += `                        <input type="checkbox" class="hiddenCheckbox" id="hiddenDropdownCheckbox_${dropDownCnt}">`;
-	html += `                        <label for="hiddenDropdownCheckbox_${dropDownCnt}">숨김</label>`;
+	html += `                        <label for="hiddenDropdownCheckbox_${dropDownCnt}">관리자 목록에서 숨김</label>`;
+    html += `                        <input type="checkbox" class="userCheckbox" id="userDropdownCheckbox_${dropDownCnt}">`;
+	html += `                        <label for="userDropdownCheckbox_${dropDownCnt}">사용자 목록에서 보임</label>`;
     html += `                        <input type="checkbox" class="requireCheckbox" id="requireDropdownCheckbox_${dropDownCnt}">`;
     html += `                        <label for="requireDropdownCheckbox_${dropDownCnt}">필수값</label>`;
 	html += `                    </div>`;
@@ -196,7 +198,9 @@ function createDataInputContent() {
                             <input type="text" data-type='dataInput' value="" placeholder="속성명을 입력하세요." class="attributeName">
                             <div class="hiddenCheck">
                                 <input type="checkbox" class="hiddenCheckbox" id="hiddenDataCheckbox_${dataInputCnt}">
-                                <label for="hiddenDataCheckbox_${dataInputCnt}">숨김</label>
+                                <label for="hiddenDataCheckbox_${dataInputCnt}">관리자 목록에서 숨김</label>
+                                <input type="checkbox" class="userCheckbox" id="userDataCheckbox_${dataInputCnt}">
+                                <label for="userDataCheckbox_${dataInputCnt}">사용자 목록에서 보임</label>
                                 <input type="checkbox" class="requireCheckbox" id="requireDataCheckbox_${dataInputCnt}">
                                 <label for="requireDataCheckbox_${dataInputCnt}">필수값</label>
                             </div>
@@ -234,7 +238,9 @@ function createDateInputContent() {
                             <input type="text" data-type='dateInput' placeholder="속성명을 입력하세요." class="attributeName">
                             <div class="hiddenCheck">
                                 <input type="checkbox" class="hiddenCheckbox" id="hiddenDateCheckbox_${dateInputCnt}">
-                                <label for="hiddenDateCheckbox_${dateInputCnt}">숨김</label>
+                                <label for="hiddenDateCheckbox_${dateInputCnt}">관리자 목록에서 숨김</label>
+                                <input type="checkbox" class="userCheckbox" id="userDateCheckbox_${dateInputCnt}">
+                                <label for="userDateCheckbox_${dateInputCnt}">사용자 목록에서 보임</label>
                                 <input type="checkbox" class="requireCheckbox" id="requireDateCheckbox_${dateInputCnt}">
                                 <label for="requireDateCheckbox_${dateInputCnt}">필수값</label>
                             </div>
@@ -285,7 +291,9 @@ function createFileInputContent() {
                                     <label for="thumbImg_${fileInputCnt}">대표이미지 설정</label>
                                 </div>
                                 <input type="checkbox" class="hiddenCheckbox" id="hiddenFileCheckbox_${fileInputCnt}">
-                                <label for="hiddenFileCheckbox_${fileInputCnt}">목록에서 숨김</label>
+                                <label for="hiddenFileCheckbox_${fileInputCnt}">관리자 목록에서 숨김</label>
+                                <input type="checkbox" class="userCheckbox" id="userFileCheckbox_${fileInputCnt}">
+                                <label for="userFileCheckbox_${fileInputCnt}">사용자 목록에서 보임</label>
                                 <input type="checkbox" class="requireCheckbox" id="requireFileCheckbox_${fileInputCnt}">
                                 <label for="requireFileCheckbox_${fileInputCnt}">필수값</label>
                             </div>
@@ -342,8 +350,10 @@ function createFilesInputContent() {
                             <input type="text" data-type='files' placeholder="속성명을 입력하세요." class="attributeName">
                             <div class="hiddenCheck">
                                 <input type="checkbox" class="hiddenCheckbox" id="hiddenFilesCheckbox_${filesInputCnt}">
-                                <label for="hiddenFilesCheckbox_${filesInputCnt}">숨김</label>
-                                <input type="checkbox" class=="requireCheckbox" id="requireFilesCheckbox_${filesInputCnt}">
+                                <label for="hiddenFilesCheckbox_${filesInputCnt}">관리자 목록에서 숨김</label>
+                                <input type="checkbox" class="userCheckbox" id="userFilesCheckbox_${filesInputCnt}">
+                                <label for="userFilesCheckbox_${filesInputCnt}">사용자 목록에서 보임</label>
+                                <input type="checkbox" class="requireCheckbox" id="requireFilesCheckbox_${filesInputCnt}">
                                 <label for="requireFilesCheckbox_${filesInputCnt}">필수값</label>
                             </div>
                         </div>
@@ -379,7 +389,9 @@ function createTextAreaInputContent() {
                             <input type="text" data-type='textArea' placeholder="속성명을 입력하세요." class="attributeName">
                             <div class="hiddenCheck">
                                 <input type="checkbox" class="hiddenCheckbox" id="hiddenTextAreaCheckbox_${textAreanCnt}">
-                                <label for="hiddenTextAreaCheckbox_${textAreanCnt}">숨김</label>
+                                <label for="hiddenTextAreaCheckbox_${textAreanCnt}">관리자 목록에서 숨김</label>
+                                <input type="checkbox" class="userCheckbox" id="userTextAreaCheckbox_${textAreanCnt}">
+                                <label for="userTextAreaCheckbox_${textAreanCnt}">사용자 목록에서 보임</label>
                                 <input type="checkbox" class="requireCheckbox" id="requireTextAreaCheckbox_${textAreanCnt}">
                                 <label for="requireTextAreaCheckbox_${textAreanCnt}">필수값</label>
                             </div>
@@ -416,7 +428,9 @@ function createEditorInputContent() {
                             <input type="text" data-type='editor' placeholder="속성명을 입력하세요." class="attributeName">
                             <div class="hiddenCheck">
                                 <input type="checkbox" class="hiddenCheckbox" id="hiddenEditorCheckbox_${editorCnt}">
-                                <label for="hiddenEditorCheckbox_${editorCnt}">숨김</label>
+                                <label for="hiddenEditorCheckbox_${editorCnt}">관리자 목록에서 숨김</label>
+                                <input type="checkbox" class="userCheckbox" id="userEditorCheckbox_${editorCnt}">
+                                <label for="userEditorCheckbox_${editorCnt}">사용자 목록에서 보임</label>
                                 <input type="checkbox" class="requireCheckbox" id="requireEditorCheckbox_${editorCnt}">
                                 <label for="requireEditorCheckbox_${editorCnt}">필수값</label>
                             </div>
@@ -434,70 +448,59 @@ function createEditorInputContent() {
 
 // 다이나믹 옵션값 데이터 수집
 function collectDynamicOptions() {
-	
-	let optionDataList = [];
+    let optionDataList = [];
 
-	// 드롭다운, 데이터 입력, 날짜 입력, 파일, 다중 파일, 텍스트 영역, 에디터 필드를 모두 선택
-	$("#optionsBody").children().each(function() {
+    $("#optionsBody").children().each(function() {
+        let type = $(this).find('input').data('type'); 
+        let view_sts = {
+            thumbnail: false,            // 기본값은 false
+            admin_list_view: true,       // 기본값은 true (관리자 목록에서 보임)
+            user_list_view: false        // 기본값은 false (사용자 목록에서 숨김)
+        };
 
-		let type = $(this).find('input').data('type'); // 기본 type은 input의 data-type 값으로 설정
-		let view_sts;
-
-		// 파일 입력 필드일 경우에만 fileType 값 적용
-		if (type === 'file') {
-			type = $(this).data('fileType') || 'file';  // 파일 타입을 가져옴 (없으면 기본 'file')
+        // 파일 입력 필드일 경우에만 fileType 값 적용
+        if (type === 'file') {
+            type = $(this).data('fileType') || 'file';
         }
-		
-		// type이 file_img일 경우 view_sts값 설정
-		if (type === 'file_img') {
-			const isRadioChecked = $(this).find('input[type="radio"]:checked').length > 0;
-            const isHiddenChecked = $(this).find('input[type="checkbox"].hiddenCheckbox').is(':checked').length > 0;
 
-			// 라디오 버튼과 체크박스가 모두 체크된 경우 view_sts를 4로 설정
-			if (isRadioChecked && isHiddenChecked) {
-				view_sts = '4'; // 대표사진 숨김
-			} else if (isRadioChecked) {
-				view_sts = '3'; // 대표사진 보임
-			} else if (isHiddenChecked) {
-				view_sts = '2'; // 숨김
-			} else {
-				view_sts = '1'; // 보임
-			}
-		} else {
-            // type이 dropdown 또는 다른 타입인 경우 view_sts 설정
-			const isHiddenChecked = $(this).find('input[type="checkbox"].hiddenCheckbox').is(':checked');
+        // file_img 타입에서 thumbnail 설정
+        if (type === 'file_img') {
             const isRadioChecked = $(this).find('input[type="radio"]:checked').length > 0;
-            view_sts = isRadioChecked ? '3' : (isHiddenChecked ? '2' : '1');
-			console.log('숨김처리', isHiddenChecked);
+            if (isRadioChecked) {
+                view_sts.thumbnail = true; // 대표 이미지 설정
+            }
+        }
 
-			// 다른 type에 대해서는 기존 조건 유지
-			// view_sts = $(this).find('input[type="radio"]:checked').length > 0 ? '3' : 
-			           //($(this).find('input[type="checkbox"].hiddenCheckbox').is(':checked').length > 0 ? '2' : '1');
-		}
+        // 관리자 목록에서 숨김 설정
+        const isAdminHiddenChecked = $(this).find('input[type="checkbox"].hiddenCheckbox').is(':checked');
+        view_sts.admin_list_view = !isAdminHiddenChecked;
+
+        // 사용자 목록에서 보임 설정
+        const isUserVisibleChecked = $(this).find('input[type="checkbox"].userCheckbox').is(':checked');
+        view_sts.user_list_view = isUserVisibleChecked;
 
         const isRequiredChecked = $(this).find('input[type="checkbox"].requireCheckbox').is(':checked');
 
-        console.log('체크햇잖아', isRequiredChecked);
+        let optionData = {
+            type: type,                    
+            attributeName: $(this).find('.attributeName').val(),
+            view_sts: view_sts,            // 객체 형태로 설정된 view_sts 추가
+            sortNum: $(this).find('.sortNum').val(),
+            required: isRequiredChecked ? 'Y' : 'N',
+            options: []                   
+        };
 
-		let optionData = {
-			type: type,                 // input의 data-type 속성 값
-			attributeName: $(this).find('.attributeName').val(),       // 속성명 input의 값
-			view_sts: view_sts, 
-			sortNum: $(this).find('.sortNum').val(),                  // 순번 input의 값
-			required : isRequiredChecked ? 'Y' : 'N',   
-			options: []                                                // 옵션 리스트 텍스트 수집
-		};
+        $(this).find('.option-list .chip').each(function() {
+            let optionText = $(this).text().replace('×', '').trim().replace(/\s+/g, '');  
+            optionData.options.push(optionText);
+        });
 
-		// 옵션 리스트가 있는 경우에만 수집
-		$(this).find('.option-list .chip').each(function() {
-			let optionText = $(this).text().replace('×', '').trim().replace(/\s+/g, '');  // '×' 제거하고, 공백 및 줄바꿈 문자 제거
-			optionData.options.push(optionText);
-		});
-		optionDataList.push(optionData);
-	});
+        optionDataList.push(optionData);
+    });
 
-	return optionDataList;        // 수집된 데이터를 리턴
+    return optionDataList; 
 }
+
 
 // 모듈 제거
 function removeOptionBox(box_id){
@@ -673,6 +676,20 @@ $(function() {
 
     const hasRepresentativePhoto = checkRepresentativePhoto(); // file_img 모듈에 view_sts 3 여부 확인
 
+    const userViewCount = dynamicOptions.filter(option => option.view_sts.user_list_view === true).length;
+
+    console.log('dddd',userViewCount);
+
+    if (userViewCount > 2) {
+        Swal.fire({
+            title: '제한 초과',
+            text: '사용자 목록에는 최대 2개까지 보이게 설정할 수 있습니다.',
+            icon: 'warning',
+            confirmButtonText: '확인'
+        });
+        return; // 등록을 막음
+    }
+
     if (boardType === 'P' && !hasRepresentativePhoto) {
             Swal.fire({
                 title: '대표사진 필요',
@@ -707,13 +724,14 @@ $(function() {
     formData.append('LikeSet', likeSet); // 승인여부 (Y 또는 N)
     formData.append('commentSet', commentSet); // 승인여부 (Y 또는 N)
     formData.append('option', JSON.stringify(dynamicOptions)); // 동적 옵션 정보를 JSON 문자열로 변환하여 추가
-	
+
+
 	// FormData 내용 콘솔에 출력
 	for (let [key, value] of formData.entries()) {
 		console.log(`${key}: ${value}`);
     }
 
-    // 서버에 POST 요청 보내기
+    //서버에 POST 요청 보내기
     $.ajax({
         url: defaultUrl + '/with/board_add',
         method: 'POST',

@@ -190,6 +190,20 @@ function renderOptions(options) {
         let { ol_type, ol_name, ol_value, ov_idx, ol_idx, sort_num, view_sts, required } = option;
         currentMaxSortNum = Math.max(currentMaxSortNum, sort_num);  // 최대 순번을 저장
 
+
+          // view_sts를 JSON 객체로 변환
+          if (typeof view_sts === 'string') {
+            // Python 딕셔너리 형식을 JavaScript JSON 형식으로 변환
+            view_sts = view_sts.replace(/'/g, '"').replace(/True/g, 'true').replace(/False/g, 'false');
+            try {
+                view_sts = JSON.parse(view_sts);
+            } catch (e) {
+                console.error("view_sts JSON parsing error:", e);
+                view_sts = {};  // 파싱 실패 시 빈 객체로 초기화
+            }
+        }
+
+
         switch (ol_type) {
             case 'dropdown':
                 createDropDown(sort_num, 'update', ol_idx); // 드롭다운 필드 생성 시 sort_num 전달
@@ -198,12 +212,15 @@ function renderOptions(options) {
                 $(`#dropdown_box_${dropDownCnt} .sortNum`).val(sort_num); // sort_num 값 설정
                 $(`#dropdown_box_${dropDownCnt}`).attr('data-gubun', 'update');  // 기존 모듈은 update로 설정
 
-                // view_sts 값이 '2'라면 체크박스를 체크 상태로 설정
-                if (view_sts === '2') {
+                // view_sts 값에 따른 체크박스 렌더링
+                if (!view_sts.admin_list_view) {
                     $(`#dropdown_box_${dropDownCnt} input[type="checkbox"].hiddenCheckbox`).prop('checked', true);
                 }
 
-                // required 값이 'Y'라면 requireCheckbox 체크박스를 체크 상태로 설정
+                if (view_sts.user_list_view) {
+                    $(`#dropdown_box_${dropDownCnt} input[type="checkbox"].userCheckbox`).prop('checked', true);
+                }
+
                 if (required === 'Y') {
                     $(`#dropdown_box_${dropDownCnt} .requireCheckbox`).prop('checked', true);
                 }
@@ -222,9 +239,12 @@ function renderOptions(options) {
                 $(`#data_input_box_${dataInputCnt} .sortNum`).val(sort_num); // sort_num 값 설정
                 $(`#data_input_box_${dataInputCnt}`).attr('data-gubun', 'update');  // 기존 모듈은 update로 설정
 
-                // view_sts 값이 '2'라면 체크박스를 체크 상태로 설정
-                if (view_sts === '2') {
+                // view_sts 값에 따라 체크박스를 체크 상태로 설정
+                if (!view_sts.admin_list_view) {
                     $(`#data_input_box_${dataInputCnt} input[type="checkbox"].hiddenCheckbox`).prop('checked', true);
+                }
+                if (view_sts.user_list_view) {
+                    $(`#data_input_box_${dataInputCnt} input[type="checkbox"].userCheckbox`).prop('checked', true);
                 }
 
                 if (required == 'Y') {
@@ -240,8 +260,12 @@ function renderOptions(options) {
                 $(`#date_input_box_${dateInputCnt}`).attr('data-gubun', 'update');  // 기존 모듈은 update로 설정
 
                 // view_sts 값이 '2'라면 체크박스를 체크 상태로 설정
-                if (view_sts === '2') {
+                if (!view_sts.admin_list_view) {
                     $(`#date_input_box_${dateInputCnt} input[type="checkbox"].hiddenCheckbox`).prop('checked', true);
+                }
+
+                if (view_sts.user_list_view) {
+                    $(`#date_input_box_${dateInputCnt} input[type="checkbox"].userCheckbox`).prop('checked', true);
                 }
 
                 if (required == 'Y') {
@@ -250,53 +274,53 @@ function renderOptions(options) {
 
                 break;
 
-            case 'file':
-            case 'file_img':
-            case 'file_video':
+                    case 'file':
+                    case 'file_img':
+                    case 'file_video':
+                    
+                        console.log('file 타입 처리:', ol_type); // 파일 타입 처리 로그 추가
+                    
+                        createFileInput(sort_num, 'update', ol_idx); // 파일 입력 필드 생성 시 sort_num 전달
+                        $(`#file_input_box_${fileInputCnt} .attributeName`).val(ol_name); // 속성명 설정
+                        $(`#file_input_box_${fileInputCnt} .sortNum`).val(sort_num); // sort_num 값 설정
+                        $(`#file_input_box_${fileInputCnt}`).attr('data-gubun', 'update');
+                        $(`#file_input_box_${fileInputCnt}`).data('fileType', ol_type);  // 파일 타입 설정
+                    
+                        // 파일 타입에 맞는 버튼 선택 및 설정 처리
+                        if (ol_type === 'file') {
+                            $(`#file_input_box_${fileInputCnt} .file-btn`).removeClass('selectedBtn');
+                            $(`#file_input_box_${fileInputCnt} .file-btn:first`).addClass('selectedBtn'); // 전체 버튼 선택
+                            $(`#file_input_box_${fileInputCnt} .thumbImgWrapper`).hide(); // 대표 이미지 설정 숨기기
+                        } else if (ol_type === 'file_img') {
+                            $(`#file_input_box_${fileInputCnt} .file-btn`).removeClass('selectedBtn');
+                            $(`#file_input_box_${fileInputCnt} .file-btn:eq(1)`).addClass('selectedBtn'); // 이미지 버튼 선택
+                            $(`#file_input_box_${fileInputCnt} .thumbImgWrapper`).show(); // 이미지 타입일 때만 대표 이미지 설정 표시
+                        } else if (ol_type === 'file_video') {
+                            $(`#file_input_box_${fileInputCnt} .file-btn`).removeClass('selectedBtn');
+                            $(`#file_input_box_${fileInputCnt} .file-btn:eq(2)`).addClass('selectedBtn'); // 비디오 버튼 선택
+                            $(`#file_input_box_${fileInputCnt} .thumbImgWrapper`).hide(); // 대표 이미지 설정 숨기기
+                        }
+                    
+                        // view_sts 값에 따라 체크박스와 라디오 버튼 설정
+                        if (!view_sts.admin_list_view) { // admin_list_view가 false일 때 체크박스 선택
+                            $(`#file_input_box_${fileInputCnt} input[type="checkbox"].hiddenCheckbox`).prop('checked', true);
+                        }
 
-                console.log('file 타입 처리:', ol_type); // 파일 타입 처리 로그 추가
+                        if (view_sts.user_list_view) {
+                            $(`#file_input_box_${fileInputCnt} input[type="checkbox"].userCheckbox`).prop('checked', true); // 사용자 목록에 보임 설정
+                        }
 
-                let thumbImgChecked = false; // 대표 이미지 설정된 상태인지 확인
+                        // 대표 이미지 설정 라디오 버튼 처리 (file_img 타입에서만 적용)
+                        if (ol_type === 'file_img') {
+                            const isThumbnail = view_sts.thumbnail || false;
+                            $(`#file_input_box_${fileInputCnt} input[name="thumbImg"]`).prop('checked', isThumbnail);
+                        }
 
-                createFileInput(sort_num, 'update', ol_idx); // 파일 입력 필드 생성 시 sort_num 전달
-                $(`#file_input_box_${fileInputCnt} .attributeName`).val(ol_name); // 속성명 설정
-                $(`#file_input_box_${fileInputCnt} .sortNum`).val(sort_num); // sort_num 값 설정
-                $(`#data_input_box_${fileInputCnt}`).attr('data-gubun', 'update');
-                $(`#file_input_box_${fileInputCnt}`).data('fileType', ol_type);  // 파일 타입 설정
-
-                // 파일 타입에 맞는 버튼 선택
-                if (ol_type === 'file') {
-                    $(`#file_input_box_${fileInputCnt} .file-btn`).removeClass('selectedBtn');
-                    $(`#file_input_box_${fileInputCnt} .file-btn:first`).addClass('selectedBtn'); // 전체 버튼 선택
-                } else if (ol_type === 'file_img') {
-                    $(`#file_input_box_${fileInputCnt} .file-btn`).removeClass('selectedBtn');
-                    $(`#file_input_box_${fileInputCnt} .file-btn:eq(1)`).addClass('selectedBtn'); // 이미지 버튼 선택
-                    // 대표 이미지 설정 라디오 버튼 처리
-                    $(`#file_input_box_${fileInputCnt} .thumbImgWrapper`).show(); // 이미지 타입일 때만 라디오 버튼 표시
-                } else if (ol_type === 'file_video') {
-                    $(`#file_input_box_${fileInputCnt} .file-btn`).removeClass('selectedBtn');
-                    $(`#file_input_box_${fileInputCnt} .file-btn:eq(2)`).addClass('selectedBtn'); // 비디오 버튼 선택
-                }
-
-                // view_sts 값에 따라 체크박스와 라디오 버튼 설정
-                if (view_sts === '2' || view_sts === '4') {
-                    $(`#file_input_box_${fileInputCnt} input[type="checkbox"].hiddenCheckbox`).prop('checked', true); // 숨김 체크박스
-                }
-
-                // 대표 이미지 설정 라디오 버튼 처리
-                if (view_sts === '3' || view_sts === '4') {  // 대표 이미지로 설정된 경우
-                    $(`#file_input_box_${fileInputCnt} input[name="thumbImg"]`).prop('checked', true);
-                    thumbImgChecked = true;  // 대표 이미지가 이미 설정되었음을 기록
-                } else {
-                    // 아직 대표 이미지가 설정되지 않았거나, 다른 파일에 이미 설정된 경우 선택 해제
-                    $(`#file_input_box_${fileInputCnt} input[name="thumbImg"]`).prop('checked', false);
-                }
-
-                if (required === 'Y') {
-                    $(`#file_input_box_${fileInputCnt} .requireCheckbox`).prop('checked', true);
-                }
-
-                break;
+                        if (required === 'Y') {
+                            $(`#file_input_box_${fileInputCnt} .requireCheckbox`).prop('checked', true);
+                        }
+                    
+                        break;
 
             case 'files':
                 createFilesInput(sort_num, 'update', ol_idx); // 다중 파일 입력 필드 생성 시 sort_num 전달
@@ -304,9 +328,12 @@ function renderOptions(options) {
                 $(`#files_input_box_${filesInputCnt} .sortNum`).val(sort_num); // sort_num 값 설정
                 $(`#data_input_box_${filesInputCnt}`).attr('data-gubun', 'update');
 
-                // view_sts 값이 '2'라면 체크박스를 체크 상태로 설정
-                if (view_sts === '2') {
-                    $(`#data_input_box_${filesInputCnt} input[type="checkbox"].hiddenCheckbox`).prop('checked', true);
+                // view_sts 값에 따른 체크박스 렌더링
+                if (!view_sts.admin_list_view) {
+                    $(`#files_input_box_${filesInputCnt} input[type="checkbox"].hiddenCheckbox`).prop('checked', true);
+                }
+                if (view_sts.user_list_view) {
+                    $(`#files_input_box_${filesInputCnt} input[type="checkbox"].userCheckbox`).prop('checked', true);
                 }
 
                 // required 값이 'Y'라면 requireCheckbox 체크박스를 체크 상태로 설정
@@ -322,9 +349,14 @@ function renderOptions(options) {
                 $(`#textarea_input_box_${textAreanCnt} .sortNum`).val(sort_num);
                 $(`#textarea_input_box_${textAreanCnt}`).attr('data-gubun', 'update');
 
-                if (view_sts === '2') {
+                 // view_sts 값에 따른 체크박스 렌더링
+                if (!view_sts.admin_list_view) {
                     $(`#textarea_input_box_${textAreanCnt} input[type="checkbox"].hiddenCheckbox`).prop('checked', true);
                 }
+                if (view_sts.user_list_view) {
+                    $(`#textarea_input_box_${textAreanCnt} input[type="checkbox"].userCheckbox`).prop('checked', true);
+                }
+
                 if (required === 'Y') {
                     $(`#textarea_input_box_${textAreanCnt} .requireCheckbox`).prop('checked', true);
                 }
@@ -336,9 +368,16 @@ function renderOptions(options) {
                 $(`#editor_input_box_${editorCnt} .sortNum`).val(sort_num);
                 $(`#editor_input_box_${editorCnt}`).attr('data-gubun', 'update');
 
-                if (view_sts === '2') {
+                // view_sts 값에 따른 체크박스 렌더링
+
+                if (!view_sts.admin_list_view) {
                     $(`#editor_input_box_${editorCnt} input[type="checkbox"].hiddenCheckbox`).prop('checked', true);
                 }
+
+                if (view_sts.user_list_view) {
+                    $(`#editor_input_box_${editorCnt} input[type="checkbox"].userCheckbox`).prop('checked', true);
+                }
+                
                 if (required === 'Y') {
                     $(`#editor_input_box_${editorCnt} .requireCheckbox`).prop('checked', true);
                 }
@@ -389,7 +428,9 @@ function createDropdownContent(dropDownCnt, gubun, sort_num, ol_idx, name) {
     html += `                    <input type="text"  data-type='dropdown' data-ol_idx="${ol_idx}" value="${name}" placeholder="속성명을 입력하세요." class="attributeName">`;
     html += `                    <div class="hiddenCheck">`;
     html += `                        <input type="checkbox" class="hiddenCheckbox" id="hiddenDropdownCheckbox_${dropDownCnt}">`;
-    html += `                        <label for="hiddenDropdownCheckbox_${dropDownCnt}">목록에서 숨김</label>`;
+    html += `                        <label for="hiddenDropdownCheckbox_${dropDownCnt}">관리자 목록에서 숨김</label>`;
+    html += `                        <input type="checkbox" class="userCheckbox" id="userDropdownCheckbox_${dropDownCnt}">`;
+    html += `                        <label for="userDropdownCheckbox_${dropDownCnt}">사용자 목록에서 보임</label>`;
     html += `                        <input type="checkbox" class="requireCheckbox" id="requireDropdownCheckbox_${dropDownCnt}">`;
     html += `                        <label for="requireDropdownCheckbox_${dropDownCnt}">필수값</label>`;
     html += `                    </div>`;
@@ -444,7 +485,9 @@ function createDataInputContent(dataInputCnt, gubun, sort_num, ol_idx, name) {
                             <input type="text" data-type='dataInput' data-ol_idx="${ol_idx}" value="${name}" placeholder="속성명을 입력하세요." class="attributeName">
                             <div class="hiddenCheck">
                                 <input type="checkbox" class="hiddenCheckbox" id="hiddenDateCheckbox_${dataInputCnt}">
-                                <label for="hiddenDateCheckbox_${dataInputCnt}">목록에서 숨김</label>
+                                <label for="hiddenDateCheckbox_${dataInputCnt}">관리자 목록에서 숨김</label>
+                                <input type="checkbox" class="userCheckbox" id="userDataCheckbox_${dataInputCnt}">
+                                <label for="userDataCheckbox_${dataInputCnt}">사용자 목록에서 보임</label>
                                 <input type="checkbox" class="requireCheckbox" id="requireDataCheckbox_${dataInputCnt}">
                                 <label for="requireDataCheckbox_${dataInputCnt}">필수값</label>
                             </div>
@@ -489,6 +532,9 @@ function createDateInputContent(dateInputCnt, gubun, sort_num, ol_idx, name) {
                             <div class="hiddenCheck">
                                 <input type="checkbox" class="hiddenCheckbox" id="hiddenDateCheckbox_${dateInputCnt}">
                                 <label for="hiddenDateCheckbox_${dateInputCnt}">숨김</label>
+                                <label for="hiddenDateCheckbox_${dateInputCnt}">관리자 목록에서 숨김</label>
+                                <input type="checkbox" class="userCheckbox" id="userDateCheckbox_${dateInputCnt}">
+                                <label for="userDateCheckbox_${dateInputCnt}">사용자 목록에서 보임</label>
                                 <input type="checkbox" class="requireCheckbox" id="requireDateCheckbox_${dateInputCnt}">
                                 <label for="requireDateCheckbox_${dateInputCnt}">필수값</label>
                             </div>
@@ -544,7 +590,9 @@ function createFileInputContent(fileInputCnt, gubun, sort_num, ol_idx, name) {
                                     <label for="thumbImg_${fileInputCnt}">대표이미지 설정</label>
                                 </div>
                                 <input type="checkbox" class="hiddenCheckbox" id="hiddenFileCheckbox_${fileInputCnt}">
-                                <label for="hiddenFileCheckbox_${fileInputCnt}">목록에서 숨김</label>
+                                <label for="hiddenFileCheckbox_${fileInputCnt}">관리자 목록에서 숨김</label>
+                                <input type="checkbox" class="userCheckbox" id="userFileCheckbox_${fileInputCnt}">
+                                <label for="userFileCheckbox_${fileInputCnt}">사용자 목록에서 보임</label>
                                 <input type="checkbox" class="requireCheckbox" id="requireFileCheckbox_${fileInputCnt}">
                                 <label for="requireFileCheckbox_${fileInputCnt}">필수값</label>
                             </div>
@@ -615,7 +663,9 @@ function createFilesInputContent(filesInputCnt, gubun, sort_num, ol_idx, name) {
                             <input type="text" data-type='files' data-ol_idx="${ol_idx}" value="${name}"  placeholder="속성명을 입력하세요." class="attributeName">
                             <div class="hiddenCheck">
                                 <input type="checkbox" class="hiddenCheckbox" id="hiddenFilesCheckbox_${filesInputCnt}">
-                                <label for="hiddenFilesCheckbox_${filesInputCnt}">숨김</label>
+                                <label for="hiddenFilesCheckbox_${filesInputCnt}">관리자 목록에서 숨김</label>
+                                <input type="checkbox" class="userCheckbox" id="userFilesCheckbox_${filesInputCnt}">
+                                <label for="userFilesCheckbox_${filesInputCnt}">사용자 목록에서 보임</label>
                                 <input type="checkbox" class="requireCheckbox" id="requireFilesCheckbox_${filesInputCnt}">
                                 <label for="requireFilesCheckbox_${filesInputCnt}">필수값</label>
                             </div>
@@ -658,7 +708,9 @@ function createTextAreaInputContent(textAreanCnt, gubun, sort_num, ol_idx, name)
                             <input type="text" data-type='textArea' data-ol_idx="${ol_idx}" value="${name}"  placeholder="속성명을 입력하세요." class="attributeName">
                             <div class="hiddenCheck">
                                 <input type="checkbox" class="hiddenCheckbox" id="hiddenTextAreaCheckbox_${textAreanCnt}">
-                                <label for="hiddenTextAreaCheckbox_${textAreanCnt}">숨김</label>
+                                <label for="hiddenTextAreaCheckbox_${textAreanCnt}">관리자 목록에서 숨김</label>
+                                <input type="checkbox" class="userCheckbox" id="userTextAreaCheckbox_${textAreanCnt}">
+                                <label for="userTextAreaCheckbox_${textAreanCnt}">사용자 목록에서 보임</label>
                                 <input type="checkbox" class="requireCheckbox" id="requireTextAreaCheckbox_${textAreanCnt}">
                                 <label for="requireTextAreaCheckbox_${textAreanCnt}">필수값</label>
                             </div>
@@ -701,7 +753,9 @@ function createEditorInputContent(editorCnt, gubun, sort_num, ol_idx, name) {
                             <input type="text" data-type='editor' data-ol_idx="${ol_idx}" value="${name}"  placeholder="속성명을 입력하세요." class="attributeName">
                             <div class="hiddenCheck">
                                 <input type="checkbox" class="hiddenCheckbox" id="hiddenEditorCheckbox_${editorCnt}">
-                                <label for="hiddenEditorCheckbox_${editorCnt}">숨김</label>
+                                <label for="hiddenEditorCheckbox_${editorCnt}">관리자 목록에서 숨김</label>
+                                <input type="checkbox" class="userCheckbox" id="userEditorCheckbox_${editorCnt}">
+                                <label for="userEditorCheckbox_${editorCnt}">사용자 목록에서 보임</label>
                                 <input type="checkbox" class="requireCheckbox" id="requireEditorCheckbox_${editorCnt}">
                                 <label for="requireEditorCheckbox_${editorCnt}">필수값</label>
                             </div>
@@ -723,7 +777,6 @@ function createEditorInputContent(editorCnt, gubun, sort_num, ol_idx, name) {
 
 // 다이나믹 옵션값 수집
 function collectDynamicOptions() {
-
     let optionDataList = [];
 
     // 드롭다운, 데이터 입력, 날짜 입력, 파일, 다중 파일, 텍스트 영역, 에디터 필드를 모두 선택
@@ -731,7 +784,11 @@ function collectDynamicOptions() {
         let $this = $(this);
         let type = $this.find('input').data('type'); // 기본 type은 input의 data-type 값으로 설정
         let action = $this.attr('data-action') || $this.data('gubun');  // 기존 항목은 'update', 새 항목은 'create'
-        let view_sts;
+        let view_sts = {
+            thumbnail: false,
+            admin_list_view: true,
+            user_list_view: false
+        };
 
         // 파일 입력 필드일 경우에만 fileType 값 적용
         if (type === 'file') {
@@ -739,33 +796,24 @@ function collectDynamicOptions() {
         }
 
         if (type === 'file_img') {
-            const parentBox = $(this);  // 현재 옵션 박스를 참조
-            const isRadioChecked = parentBox.find('input[type="radio"][name="thumbImg"]:checked').length > 0;  // 대표 이미지 체크 확인
-            const isHiddenChecked = $(this).find('input[type="checkbox"].hiddenCheckbox').is(':checked');
-
-            // 라디오 버튼과 체크박스가 모두 체크된 경우 view_sts를 4로 설정
-            if (isRadioChecked && isHiddenChecked) {
-                view_sts = '4'; // 대표사진 숨김
-            } else if (isRadioChecked) {
-                view_sts = '3'; // 대표사진 보임
-            } else if (isHiddenChecked) {
-                view_sts = '2'; // 숨김
-            } else {
-                view_sts = '1'; // 보임
-            }
-        } else {
-            // type이 dropdown 또는 다른 타입인 경우 view_sts 설정
-            const isHiddenChecked = $(this).find('input[type="checkbox"].hiddenCheckbox').is(':checked');
-            const isRadioChecked = $(this).find('input[type="radio"]:checked').length > 0;
-            view_sts = isRadioChecked ? '3' : (isHiddenChecked ? '2' : '1');
+            const isThumbnailChecked = $this.find('input[type="radio"][name="thumbImg"]:checked').length > 0;
+            view_sts.thumbnail = isThumbnailChecked; // 대표 이미지 설정 여부 반영
         }
 
+        // 관리자 목록에서 숨김 설정
+        const isAdminHiddenChecked = $this.find('input[type="checkbox"].hiddenCheckbox').is(':checked');
+        view_sts.admin_list_view = !isAdminHiddenChecked;
+     
+        // 사용자 목록에서 보임 설정
+        const isUserVisibleChecked = $this.find('input[type="checkbox"].userCheckbox').is(':checked');
+        view_sts.user_list_view = isUserVisibleChecked;
+     
+        const isRequiredChecked = $this.find('input[type="checkbox"].requireCheckbox').is(':checked');
+     
         // 삭제된 항목도 수집
         if (action === 'delete') {
             console.log(`Collecting deleted item: ${$this.attr('id')}`);
         }
-
-        const isRequiredChecked = $(this).find('input[type="checkbox"].requireCheckbox').is(':checked');
 
         let optionData = {
             type: type,                 // input의 data-type 속성 값
@@ -956,6 +1004,18 @@ $(function () {
 
         console.log("수집된 동적 옵션 정보:", dynamicOptions);
 
+        const userViewCount = dynamicOptions.filter(option => option.view_sts.user_list_view === true).length;
+
+        if (userViewCount > 2) {
+            Swal.fire({
+                title: '제한 초과',
+                text: '사용자 목록에는 최대 2개까지 보이게 설정할 수 있습니다.',
+                icon: 'warning',
+                confirmButtonText: '확인'
+            });
+            return; // 등록을 막음
+        }
+
         // 요청할 폼 데이터
         const formData = new FormData();
 
@@ -981,7 +1041,7 @@ $(function () {
             console.log(`${key}: ${value}`);
         }
 
-        // 서버에 POST 요청 보내기
+        //서버에 POST 요청 보내기
         $.ajax({
             url: defaultUrl + '/with/board_edit',
             method: 'POST',

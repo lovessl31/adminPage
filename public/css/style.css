@@ -1362,7 +1362,8 @@ table td {
   margin-right: 5px;
 }
 
-.hiddenCheck input:nth-of-type(2) {
+.hiddenCheck input:nth-of-type(2), 
+.hiddenCheck input:nth-of-type(3)  {
   margin-left: 10px;
 }
 
