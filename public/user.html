@@ -186,16 +186,9 @@
                         <input type="text" id="addUserPhone">
                     </li>
                     <li class="c_select_wrap">
-                        <h3>회사선택<span class="u_required">*</span></h3>
-                        <input type="text" id="selecteCompany" placeholder="회사를 선택해주세요." readonly>
-                        <button class="c_select_btn"><img src="/images/dropdown.png"></button>
-                        <ul class="c_list" id="addCompanySelect" style="display: none;">
-                            <li>촉촉한초코칩</li>
-                            <li>헤이키커피</li>
-                            <li>밀크씨슬</li>
-                            <li>밀크씨슬</li>
-                            <li>밀크씨슬</li>
-                        </ul>
+                    <select id="addCompanySelect">
+                        <option value="" disabled selected hidden>회사를 선택해주세요.</option>
+                    </select>
                     </li>
                     <li>
                         <h3>사용자 승인<span class="u_required">*</span></h3>
@@ -265,7 +258,7 @@
                         <input type="text" id="modifyUserPhone">
                     </li>
                     <li class="c_select_wrap">
-                        <h3>회사선택<span class="u_required">*</span></h3>
+                        <!-- <h3>회사선택<span class="u_required">*</span></h3>
                         <input type="text" id="selecteCompany" placeholder="회사를 선택해주세요." readonly>
                         <button class="c_select_btn"><img src="/images/dropdown.png"></button>
                         <ul class="c_list" style="display: none;">
@@ -274,7 +267,10 @@
                             <li>밀크씨슬</li>
                             <li>밀크씨슬</li>
                             <li>밀크씨슬</li>
-                        </ul>
+                        </ul> -->
+                        <select id="modifyCompanySelect">
+               
+                        </select>
                     </li>
                     <li>
                         <h3>사용자 승인<span class="u_required">*</span></h3>
