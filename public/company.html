@@ -47,11 +47,11 @@
         <!-- 사이드네비 -->
         <div class="sideNav">
             <ul>
-                <li><a href="company.html" class="resetPage">회사관리</a></li>
-                <li><a href="user.html" class="resetPage">사용자관리</a></li>
-                <li><a href="category.html" class="resetPage">카테고리관리</a></li>
-                <li><a href="board.html" class="resetPage">게시판관리</a></li>
-                <li><a href="organization.html" class="resetPage">조직도관리</a></li>
+                <li><a href="company.html" class="resetPage"><img src="/images/company.svg">회사관리</a></li>
+                <li><a href="user.html" class="resetPage"><img src="/images/user.svg">사용자관리</a></li>
+                <li><a href="category.html" class="resetPage"><img src="/images/category.svg">카테고리관리</a></li>
+                <li><a href="board.html" class="resetPage"><img src="/images/board.svg">게시판관리</a></li>
+                <li><a href="organization.html" class="resetPage"><img src="/images/or.png">조직도관리</a></li>
             </ul>
         </div>
 
@@ -79,14 +79,14 @@
                                 <img src="./images/search.svg">
                                 </div>
                                 <!-- 검색어 입력 필드 -->
-                                 <div class="searchInput">
+                                <div class="searchInput">
                                     <input id="searchInput" type="text" placeholder="검색어를 입력해주세요">
                                 </div>
                                 <div class="searchBtn"><button id="searchButton">검색</button></div>
                             </div>
                         </div>
                         <div>
-                            <button id="addCompanyBtn">회사등록</button>
+                            <button class="create_btn" id="addCompanyBtn"><img src="/images/plust.png">회사등록</button>
                         </div>
                     </div>
                     
@@ -168,7 +168,7 @@
     </div>
     
     <!-- 팝업 레이어 (회사수정) -->
-    <div id="modifyPopup" class="popup">
+    <!-- <div id="modifyPopup" class="popup">
         <div class="popup-content-com">
             <div class="popup-title">
                 <div class="d-flex align-items-center">
@@ -197,10 +197,6 @@
                                 <td><input type="text" id="businessNumber"></td>
                             </tr>
                             <tr>
-                                <td>등록일</td>
-                                <td id="registrationDate"></td>
-                            </tr>
-                            <tr>
                                 <td>첨부파일</td>
                                 <td class="buttons">
                                     <div class="file-input-wrapper">
@@ -220,10 +216,100 @@
                 </div>
             </div>
         </div>
+    </div> -->
+
+    <!-- 팝업 레이어 (회사등록) -->
+    <div id="registerPopup" class="popup">
+        <div class="c_popup_wrap">
+            <div class="c_pop_header">
+                <div class="c_pop_tit">
+                    <h4>회사등록</h4>
+                    <h4>회사수정</h4>
+                </div>
+                <button class="close"><img src="/images/close.png" alt="close_btn"></button>
+            </div>
+            
+            <div class="c_pop_content">
+                <ul class="c_pop_item">
+                    <li>
+                        <h3>회사명</h3>
+                        <input type="text" id="c_name">
+                    </li>
+                    <li>
+                        <h3>대표자명</h3>
+                        <input type="text" id="owner_name">
+                    </li>
+                    <li>
+                        <h3>사업자번호</h3>
+                        <input type="text" id="c_id">
+                    </li>
+                    <li>
+                        <h3>사업자등록증</h3>
+                        <div class="c_file_attach">
+                            <input type="text" class="file-input" id="registerFileInput" readonly>
+                            <input type="file" id="registerRealFileInput" style="display:none;">
+                            <button class="attachBtn" id="registerAttachBtn">첨부</button>
+                        </div> 
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="c_pop_bottom">
+                <div class="c_reg_btn">
+                    <button id="registerCancelBtn">취소</button>
+                    <button id="registerSaveBtn">등록</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 팝업 레이어 (회사수정) -->
+    <div id="modifyPopup" class="popup">
+        <div class="c_popup_wrap">
+            <div class="c_pop_header">
+                <div class="c_pop_tit">
+                    <h4>회사수정</h4>
+                    <h4>회사등록</h4>
+                </div>
+                <button class="close"><img src="/images/close.png" alt="close_btn"></button>
+            </div>
+            
+            <div class="c_pop_content">
+                <ul class="c_pop_item">
+                    <li>
+                        <h3>회사명</h3>
+                        <input type="text" id="companyName">
+                    </li>
+                    <li>
+                        <h3>대표자명</h3>
+                        <input type="text" id="representativeName">
+                    </li>
+                    <li>
+                        <h3>사업자번호</h3>
+                        <input type="text" id="businessNumber">
+                    </li>
+                    <li>
+                        <h3>사업자등록증</h3>
+                        <div class="c_file_attach">
+                            <input type="text" class="file-input" id="fileInput" readonly>
+                            <input type="file" id="realFileInput" style="display:none;">
+                            <button class="attachBtn" id="attachBtn">첨부</button>
+                        </div> 
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="c_pop_bottom">
+                <div class="c_reg_btn">
+                    <button id="registerCancelBtn">취소</button>
+                    <button id="modifySaveBtn">등록</button>
+                </div>
+            </div>
+        </div>
     </div>
 
      <!-- 팝업 레이어 (회사등록) -->
-     <div id="registerPopup" class="popup">
+     <!-- <div id="registerPopup" class="popup">
         <div class="popup-content-com">
             <div class="popup-title">
                 <div class="d-flex align-items-center">
@@ -266,7 +352,7 @@
                                     </div>
                                  
                                 </td>
-                            </tr> -->
+                            </tr> 
                             <tr>
                                 <td>사업자등록증</td>
                                 <td class="buttons">
@@ -287,7 +373,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <!-- jQuery -->

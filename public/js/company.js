@@ -330,11 +330,6 @@ function modifyComSave() {
     formData.append('c_id', cId);
     formData.append('com_idx', comIdx);
     
-    // // 파일이 있을 때만 파일 추가
-    // if (fileInput) {
-    //     formData.append('file', fileInput); // 'file'은 서버에서 기대하는 파일 필드 이름이어야 합니다.
-    // }
-    
     // 파일이 있을 때만 파일 추가
     if (fileInputs.length > 0 && selectedCompany.files) {
         for (let i = 0; i < fileInputs.length; i++) {
@@ -354,7 +349,6 @@ function modifyComSave() {
     });
 
     // 수정 요청 보내기
-
     $.ajax({
         url: defaultUrl + `/with/com_edit`,
         type: 'POST',
@@ -482,37 +476,6 @@ function downloadFile(event) {
         }
     };
     
-    // xhr.open('GET', url, true);
-    // xhr.setRequestHeader('Authorization', `Bearer ${atoken}`);
-    // xhr.responseType = 'blob'; // 바이너리 데이터를 처리하기 위해 blob으로 설정
-
-    // xhr.onload = function () {
-    //     if (xhr.status === 200) {
-    //         // Content-Disposition 헤더에서 파일 이름 추출
-    //         const disposition = xhr.getResponseHeader('content-disposition');
-    //         let filename = 'downloaded_file';
-    //         if (disposition && disposition.includes('attachment')) {
-    //             const matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
-    //             if (matches && matches[1]) {
-    //                 filename = matches[1].replace(/['"]/g, '');
-    //             }
-    //         }
-
-    //         // Blob 데이터를 사용하여 파일 다운로드
-    //         const blob = xhr.response;
-    //         const url = window.URL.createObjectURL(blob);
-    //         const a = document.createElement('a');
-    //         a.href = url;
-    //         a.download = filename;
-    //         document.body.appendChild(a);
-    //         a.click();
-    //         window.URL.revokeObjectURL(url);
-    //         document.body.removeChild(a);
-    //     } else {
-    //         alert('파일 다운로드에 실패했습니다.');
-    //     }
-    // };
-
     xhr.onerror = function () {
         alert('파일 다운로드 중 오류가 발생했습니다.');
     };
@@ -523,26 +486,13 @@ function downloadFile(event) {
 
 $(function() {
     
-    // // DOM이 준비된 후 실행될 코드
-    // fetchCompanyData(1);
-    
-    // // localStorage에서 현재 페이지 번호 가져오기
-    // const savedPage = localStorage.getItem('currentPage');
-    // if (savedPage) {
-    //     currentPage = parseInt(savedPage, 10);
-    //     localStorage.removeItem('currentPage');
-    // } else {
-    //     currentPage = 1;
-    // }
-    
-    // fetchCompanyData(currentPage);
-    
     // localStorage에서 현재 페이지 번호 가져오기
     const savedPage = localStorage.getItem('currentPage');
     currentPage = savedPage ? parseInt(savedPage, 10) : 1;
  
     // 페이지 데이터 로드
     fetchCompanyData(currentPage);
+    clearFormFields();
 
     // 검색 버튼 클릭 시
     $('#searchButton').on('click', executeSearch);
@@ -585,6 +535,12 @@ $(function() {
         }
     });
     
+    // 등록 팝업 취소 버튼 클릭 시 창 닫기
+    $('#registerCancelBtn').on('click', function() {
+        $(this).closest('.popup').css('display', 'none');
+        clearFormFields();
+    });
+
     // 회사 등록 저장 버튼 클릭 이벤트 핸들러 추가
     $('#registerSaveBtn').on('click', addCompany);
 
@@ -632,7 +588,8 @@ $(function() {
     // 팝업 닫기 버튼 클릭 시 팝업 닫기
     $(document).on('click', '.popup .close', function() {
         $(this).closest('.popup').css('display', 'none');
+        clearFormFields();
     });
-
+    
 });
 

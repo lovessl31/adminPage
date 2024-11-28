@@ -753,7 +753,7 @@ $(function() {
 				cancelButtonText: '아니요'
             }).then((result)=> {
 				if(result.isConfirmed) {
-					window.location.href = '/boardCreate.html';  // 새 게시판 생성 페이지로 리디렉션
+					window.location.href = '/boardCreate.html';  // 새 게시판 생성 페이지로 리디렉션`
 				} else if (result.dismiss === Swal.DismissReason.cancel) {
 					// "아니요"를 클릭한 경우 이전 페이지로 이동
 					window.location.href = `/board.html?=${bidx}`;  // 이전 board.html 페이지로 이동
@@ -766,4 +766,5 @@ $(function() {
         }
         });
 	});
+
 });

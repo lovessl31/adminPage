@@ -56,6 +56,7 @@ function fetchPostData(page = 1 ) {
 }
 
 function renderlistTable() {
+
     const tableContainer = $('#postTableContainer');
     const noPostsMessageContainer = $('#noPostsMessage');
 

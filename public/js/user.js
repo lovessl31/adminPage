@@ -606,7 +606,6 @@ $(function() {
         }
     });
 
-
    // 비밀번호 변경 버튼 클릭 시 이벤트 처리
    $(document).on('click', '.pwChangeBtn', function() {
 
@@ -631,9 +630,20 @@ $(function() {
             } else {
                 console.error('userIdx 값이 설정되지 않았습니다.');
             }
-
-   
     });
 
-
+    $('.c_select_btn').on('click', function () {
+        const $list = $(this).siblings('.c_list');
+        const $img = $(this).find('img');
+    
+        $list.slideToggle(300, function () {
+            // 애니메이션 완료 후 상태 체크
+            if ($list.is(':visible')) {
+                $img.attr('src', '/images/dropup.png'); // 리스트가 보이는 경우
+            } else {
+                $img.attr('src', '/images/dropdown.png'); // 리스트가 숨겨진 경우
+            }
+        });
+    });
 });
+

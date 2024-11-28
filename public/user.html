@@ -48,11 +48,11 @@
         <!-- 사이드네비 -->
         <div class="sideNav">
             <ul>
-                <li><a href="company.html" class="resetPage">회사관리</a></li>
-                <li><a href="user.html" class="resetPage">사용자관리</a></li>
-                <li><a href="category.html" class="resetPage">카테고리관리</a></li>
-                <li><a href="board.html" class="resetPage">게시판관리</a></li>
-                <li><a href="organization.html" class="resetPage">조직도관리</a></li>
+                <li><a href="company.html" class="resetPage"><img src="/images/company.svg">회사관리</a></li>
+                <li><a href="user.html" class="resetPage"><img src="/images/user.svg">사용자관리</a></li>
+                <li><a href="category.html" class="resetPage"><img src="/images/category.svg">카테고리관리</a></li>
+                <li><a href="board.html" class="resetPage"><img src="/images/board.svg">게시판관리</a></li>
+                <li><a href="organization.html" class="resetPage"><img src="/images/or.png">조직도관리</a></li>
             </ul>
         </div>
         <!-- 메인 컨텐츠 -->
@@ -82,7 +82,7 @@
                         </div>
                     </div>
                     <div>
-                        <button id="addUserBtn">사용자 추가</button>
+                        <button class="create_btn" id="addUserBtn"><img src="/images/plust.png">사용자 추가</button>
                     </div>
                 </div>
 
@@ -156,7 +156,164 @@
         </div>
     </div>
 
+    <!-- 사용자 추가 팝업레이어 -->
+    <div id="addPopupLayer" class="popup">
+        <div class="c_popup_wrap">
+            <div class="c_pop_header">
+                <div class="c_pop_tit">
+                    <h4>사용자등록</h4>
+                    <h4>사용자수정</h4>
+                </div>
+                <button class="close"><img src="/images/close.png" alt="close_btn"></button>
+            </div>
+            
+            <div class="c_pop_content">
+                <ul class="c_pop_item">
+                    <li>
+                        <h3>아이디<span class="u_required">*</span></h3>
+                        <input type="email" id="addUserId">
+                    </li>
+                    <li>
+                        <h3>비밀번호<span class="u_required">*</span></h3>
+                        <input type="password" id="addUserPassword">
+                    </li>
+                    <li>
+                        <h3>이름<span class="u_required">*</span></h3>
+                        <input type="text" id="addUserName">
+                    </li>
+                    <li>
+                        <h3>연락처<span class="u_required">*</span></h3>
+                        <input type="text" id="addUserPhone">
+                    </li>
+                    <li class="c_select_wrap">
+                        <h3>회사선택<span class="u_required">*</span></h3>
+                        <input type="text" id="selecteCompany" placeholder="회사를 선택해주세요." readonly>
+                        <button class="c_select_btn"><img src="/images/dropdown.png"></button>
+                        <ul class="c_list" style="display: none;">
+                            <li>촉촉한초코칩</li>
+                            <li>헤이키커피</li>
+                            <li>밀크씨슬</li>
+                            <li>밀크씨슬</li>
+                            <li>밀크씨슬</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <h3>사용자 승인<span class="u_required">*</span></h3>
+                        <div class="approve_wrap">
+                            <div class="d-flex align-items-center me-3">
+                                <input type="radio" id="addStatusYes" name="addStatus" value="Y" class="me-1">
+                                <label for="addStatusYes">승인</label>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <input type="radio" id="addStatusNo" name="addStatus" value="N" class="me-1">
+                                <label for="addStatusNo">미승인</label>
+                            </div>
+                        </div>
+                    </li>
+                    <!-- <li>
+                        <h3>직급</h3>
+                        <input type="text" id="addPosition">
+                    </li>
+                    <li>
+                        <h3>직책</h3>
+                        <input type="text" id="addRank">
+                    </li> -->
+                </ul>
+            </div>
+            
+            <div class="c_pop_bottom">
+                <div class="c_reg_btn">
+                    <button class="cancleBtn">취소</button>
+                    <button id="addSaveBtn" class="saveBtn">등록</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 사용자 수정 팝업레이어 -->
+    <div id="modifyPopupLayer" class="popup">
+        <div class="c_popup_wrap">
+            <div class="c_pop_header">
+                <div class="c_pop_tit">
+                    <h4>사용자수정</h4>
+                    <h4>사용자등록</h4>
+                </div>
+                <button class="close"><img src="/images/close.png" alt="close_btn"></button>
+            </div>
+            
+            <div class="c_pop_content">
+                <ul class="c_pop_item">
+                    <li>
+                        <h3>아이디<span class="u_required">*</span></h3>
+                        <input type="email" id="modifyUserId" readonly>
+                    </li>
+                    <li>
+                        <h3>비밀번호<span class="u_required">*</span></h3>
+                        <div class="infoText">
+                            <div class="pwChangeWrap">
+                                <button class="pwChangeBtn">비밀번호 변경</button>
+                            </div>
+                            <input type="password" placeholder="새 비밀번호" id="newUserPassword" style="display: none;">
+                        </div>
+                    </li>
+                    <li>
+                        <h3>이름<span class="u_required">*</span></h3>
+                        <input type="text" id="modifyUserName">
+                    </li>
+                    <li>
+                        <h3>연락처<span class="u_required">*</span></h3>
+                        <input type="text" id="modifyUserPhone">
+                    </li>
+                    <li class="c_select_wrap">
+                        <h3>회사선택<span class="u_required">*</span></h3>
+                        <input type="text" id="selecteCompany" placeholder="회사를 선택해주세요." readonly>
+                        <button class="c_select_btn"><img src="/images/dropdown.png"></button>
+                        <ul class="c_list" style="display: none;">
+                            <li>촉촉한초코칩</li>
+                            <li>헤이키커피</li>
+                            <li>밀크씨슬</li>
+                            <li>밀크씨슬</li>
+                            <li>밀크씨슬</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <h3>사용자 승인<span class="u_required">*</span></h3>
+                        <div class="approve_wrap">
+                            <div class="d-flex align-items-center me-3">
+                                <input type="radio" id="modifyStatusYes" name="modifyStatus" value="Y" class="me-1">
+                                <label for="modifyStatusYes">승인</label>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <input type="radio" id="modifyStatusNo" name="modifyStatus" value="N" class="me-1">
+                                <label for="modifyStatusNo">미승인</label>
+                            </div>
+                        </div>
+                    </li>
+                    <!-- <li>
+                        <h3>직급</h3>
+                        <input type="text" id="modifyRank">
+                    </li>
+                    <li>
+                        <h3>직책</h3>
+                        <input type="text" id="modifyPosition">
+                    </li> -->
+                </ul>
+            </div>
+            
+            <div class="c_pop_bottom">
+                <div class="c_reg_btn">
+                    <button class="cancleBtn">취소</button>
+                    <button id="addSaveBtn" class="saveBtn">등록</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
         <!-- 사용자 추가 레이어 -->
+         <!-- -
         <div id="addPopupLayer" class="popup">
             <div class="popup-content">
                 <div class="popup-title">
@@ -170,12 +327,12 @@
                 </div>
     
                 <div class="contentPadding">
-                    <!-- 클릭시 유저이미지 첨부할 수 있도록 -->
-                    <!-- <span class="userImageSubmit"> -->
-                        <!-- 이미지 미리보기 요소 추가 -->
+                    <!-- 클릭시 유저이미지 첨부할 수 있도록 
+                    <!-- <span class="userImageSubmit"> 
+                        <!-- 이미지 미리보기 요소 추가 
                         <!-- <img class="userImagePreview" id="userImagePreview" src="" alt="이미지 미리보기" style="display: none;">
                     </span>
-                    <input type="file" id="userImageInput" accept="image/*" style="display: none;"> -->
+                    <input type="file" id="userImageInput" accept="image/*" style="display: none;"> 
     
                     <div class="userForm">
                         <input type="email" placeholder="아이디" id="addUserId">
@@ -206,9 +363,10 @@
             </div>
         </div>
     </div>
+    -->
         
    <!-- 사용자 수정 팝업 레이어 -->
-    <div id="modifyPopupLayer" class="popup">
+    <!-- <div id="modifyPopupLayer" class="popup">
     <div class="popup-content">
         <div class="popup-title">
             <div class="d-flex align-items-center">
@@ -274,7 +432,7 @@
                     </div>
 
                 </div>
-           
+            -->
 
            
      
