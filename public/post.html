@@ -1,175 +1,217 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AMDIN - 관리자페이지</title>
-    <link rel="icon" href="./images/favicon.png" type="image/png">
+    <link rel="icon" href="./images/favicon.png" type="image/png" />
     <!-- Reset CSS -->
-    <link rel="stylesheet" href="./css/reset.css">
+    <link rel="stylesheet" href="./css/reset.css" />
     <!-- Pretendard Font -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css">
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css"
+    />
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+      crossorigin="anonymous"
+    />
     <!-- sweetalert2 CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.10/dist/sweetalert2.min.css">
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.10/dist/sweetalert2.min.css"
+    />
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="./css/style.css">
-    <link rel="stylesheet" href="./css/post.css">
-</head>
-<body>
+    <link rel="stylesheet" href="./css/style.css" />
+    <link rel="stylesheet" href="./css/post.css" />
+  </head>
+  <body>
     <div class="wrap">
-        <!-- 헤더 -->
-        <div id="header">
-            <div class="headerWrap">
-                <div class="leftHeader">
-                    <img src="">
-                    <a href="index.html">ADMIN</a>
-                </div>
-                <div class="rightHeader">
-                    <div id="loginButtons">
-                        <ul>
-                            <li><a href="login.html">LOGIN</a></li> <!-- 최고 관리자 로그인 페이지 -->
-                            <!-- 회사관리자 로그인 페이지 -->
-                            <!-- <li><a href="com_login.html">슈퍼</a></li> -->
-                        </ul>
-                    </div>
-                    
-                    <button id="logoutButton" style="display: none;">LOGOUT</button>
-                    <div id="userInfo" style="display: none;"> <!-- 로그인 성공 시 로그인 사용자 정보-->
-                        <!-- <div class="d-flex align-items-center">
+      <!-- 헤더 -->
+      <div id="header">
+        <div class="headerWrap">
+          <div class="leftHeader">
+            <img src="" />
+            <a href="index.html">ADMIN</a>
+          </div>
+          <div class="rightHeader">
+            <div id="loginButtons">
+              <ul>
+                <li><a href="login.html">LOGIN</a></li>
+                <!-- 최고 관리자 로그인 페이지 -->
+                <!-- 회사관리자 로그인 페이지 -->
+                <!-- <li><a href="com_login.html">슈퍼</a></li> -->
+              </ul>
+            </div>
+
+            <button id="logoutButton" style="display: none">LOGOUT</button>
+            <div id="userInfo" style="display: none">
+              <!-- 로그인 성공 시 로그인 사용자 정보-->
+              <!-- <div class="d-flex align-items-center">
                             <span>guest</span>
                             <div class="imgBg"></div>
                         </div> -->
-                    </div>
-                </div>
             </div>
+          </div>
         </div>
-        <!-- 사이드네비 -->
-        <div class="sideNav">
-          <ul>
-            <li><a href="company.html" class="resetPage"><img src="/images/company.svg">회사관리</a></li>
-            <li><a href="user.html" class="resetPage"><img src="/images/user.svg">사용자관리</a></li>
-            <li><a href="category.html" class="resetPage"><img src="/images/category.svg">카테고리관리</a></li>
-            <li><a href="board.html" class="resetPage"><img src="/images/board.svg">게시판관리</a></li>
-            <li><a href="organization.html" class="resetPage"><img src="/images/or.png">조직도관리</a></li>
+      </div>
+      <!-- 사이드네비 -->
+      <div class="sideNav">
+        <ul>
+          <li>
+            <a href="company.html" class="resetPage"
+              ><img src="/images/company.svg" />회사관리</a
+            >
+          </li>
+          <li>
+            <a href="user.html" class="resetPage"
+              ><img src="/images/user.svg" />사용자관리</a
+            >
+          </li>
+          <li>
+            <a href="category.html" class="resetPage"
+              ><img src="/images/category.svg" />카테고리관리</a
+            >
+          </li>
+          <li>
+            <a href="board.html" class="resetPage"
+              ><img src="/images/board.svg" />게시판관리</a
+            >
+          </li>
+          <li>
+            <a href="organization.html" class="resetPage"
+              ><img src="/images/or.png" />조직도관리</a
+            >
+          </li>
         </ul>
-        </div>
-        <!-- 메인 컨텐츠 -->
-        <div id="content">
-            <div class="postContentInner">
-               <div class="postContentWrap">
-                <div class="post-header">
-                    <p></p><!-- 클릭한 게시판 명 -->
-                    <button class="postListBtn">목록</button>
+      </div>
+      <!-- 메인 컨텐츠 -->
+      <div id="content">
+        <div class="postContentInner">
+          <div class="postContentWrap">
+            <div class="post-header">
+              <p></p>
+              <!-- 클릭한 게시판 명 -->
+              <button class="postListBtn">목록</button>
+            </div>
+
+            <hr />
+
+            <div class="post-title">
+              <h2></h2>
+              <div
+                class="d-flex justify-content-between align-items-center mt-2"
+              >
+                <div class="write-info">
+                  <span>송수련</span>
+                  <span>2024.07.17 17:46</span>
+                  <span>조회 23</span>
+                  <span>댓글 3</span>
                 </div>
-
-                <hr>
-
-                <div class="post-title">
-                    <h2></h2>
-                    <div class="d-flex justify-content-between align-items-center mt-2">
-                        <div class="write-info">
-                            <span>송수련</span>
-                            <span>2024.07.17 17:46</span>
-                            <span>조회 23</span>
-                            <span>댓글 3</span>
-                        </div>
-                        <div class="modify-drop">
-                            <button class="confirmDeleteBtn"><img src="/images/confrimpic.png"></button>
-                            <ul class="drop_content">
-                                <li><button>수정</button></li>
-                                <li><button>삭제</button></li>
-                            </ul>
-                        </div>
-                    </div>
+                <div class="modify-drop">
+                  <button class="confirmDeleteBtn">
+                    <img src="/images/confrimpic.png" />
+                  </button>
+                  <ul class="drop_content">
+                    <li><button>수정</button></li>
+                    <li><button>삭제</button></li>
+                  </ul>
                 </div>
+              </div>
+            </div>
 
-                <div class="module-container">
-                    <div class="module-content">
-                        <div class="row mb-2">
-                            <div class="col-1 font-weight">상태:</div>
-                            <div class="col-4">신규</div>
-                        </div>
-                        <div class="row mb-2">
-                            <div class="col-1 font-weight">시작시간:</div>
-                            <div class="col-4">2024/07/08</div>
-                        </div>
-                        <div class="row mb-2">
-                            <div class="col-1 font-weight">마감시간:</div>
-                            <div class="col-4">2024/07/11</div>
-                        </div>
-                    </div>
+            <div class="module-container">
+              <div class="module-content">
+                <div class="row mb-2">
+                  <div class="col-1 font-weight">상태:</div>
+                  <div class="col-4">신규</div>
                 </div>
+                <div class="row mb-2">
+                  <div class="col-1 font-weight">시작시간:</div>
+                  <div class="col-4">2024/07/08</div>
+                </div>
+                <div class="row mb-2">
+                  <div class="col-1 font-weight">마감시간:</div>
+                  <div class="col-4">2024/07/11</div>
+                </div>
+              </div>
+            </div>
 
-                <hr>
+            <hr />
 
-                <div class="post-content">
+            <div class="post-content">
+              <!-- 게시글에 첨부된 첨부파일 -->
+              <div class="attach-content">
+                <div class="d-flex align-items-center">
+                  <button class="toggle-file-wrap">
+                    <img id="toggle-icon" src="/images/attach-dropright.png" />
+                    <!-- 첨부파일 닫혀있을경우 -->
+                    <!-- <img src="/images/attach-dropright.png"> -->
+                  </button>
 
-                    <!-- 게시글에 첨부된 첨부파일 -->
-                    <div class="attach-content">
-                        <div class="d-flex align-items-center">
-                          <button class="toggle-file-wrap">
-                                <img id="toggle-icon" src="/images/attach-dropright.png">
-                                <!-- 첨부파일 닫혀있을경우 -->
-                                <!-- <img src="/images/attach-dropright.png"> -->
-                            </button>
-             
-                            <p>첨부파일 <span class="fileCount">2</span>개<span class="total-c">(134.5KB)</span></p>
-                        </div>
-                        <div class="file-wrap">
-                            <div class="file-item">
-                                <p>객원 에디터 개인정보 처리방침.hwp <span>63.50KB</span></p>
-                                <button><img src="/images/download.svg"></button>
-                            </div>
-                            <div class="file-item">
-                                <p>객원 에디터 계약서 (3).hwp <span>63.50KB</span></p>
-                                <button><img src="/images/download.svg"></button>
-                            </div>
-                        </div>
-                    </div>
+                  <p>
+                    첨부파일 <span class="fileCount">2</span>개<span
+                      class="total-c"
+                      >(134.5KB)</span
+                    >
+                  </p>
+                </div>
+                <div class="file-wrap">
+                  <div class="file-item">
+                    <p>
+                      객원 에디터 개인정보 처리방침.hwp <span>63.50KB</span>
+                    </p>
+                    <button><img src="/images/download.svg" /></button>
+                  </div>
+                  <div class="file-item">
+                    <p>객원 에디터 계약서 (3).hwp <span>63.50KB</span></p>
+                    <button><img src="/images/download.svg" /></button>
+                  </div>
+                </div>
+              </div>
 
-                    <div class="post_content my-5">
-                        <!-- 사용자가 에디터에 입력한 게시글 내용 -->
-                         <p></p>
-                    </div>
+              <div class="post_content my-5">
+                <!-- 사용자가 에디터에 입력한 게시글 내용 -->
+                <p></p>
+              </div>
 
-                    <!-- 내가 좋아요 눌렀을 때 -->
-                    <div class="likesWrap">
-                        <button><img src="/images/fillheart.png"></button>
-                        <!-- <button><img src="/images/heart.png"></button> -->
-                        <p>좋아요 <span class="likes_count">4</span></p>
-                    </div>
+              <!-- 내가 좋아요 눌렀을 때 -->
+              <div class="likesWrap">
+                <button><img src="/images/fillheart.png" /></button>
+                <!-- <button><img src="/images/heart.png"></button> -->
+                <p>좋아요 <span class="likes_count">4</span></p>
+              </div>
 
-                    <!-- 내가 좋아요 안누르고, 아무도 안눌렀을 때 -->
-                    <!-- <div class="likesWrap">
+              <!-- 내가 좋아요 안누르고, 아무도 안눌렀을 때 -->
+              <!-- <div class="likesWrap">
                         <button><img src="/images/heart.png"></button>
                         <p>좋아요 <span class="likes_count">0</span></p>
                     </div> -->
 
-                    <!-- 내가 안눌렀지만, 다른 사람들이 눌렀을 때 -->
-                    <!-- <div class="likesWrap">
+              <!-- 내가 안눌렀지만, 다른 사람들이 눌렀을 때 -->
+              <!-- <div class="likesWrap">
                         <button><img src="/images/heart.png"></button>
                         <p>좋아요 <span class="likes_count">4</span></p>
                     </div> -->
-               
+            </div>
 
-                </div>
+            <div class="cmt_content_wrap">
+              <div class="cmt_section"></div>
+              <div class="cmt_title">
+                <h5>댓글</h5>
+                <span></span>
+              </div>
 
-
-                
-                <div class="cmt_content_wrap">
-                    <div class="cmt_section"></div>
-                    <div class="cmt_title"><h5>댓글</h5><span></span></div>
-              
-                    <!-- 댓글이 10개 이상인 경우 나타나는 영역 -->
-                    <!-- <div class="all_cmt">
+              <!-- 댓글이 10개 이상인 경우 나타나는 영역 -->
+              <!-- <div class="all_cmt">
                       <button id="all_cmt_btn">댓글 전체보기<span></span></button>
                     </div> -->
-              
-              
-                    <div class="cmt_wrap"></div>
-                    
+
+              <div class="cmt_wrap"></div>
+
               <!--       
                     <div class="cmt_item">
                       <div class="cmt_user_img"></div>
@@ -239,9 +281,8 @@
                       </div>
                   
                     </div> -->
-                    
-                    
-                    <!-- <div class="cmt_item">
+
+              <!-- <div class="cmt_item">
                       <div class="cmt_user_img"></div>
                       <div>
                         <div class="cmt_tit_info">
@@ -270,56 +311,68 @@
                   
                     </div>
                      -->
-                
-                  
-                 <!-- 댓글 및 답글 작성창 통합 -->
+
+              <!-- 댓글 및 답글 작성창 통합 -->
               <div class="cmt_write_wrap" id="comment_write">
                 <div class="cmt_write">
                   <!-- 멘션 부분은 기본적으로 숨김 처리 -->
-                  <div class="reply_mention" style="display: none;">
-                    <button class="re_btn_wrap"><img src="/images/close_black.svg"></button>
+                  <div class="reply_mention" style="display: none">
+                    <button class="re_btn_wrap">
+                      <img src="/images/close_black.svg" />
+                    </button>
                     <p id="mentionText"></p>
                   </div>
-              
+
                   <div class="cmt_textarea">
-                    <textarea id="commentTextArea" placeholder="댓글을 입력하세요.."></textarea>
+                    <textarea
+                      id="commentTextArea"
+                      placeholder="댓글을 입력하세요.."
+                    ></textarea>
                   </div>
-              
-                  <div class="attach_area" style="display: none;">
-                    
+
+                  <div class="attach_area" style="display: none">
                     <!-- 댓글 사진 첨부 -->
                     <div class="thumb_box">
                       <div class="img_cover">
-                        <span class="thumbnail"><img src="" alt="첨부 이미지" class="thumbnail-img"/></span>
+                        <span class="thumbnail"
+                          ><img src="" alt="첨부 이미지" class="thumbnail-img"
+                        /></span>
                         <button class="remove_img">
-                            <img src="/images/close.svg">
+                          <img src="/images/close.svg" />
                         </button>
                       </div>
                     </div>
-              
+
                     <!-- 댓글 파일 첨부 -->
                     <div class="file_cover">
                       <div class="file_box">
                         <div>
                           <span class="fine_name">
                             <i class="file_name_img"></i>
-                            <button type="button" class="file_name_text">관리자페이지.zip</button>
+                            <button type="button" class="file_name_text">
+                              관리자페이지.zip
+                            </button>
                           </span>
                           <span class="file_size">(552B)</span>
                         </div>
                         <div>
-                          <button class="btn_fine_del"><img src="/images/close_black.svg"></button>
+                          <button class="btn_fine_del">
+                            <img src="/images/close_black.svg" />
+                          </button>
                         </div>
                       </div>
                     </div>
-              
-                    
                   </div>
-              
+
                   <div class="cmt_bottom">
-                    <input type="file" id="fileInputComment" multiple style="display:none">
+                    <input
+                      type="file"
+                      id="fileInputComment"
+                      multiple
+                      style="display: none"
+                    />
                     <button class="cmt_pic_wrap" id="fileButton">
-                        <img src="/images/pic.svg">
+                      <img src="/images/pic.svg" />
                     </button>
                     <div class="cmt_reg">
                       <span>0/600</span>
@@ -328,12 +381,12 @@
                   </div>
                 </div>
               </div>
-                  
-              
-                  <!-- 더보기 클릭 시 댓글 메뉴 나타남 -->
-                  <div class="overlay"></div> <!-- 검정색 투명 오버레이 -->
-                  <div class="cmt_menu" style="display: none;">
-                    <!-- <div class="cmt_menu_wrap">
+
+              <!-- 더보기 클릭 시 댓글 메뉴 나타남 -->
+              <div class="overlay"></div>
+              <!-- 검정색 투명 오버레이 -->
+              <div class="cmt_menu" style="display: none">
+                <!-- <div class="cmt_menu_wrap">
                       <ul>
                         <li class="reply_menu" data-user-name="${userName}">답댓글</li>
                         <li>복사</li>
@@ -342,48 +395,53 @@
                         <li>취소</li>
                       </ul>
                     </div> -->
-                  </div>
+              </div>
 
+              <hr />
 
-                <hr>
-                
-                <div class="post-footer">
-                    <a href="write.html"><button class="writeBtn">글쓰기</button></a>
-                    <div>
-                        <button class="postListBtn">목록</button>
-                        <button id="goTop">TOP</button>
-                    </div>
-                </div>
-
-
-
-               </div>
-            </div>
-        </div>
-</div>
-        <!-- 푸터 -->
-        <div id="footer">523510809645
-            <div class="footerWrap">
+              <div class="post-footer">
+                <a href="write.html"
+                  ><button class="writeBtn">글쓰기</button></a
+                >
                 <div>
-                    <span>문의사항</span>
-                    <span>wants@withfirst.com</span>
+                  <button class="postListBtn">목록</button>
+                  <button id="goTop">TOP</button>
                 </div>
-                <div>
-                    <p>©withfirst All rights reserved.</p>
-                </div>
+              </div>
             </div>
+          </div>
         </div>
-
-
+      </div>
+      <!-- 푸터 -->
+      <div id="footer">
+        523510809645
+        <div class="footerWrap">
+          <div>
+            <span>문의사항</span>
+            <span>wants@withfirst.com</span>
+          </div>
+          <div>
+            <p>©withfirst All rights reserved.</p>
+          </div>
+        </div>
+      </div>
     </div>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-latest.min.js"></script>
     <!-- Popper.js -->
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
+      integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p"
+      crossorigin="anonymous"
+    ></script>
     <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"
+      integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF"
+      crossorigin="anonymous"
+    ></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="./js/script.js"></script>
     <!-- Sweetalert2 JS -->
@@ -391,46 +449,44 @@
     <script src="/js/post.js"></script>
     <script src="/js/currentPage.js"></script>
     <script>
+      //    // JSON 파일에서 데이터 불러오기
+      //    function loadUserData() {
+      //     axios.get('./')
+      //         .then(response => {
+      //             const users = response.data;
+      //             const tableBody = document.getElementById('userTableBody');
+      //             users.forEach(user => {
+      //                 const row = document.createElement('tr');
+      //                 row.innerHTML = `
+      //                     <td>
+      //                         <div class="d-flex align-items-center justify-content-center">
+      //                             <input type="checkbox">
+      //                         </div>
+      //                     </td>
+      //                     <td class="userInfo">
+      //                         <span class="userImage"></span>
+      //                         ${user.name}
+      //                     </td>
+      //                     <td>${user.contact}</td>
+      //                     <td>${user.email}</td>
+      //                     <td>${user.company}</td>
+      //                     <td>${user.department}</td>
+      //                     <td>${user.position}</td>
+      //                     <td class="buttons center-align">
+      //                         <button class="modifyBtn">수정</button>
+      //                         <button class="deleteBtn">삭제</button>
+      //                     </td>
+      //                 `;
+      //                 tableBody.appendChild(row);
+      //             });
+      //         })
+      //         .catch(error => {
+      //             console.error('Error loading user data:', error);
+      //         });
+      // }
 
-    //    // JSON 파일에서 데이터 불러오기
-    //    function loadUserData() {
-    //     axios.get('./')
-    //         .then(response => {
-    //             const users = response.data;
-    //             const tableBody = document.getElementById('userTableBody');
-    //             users.forEach(user => {
-    //                 const row = document.createElement('tr');
-    //                 row.innerHTML = `
-    //                     <td>
-    //                         <div class="d-flex align-items-center justify-content-center">
-    //                             <input type="checkbox">
-    //                         </div>
-    //                     </td>
-    //                     <td class="userInfo">
-    //                         <span class="userImage"></span>
-    //                         ${user.name}
-    //                     </td>
-    //                     <td>${user.contact}</td>
-    //                     <td>${user.email}</td>
-    //                     <td>${user.company}</td>
-    //                     <td>${user.department}</td>
-    //                     <td>${user.position}</td>
-    //                     <td class="buttons center-align">
-    //                         <button class="modifyBtn">수정</button>
-    //                         <button class="deleteBtn">삭제</button>
-    //                     </td>
-    //                 `;
-    //                 tableBody.appendChild(row);
-    //             });
-    //         })
-    //         .catch(error => {
-    //             console.error('Error loading user data:', error);
-    //         });
-    // }
-
-    // // 페이지 로드 시 가상 데이터 로드
-    // document.addEventListener('DOMContentLoaded', loadUserData);
-
+      // // 페이지 로드 시 가상 데이터 로드
+      // document.addEventListener('DOMContentLoaded', loadUserData);
     </script>
-</body>
+  </body>
 </html>

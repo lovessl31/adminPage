@@ -1,147 +1,169 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AMDIN - 관리자페이지</title>
-    <link rel="icon" href="./images/favicon.png" type="image/png">
+    <link rel="icon" href="./images/favicon.png" type="image/png" />
     <!-- Reset CSS -->
-    <link rel="stylesheet" href="./css/reset.css">
+    <link rel="stylesheet" href="./css/reset.css" />
     <!-- Pretendard Font -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css">
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css"
+    />
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+      crossorigin="anonymous"
+    />
     <!-- sweetalert2 CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.10/dist/sweetalert2.min.css">
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.10/dist/sweetalert2.min.css"
+    />
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="./css/style.css">
-    <link rel="stylesheet" href="./images/downArrow.png">
-</head>
-<body>
+    <link rel="stylesheet" href="./css/style.css" />
+    <link rel="stylesheet" href="./images/downArrow.png" />
+  </head>
+  <body>
     <div class="wrap">
-        <!-- 헤더 -->
-        <div id="header">
-            <div class="headerWrap">
-                <div class="leftHeader">
-                    <img src="">
-                    <a href="index.html">ADMIN</a>
-                </div>
-                <div class="rightHeader">
-                    <div id="loginButtons">
-                        <ul>
-                            <li><a href="login.html">LOGIN</a></li> <!-- 최고 관리자 로그인 페이지 -->
-                            <!-- 회사관리자 로그인 페이지 -->
-                            <!-- <li><a href="com_login.html">슈퍼</a></li> -->
-                        </ul>
-                    </div>
-                    
-                    <button id="logoutButton" style="display: none;">LOGOUT</button>
-                    <div id="userInfo" style="display: none;"> <!-- 로그인 성공 시 로그인 사용자 정보-->
-                        <!-- <div class="d-flex align-items-center">
+      <!-- 헤더 -->
+      <div id="header">
+        <div class="headerWrap">
+          <div class="leftHeader">
+            <img src="" />
+            <a href="index.html">ADMIN</a>
+          </div>
+          <div class="rightHeader">
+            <div id="loginButtons">
+              <ul>
+                <li><a href="login.html">LOGIN</a></li>
+                <!-- 최고 관리자 로그인 페이지 -->
+                <!-- 회사관리자 로그인 페이지 -->
+                <!-- <li><a href="com_login.html">슈퍼</a></li> -->
+              </ul>
+            </div>
+
+            <button id="logoutButton" style="display: none">LOGOUT</button>
+            <div id="userInfo" style="display: none">
+              <!-- 로그인 성공 시 로그인 사용자 정보-->
+              <!-- <div class="d-flex align-items-center">
                             <span>guest</span>
                             <div class="imgBg"></div>
                         </div> -->
-                    </div>
-                </div>
             </div>
+          </div>
         </div>
-        <!-- 사이드네비 -->
-        <div class="sideNav">
-            <ul>
-                <li><a href="company.html" class="resetPage">회사관리</a></li>
-                <li><a href="user.html" class="resetPage">사용자관리</a></li>
-                <li><a href="category.html" class="resetPage">카테고리관리</a></li>
-                <li><a href="board.html" class="resetPage">게시판관리</a></li>
-                <li><a href="organization.html" class="resetPage">조직도관리</a></li>
-            </ul>
-        </div>
-        <!-- 메인 컨텐츠 -->
-        <div id="content">
-            <h4>카테고리관리</h4>
-            <div class="contentInner">
-               <div class="contentWrap">
-
-                <div class="categoryWrap">
-                    <div class="addWrap">
-                        <div class="add_img">
-                            <button id="addCategoryBtn">
-                                <img src="/images/add.svg">새 카테고리 추가
-                            </button>
-                        </div>
-                        <!-- <div class="addCateBtn">
+      </div>
+      <!-- 사이드네비 -->
+      <div class="sideNav">
+        <ul>
+          <li><a href="company.html" class="resetPage">회사관리</a></li>
+          <li><a href="user.html" class="resetPage">사용자관리</a></li>
+          <li><a href="category.html" class="resetPage">카테고리관리</a></li>
+          <li><a href="board.html" class="resetPage">게시판관리</a></li>
+          <li><a href="organization.html" class="resetPage">조직도관리</a></li>
+        </ul>
+      </div>
+      <!-- 메인 컨텐츠 -->
+      <div id="content">
+        <h4>카테고리관리</h4>
+        <div class="contentInner">
+          <div class="contentWrap">
+            <div class="categoryWrap">
+              <div class="addWrap">
+                <div class="add_img">
+                  <button id="addCategoryBtn">
+                    <img src="/images/add.svg" />새 카테고리 추가
+                  </button>
+                </div>
+                <!-- <div class="addCateBtn">
                             <button class="cancleBtn" id="cancleChangeBtn">취소</button>
                             <button class="saveBtn" id="saveCategoriesBtn">저장</button>
                         </div> -->
-                    </div>
-                    <div class="cateContentWrap">
-                        <div class="cateListWrap">
-                            <!-- #addCategoryBtn 새 카테고리 추가 버튼 누르면 최상위 li 추가-->
-                            <ul class="cateList" id="cateList">
-                               
-                            </ul>
-                        </div>
-    
-                        <div class="cateEx" id="cateEx">
-                            <!-- 카테고리 추가 전 초기 화면 -->
-                            <div id="explain" class="explain">
-                                <h5>카테고리 생성 안내</h5>
-                                <ul>
-                                    <li>상단의 새 카테고리 추가를 클릭하면 카테고리가 추가 됩니다.</li>
-                                    <li>최상위 카테고리는 상단의 메뉴가 됩니다.</li>
-                                    <li>추가된 최상위 카테고리의 + 버튼 클릭 시 하위 카테고리가 생성됩니다.
-                                    </li>
-                                    <li>생성된 카테고리는 오른쪽 필드에서 카테고리명 변경하실 수 있습니다.</li>
-                                </ul>
-                            </div>
-    
-                            <!-- 카테고리 추가 후 카테고리 선택 시 나타나는 화면 -->
-                            <div id="cateInputWrap" class="cateInputWrap" style="display:none;">
-                                <h5>카테고리명</h5>
-                                <div>
-                                    <input class="cateInput" type="text" id="cateInput">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+              </div>
+              <div class="cateContentWrap">
+                <div class="cateListWrap">
+                  <!-- #addCategoryBtn 새 카테고리 추가 버튼 누르면 최상위 li 추가-->
+                  <ul class="cateList" id="cateList"></ul>
                 </div>
 
-                </div>
-            </div>
-        </div>
+                <div class="cateEx" id="cateEx">
+                  <!-- 카테고리 추가 전 초기 화면 -->
+                  <div id="explain" class="explain">
+                    <h5>카테고리 생성 안내</h5>
+                    <ul>
+                      <li>
+                        상단의 새 카테고리 추가를 클릭하면 카테고리가 추가
+                        됩니다.
+                      </li>
+                      <li>최상위 카테고리는 상단의 메뉴가 됩니다.</li>
+                      <li>
+                        추가된 최상위 카테고리의 + 버튼 클릭 시 하위 카테고리가
+                        생성됩니다.
+                      </li>
+                      <li>
+                        생성된 카테고리는 오른쪽 필드에서 카테고리명 변경하실 수
+                        있습니다.
+                      </li>
+                    </ul>
+                  </div>
 
-        <!-- 푸터 -->
-        <div id="footer">
-            <div class="footerWrap">
-                <div>
-                    <span>문의사항</span>
-                    <span>wants@withfirst.com</span>
+                  <!-- 카테고리 추가 후 카테고리 선택 시 나타나는 화면 -->
+                  <div
+                    id="cateInputWrap"
+                    class="cateInputWrap"
+                    style="display: none"
+                  >
+                    <h5>카테고리명</h5>
+                    <div>
+                      <input class="cateInput" type="text" id="cateInput" />
+                    </div>
+                  </div>
                 </div>
-                <div>
-                    <p>©withfirst All rights reserved.</p>
-                </div>
+              </div>
             </div>
+          </div>
         </div>
+      </div>
+
+      <!-- 푸터 -->
+      <div id="footer">
+        <div class="footerWrap">
+          <div>
+            <span>문의사항</span>
+            <span>wants@withfirst.com</span>
+          </div>
+          <div>
+            <p>©withfirst All rights reserved.</p>
+          </div>
+        </div>
+      </div>
     </div>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-        <!-- jQuery -->
+    <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-latest.min.js"></script>
-        <!-- Popper.js -->
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
-        <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+    <!-- Popper.js -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
+      integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p"
+      crossorigin="anonymous"
+    ></script>
+    <!-- Bootstrap JS -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"
+      integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF"
+      crossorigin="anonymous"
+    ></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="./js/script.js"></script>
     <script src="./js/category.js"></script>
     <!-- Sweetalert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <script src="/js/currentPage.js"></script>
-    <script>
-
-    
-    </script>
-    </body>
-    </html>
-    
-</body>
+  </body>
 </html>

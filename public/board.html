@@ -1,237 +1,269 @@
 <!DOCTYPE html>
 <html lang="ko">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AMDIN - 관리자페이지</title>
-    <link rel="icon" href="./images/favicon.png" type="image/png">
+    <link rel="icon" href="./images/favicon.png" type="image/png" />
     <!-- Reset CSS -->
-    <link rel="stylesheet" href="./css/reset.css">
+    <link rel="stylesheet" href="./css/reset.css" />
     <!-- Pretendard Font -->
-    <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css">
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css"
+    />
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+      crossorigin="anonymous"
+    />
     <!-- sweetalert2 CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.10/dist/sweetalert2.min.css">
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.10/dist/sweetalert2.min.css"
+    />
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="./css/style.css">
-</head>
-<body>
+    <link rel="stylesheet" href="./css/style.css" />
+  </head>
+  <body>
     <div class="wrap">
-        <!-- 헤더 -->
-        <div id="header">
-            <div class="headerWrap">
-                <div class="leftHeader">
-                    <img src="">
-                    <a href="index.html">ADMIN</a>
-                </div>
-                <div class="rightHeader">
-                    <div id="loginButtons">
-                        <ul>
-                            <li><a href="login.html">LOGIN</a></li><!-- 최고 관리자 로그인 페이지 -->
-                            <!-- 회사관리자 로그인 페이지 -->
-                            <!-- <li><a href="com_login.html">슈퍼</a></li> -->
-                        </ul>
-                    </div>
+      <!-- 헤더 -->
+      <div id="header">
+        <div class="headerWrap">
+          <div class="leftHeader">
+            <img src="" />
+            <a href="index.html">ADMIN</a>
+          </div>
+          <div class="rightHeader">
+            <div id="loginButtons">
+              <ul>
+                <li><a href="login.html">LOGIN</a></li>
+                <!-- 최고 관리자 로그인 페이지 -->
+                <!-- 회사관리자 로그인 페이지 -->
+                <!-- <li><a href="com_login.html">슈퍼</a></li> -->
+              </ul>
+            </div>
 
-                    <button id="logoutButton" style="display: none;">LOGOUT</button>
-                    <div id="userInfo" style="display: none;"> <!-- 로그인 성공 시 로그인 사용자 정보-->
-                        <!-- <div class="d-flex align-items-center">
+            <button id="logoutButton" style="display: none">LOGOUT</button>
+            <div id="userInfo" style="display: none">
+              <!-- 로그인 성공 시 로그인 사용자 정보-->
+              <!-- <div class="d-flex align-items-center">
                             <span>guest</span>
                             <div class="imgBg"></div>
                         </div> -->
-                    </div>
-                </div>
             </div>
+          </div>
         </div>
-        <!-- 사이드네비 -->
-        <div class="sideNav">
-            <ul>
-                <li><a href="company.html" class="resetPage"><img src="/images/company.svg">회사관리</a></li>
-                <li><a href="user.html" class="resetPage"><img src="/images/user.svg">사용자관리</a></li>
-                <li><a href="category.html" class="resetPage"><img src="/images/category.svg">카테고리관리</a></li>
-                <li><a href="board.html" class="resetPage"><img src="/images/board.svg">게시판관리</a></li>
-                <li><a href="organization.html" class="resetPage"><img src="/images/or.png">조직도관리</a></li>
-            </ul>
-        </div>
-        <!-- 메인 컨텐츠 -->
-        <div id="content">
-            <h4>게시판관리</h4>
-            <div class="contentInner">
-                <div class="contentWrap">
-                    <p id="board_count"></p> <!-- 괄호 안 총 사용자 수 데이터 -->
-                    <div class="searchContent">
-                        <div class="searchWrap">
-                            <select class="searchSelect" id="searchSelect">
-                                <option value="all">전체</option>
-                                <option value="board_name">게시판명</option>
-                                <option value="category_name">카테고리</option>
-                            </select>
-                            <div class="divider"></div> <!-- 구분선 추가 -->
-                            <div class="searchInputWrapper d-flex align-items-center">
-                                <div class="floatImg">
-                                    <img src="./images/search.svg">
-                                </div>
-                                <div class="searchInput">
-                                    <input type="text" id="searchInput" placeholder="검색어를 입력해주세요">
-                                </div>
-                                <div class="searchBtn"><button id="searchButton">검색</button></div>
-                            </div>
-                        </div>
-                        <div>
-                            <button class="create_btn" id="createBoard"><img src="/images/plust.png">게시판 생성</button>
-                        </div>
-                    </div>
-
-                    <table id="boardTableContainer" style="text-align: center;">
-                        <thead>
-                            <tr class="board_header">
-                                <th>
-                                    <div class="d-flex align-items-center justify-content-center">
-                                        <input type="checkbox" class="form-check-input">
-                                    </div>
-                                </th>
-                                <th style="text-align: left;">No</th>
-                                <th>게시판명</th>
-                                <th>게시판 유형</th>
-                                <th>댓글</th>
-                                <th>좋아요</th>
-                                <th>생성일</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody id="boardTableBody">
-                            <!-- <tr>
-                            <td>
-                                <div class="d-flex align-items-center justify-content-center">
-                                    <input type="checkbox">
-                                </div>
-                            </td>
-                            <td>1</td>
-                            <td><a href="/postList.html">비즈박스<img src="./images/link.svg"></a></td>
-                            <td>프론트엔드</td>
-                            <td>리스트</td>
-                            <td>사용안함</td>
-                            <td class="buttons center-align">
-                                <button class="modifyBtn" id="boardModify">수정</button>
-                                <button class="deleteBtn">삭제</button>
-                                <button class="moveBtn"><a href="/postList.html">이동</a></button>
-                            </td>
-                        </tr> -->
-                        </tbody>
-                    </table>
-
-                    <div class="bottomContent">
-                        <div>
-                            <select class="countSelect" id="itemCountSelect">
-                                <option value="10">10개</option>
-                                <option value="30">30개</option>
-                                <option value="50">50개</option>
-                                <option value="100">100개</option>
-                            </select>
-                            <button id="deleteBtn">삭제</button>
-                        </div>
-                             <!-- 페이지네이션 영역 -->
-                    <div class="pagination" id="pagination"></div>                                        
-                    </div>
+      </div>
+      <!-- 사이드네비 -->
+      <div class="sideNav">
+        <ul>
+          <li>
+            <a href="company.html" class="resetPage"
+              ><img src="/images/company.svg" />회사관리</a
+            >
+          </li>
+          <li>
+            <a href="user.html" class="resetPage"
+              ><img src="/images/user.svg" />사용자관리</a
+            >
+          </li>
+          <li>
+            <a href="category.html" class="resetPage"
+              ><img src="/images/category.svg" />카테고리관리</a
+            >
+          </li>
+          <li>
+            <a href="board.html" class="resetPage"
+              ><img src="/images/board.svg" />게시판관리</a
+            >
+          </li>
+          <li>
+            <a href="organization.html" class="resetPage"
+              ><img src="/images/or.png" />조직도관리</a
+            >
+          </li>
+        </ul>
+      </div>
+      <!-- 메인 컨텐츠 -->
+      <div id="content">
+        <h4>게시판관리</h4>
+        <div class="contentInner">
+          <div class="contentWrap">
+            <p id="board_count"></p>
+            <!-- 괄호 안 총 사용자 수 데이터 -->
+            <div class="searchContent">
+              <div class="searchWrap">
+                <select class="searchSelect" id="searchSelect">
+                  <option value="all">전체</option>
+                  <option value="board_name">게시판명</option>
+                  <option value="category_name">카테고리</option>
+                </select>
+                <div class="divider"></div>
+                <!-- 구분선 추가 -->
+                <div class="searchInputWrapper d-flex align-items-center">
+                  <div class="floatImg">
+                    <img src="./images/search.svg" />
+                  </div>
+                  <div class="searchInput">
+                    <input
+                      type="text"
+                      id="searchInput"
+                      placeholder="검색어를 입력해주세요"
+                    />
+                  </div>
+                  <div class="searchBtn">
+                    <button id="searchButton">검색</button>
+                  </div>
                 </div>
+              </div>
+              <div>
+                <button class="create_btn" id="createBoard">
+                  <img src="/images/plust.png" />게시판 생성
+                </button>
+              </div>
             </div>
-        </div>
 
-        <!-- 푸터 -->
-        <div id="footer">
-            <div class="footerWrap">
-                <div>
-                    <span>문의사항</span>
-                    <span>wants@withfirst.com</span>
-                </div>
-                <div>
-                    <p>©withfirst All rights reserved.</p>
-                </div>
+            <table id="boardTableContainer" style="text-align: center">
+              <thead>
+                <tr class="board_header">
+                  <th>
+                    <div
+                      class="d-flex align-items-center justify-content-center"
+                    >
+                      <input type="checkbox" class="form-check-input" />
+                    </div>
+                  </th>
+                  <th style="text-align: left">No</th>
+                  <th>게시판명</th>
+                  <th>게시판 유형</th>
+                  <th>댓글</th>
+                  <th>좋아요</th>
+                  <th>생성일</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="boardTableBody"></tbody>
+            </table>
+
+            <div class="bottomContent">
+              <div>
+                <select class="countSelect" id="itemCountSelect">
+                  <option value="10">10개</option>
+                  <option value="30">30개</option>
+                  <option value="50">50개</option>
+                  <option value="100">100개</option>
+                </select>
+                <button id="deleteBtn">삭제</button>
+              </div>
+              <!-- 페이지네이션 영역 -->
+              <div class="pagination" id="pagination"></div>
             </div>
+          </div>
         </div>
+      </div>
 
-        <!-- 팝업 레이어 (게시판 수정) -->
-        <div id="modifyPopup" class="popup">
-            <div class="popup-content">
-                <div class="popup-title">
-                    <div class="d-flex align-items-center">
-                        <h2>게시판 관리</h2>
-                        <span>수정</span>
-                    </div>
-                    <div>
-                        <span class="close">&times;</span>
-                    </div>
-                </div>
+      <!-- 푸터 -->
+      <div id="footer">
+        <div class="footerWrap">
+          <div>
+            <span>문의사항</span>
+            <span>wants@withfirst.com</span>
+          </div>
+          <div>
+            <p>©withfirst All rights reserved.</p>
+          </div>
+        </div>
+      </div>
 
-                <div class="contentPadding">
-                    <div class="boardForm">
-                        <table class="boardTable">
-                            <tbody>
-                                <tr>
-                                    <td>게시판 명</td>
-                                    <td><input type="text" id="regisName"></td>
-                                </tr>
-                                <tr>
-                                    <td>게시판 타입</td>
-                                    <td id="regisType">
-                                        앨범 <input type="radio" name="boardType" value="P">
-                                        리스트 <input type="radio" name="boardType" value="L">
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>좋아요 기능</td>
-                                    <td id="regisLike">
-                                        Y <input type="radio" name="likeFeature" value="Y">
-                                        N <input type="radio" name="likeFeature" value="N">
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>등록일</td>
-                                    <td id="regisDate"></td>
-                                </tr>
-                                <tr>
-                                    <td>게시판 설명</td>
-                                    <td><textarea name="edit_board_desc" id="regisDesc"></textarea></td>
-                                </tr>
-                                <tr>
-                                    <td>게시판 옵션</td>
-                                    <td id="regisOption"></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="saveBtnWrap noMarginTop">
-                        <button class="cancleBtn" id="modifyCancelBtn">취소</button>
-                        <button class="saveBtn" id="modifySaveBtn">저장</button>
-                    </div>
-                </div>
+      <!-- 팝업 레이어 (게시판 수정) -->
+      <div id="modifyPopup" class="popup">
+        <div class="popup-content">
+          <div class="popup-title">
+            <div class="d-flex align-items-center">
+              <h2>게시판 관리</h2>
+              <span>수정</span>
             </div>
+            <div>
+              <span class="close">&times;</span>
+            </div>
+          </div>
+
+          <div class="contentPadding">
+            <div class="boardForm">
+              <table class="boardTable">
+                <tbody>
+                  <tr>
+                    <td>게시판 명</td>
+                    <td><input type="text" id="regisName" /></td>
+                  </tr>
+                  <tr>
+                    <td>게시판 타입</td>
+                    <td id="regisType">
+                      앨범
+                      <input type="radio" name="boardType" value="P" /> 리스트
+                      <input type="radio" name="boardType" value="L" />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>좋아요 기능</td>
+                    <td id="regisLike">
+                      Y <input type="radio" name="likeFeature" value="Y" /> N
+                      <input type="radio" name="likeFeature" value="N" />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>등록일</td>
+                    <td id="regisDate"></td>
+                  </tr>
+                  <tr>
+                    <td>게시판 설명</td>
+                    <td>
+                      <textarea
+                        name="edit_board_desc"
+                        id="regisDesc"
+                      ></textarea>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>게시판 옵션</td>
+                    <td id="regisOption"></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="saveBtnWrap noMarginTop">
+              <button class="cancleBtn" id="modifyCancelBtn">취소</button>
+              <button class="saveBtn" id="modifySaveBtn">저장</button>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-latest.min.js"></script>
     <!-- Popper.js -->
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
-        integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p"
-        crossorigin="anonymous"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
+      integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p"
+      crossorigin="anonymous"
+    ></script>
     <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"
-        integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF"
-        crossorigin="anonymous"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"
+      integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF"
+      crossorigin="anonymous"
+    ></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="./js/script.js"></script>
     <script src="./js/TimePopup.js"></script>
-    <script src="./js/board.js"></script>    
+    <script src="./js/board.js"></script>
     <!-- Sweetalert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <script src="/js/currentPage.js"></script>
-    <!-- <script type="module" src="./js/board.js"></script> -->
-</body>
-
+  </body>
 </html>
