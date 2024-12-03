@@ -452,7 +452,7 @@ function renderComment() {
                 <div class="cmt_tit_wrap">
                     <div class="cmt_tit_content">
                         <div class="cmt_user_img">
-                            <img src="/images/user.svg" alt="User Image">
+                            <img src="/images/pro.svg" alt="User Image">
                         </div>
                         <div class="cmt_tit_info">
                             <h5>${comment.user_name}</h5>
@@ -476,6 +476,7 @@ function renderComment() {
                 </div>
             </div>
         `;
+
 
         cmtContainer.append(commentHtml);
            //하위 댓글이 있을 경우 호출
@@ -559,7 +560,7 @@ function renderReplyComments(reply, container, parentUserName = null, depth) {
         <div class="cmt_tit_wrap">
             <div class="cmt_tit_content">
                 <div class="cmt_user_img">
-                    <img src="/images/user.svg" alt="User Image">
+                    <img src="/images/pro.svg" alt="User Image">
                 </div>
                 <div class="cmt_tit_info">
                     <h5>${reply.user_name}</h5>

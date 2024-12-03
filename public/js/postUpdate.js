@@ -988,7 +988,13 @@ function initializeSingleFileUpload(fileInputId, fileBtnId, fileInfoWrapId, allo
 }
 
 $(function () {
+    
     fetchBoardDetailData();
+
+    $('#saveCancleBtn').on('click', function() {
+        history.back();
+    });
+
 
     $('#saveButton').on('click', function () {
 

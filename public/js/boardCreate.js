@@ -646,7 +646,7 @@ $(function() {
     });
 
 	// 팝업 닫기 버튼 클릭 시 팝업 닫기
-	$('.popup-close').on('click', function() {
+	$('.close').on('click', function() {
 		$('#categoryPopup').hide(); // 팝업 숨김
 	});
 	
@@ -732,39 +732,39 @@ $(function() {
     }
 
     //서버에 POST 요청 보내기
-    $.ajax({
-        url: defaultUrl + '/with/board_add',
-        method: 'POST',
-        data: formData,
-        processData: false,
-        contentType: false,
-        headers: {
-            'Authorization': `Bearer ${atoken}`
-        },
-        success: function(response) {
-            console.log('게시판 등록 응답:', response.data);
-            //showPopup(5, '게시판 등록', '<p>게시판 등록에 성공하였습니다. 추가로 작업 하시겠습니까?</p>', 'suc', 'select');
-			Swal.fire({
-                title: '게시판 등록',
-                text: '게시판 등록에 성공하였습니다. 추가로 작업하시겠습니까?',
-                icon: 'success',
-				showCancelButton: true, // "아니요" 버튼 추가
-				confirmButtonText: '네',
-				cancelButtonText: '아니요'
-            }).then((result)=> {
-				if(result.isConfirmed) {
-					window.location.href = '/boardCreate.html';  // 새 게시판 생성 페이지로 리디렉션`
-				} else if (result.dismiss === Swal.DismissReason.cancel) {
-					// "아니요"를 클릭한 경우 이전 페이지로 이동
-					window.location.href = `/board.html?=${bidx}`;  // 이전 board.html 페이지로 이동
-				}
-            });
-        },
-        error: function(error) {
-            console.error('게시판 등록 오류:', error.response ? error.response.data : error.message);
-            showPopup(2, '게시판 등록 실패', '<p>게시판 등록에 실패하였습니다.</p>', 'fail');
-        }
-        });
+    // $.ajax({
+    //     url: defaultUrl + '/with/board_add',
+    //     method: 'POST',
+    //     data: formData,
+    //     processData: false,
+    //     contentType: false,
+    //     headers: {
+    //         'Authorization': `Bearer ${atoken}`
+    //     },
+    //     success: function(response) {
+    //         console.log('게시판 등록 응답:', response.data);
+    //         //showPopup(5, '게시판 등록', '<p>게시판 등록에 성공하였습니다. 추가로 작업 하시겠습니까?</p>', 'suc', 'select');
+	// 		Swal.fire({
+    //             title: '게시판 등록',
+    //             text: '게시판 등록에 성공하였습니다. 추가로 작업하시겠습니까?',
+    //             icon: 'success',
+	// 			showCancelButton: true, // "아니요" 버튼 추가
+	// 			confirmButtonText: '네',
+	// 			cancelButtonText: '아니요'
+    //         }).then((result)=> {
+	// 			if(result.isConfirmed) {
+	// 				window.location.href = '/boardCreate.html';  // 새 게시판 생성 페이지로 리디렉션`
+	// 			} else if (result.dismiss === Swal.DismissReason.cancel) {
+	// 				// "아니요"를 클릭한 경우 이전 페이지로 이동
+	// 				window.location.href = `/board.html?=${bidx}`;  // 이전 board.html 페이지로 이동
+	// 			}
+    //         });
+    //     },
+    //     error: function(error) {
+    //         console.error('게시판 등록 오류:', error.response ? error.response.data : error.message);
+    //         showPopup(2, '게시판 등록 실패', '<p>게시판 등록에 실패하였습니다.</p>', 'fail');
+    //     }
+    //     });
 	});
 
 });

@@ -67,7 +67,7 @@ function renderlistTable() {
             <tr>
                 <th>
                     <div class="d-flex align-items-center justify-content-center">
-                        <input type="checkbox" id="selectAllCheckbox">
+                        <input type="checkbox" class="form-check-input" id="selectAllCheckbox">
                     </div>
                 </th>
                 <th style="text-align: left;">No</th>
@@ -118,7 +118,7 @@ function renderlistTable() {
             <tr class="post_row" data-post-id="${post.post_idx}">
                 <td>
                     <div class="d-flex align-items-center justify-content-center">
-                        <input type="checkbox" class="postCheckbox" data-post-idx="${post.post_idx}" data-user-idx="${post.user_idx}">
+                        <input type="checkbox" class="form-check-input" class="postCheckbox" data-post-idx="${post.post_idx}" data-user-idx="${post.user_idx}">
                     </div>
                 </td>
                 <td style="text-align: left;">${post.post_idx}</td>

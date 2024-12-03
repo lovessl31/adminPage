@@ -86,7 +86,7 @@ function renderTable() {
         <tr>
             <td>
                 <div class="d-flex align-items-center justify-content-center">
-                    <input type="checkbox" data-com-idx="${company.com_idx}" data-c-id="${company.c_id}">
+                    <input type="checkbox" class="form-check-input" data-com-idx="${company.com_idx}" data-c-id="${company.c_id}">
                 </div>
             </td>
             <td>${company.com_idx}</td>

@@ -219,7 +219,7 @@ function loadTreeData(callback) {
                         }
                     },
                     "member": {
-                        "icon": "./images/user.svg", // 멤버 노드에 사용할 아이콘 경로
+                        "icon": "./images/pro.svg", // 멤버 노드에 사용할 아이콘 경로
                         'a_attr': {
                             'class': 'member_node_link' // a 태그에 클래스 추가
                         }

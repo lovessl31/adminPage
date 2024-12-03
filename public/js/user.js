@@ -74,7 +74,7 @@ function renderUserTable() {
         const row = $(`
             <tr>
                 <td><div class="d-flex align-items-center justify-content-center">
-                    <input type="checkbox" data-u-idx="${user.user_idx}" data-u-id="${user.user_id}">
+                    <input type="checkbox" class="form-check-input" data-u-idx="${user.user_idx}" data-u-id="${user.user_id}">
                 </div></td>
                 <td>${user.user_idx}</td>
                 <td class="userName" data-u-idx="${user.user_idx}">${user.user_name}</td>
@@ -120,6 +120,71 @@ $('#userTableBody').on('click', '.modifyBtn', function() {
 }
 
 // 페이지네이션 렌더링 함수
+// function renderPagination() {
+//     const pagination = $('#pagination').empty();
+
+//     // << 버튼 (첫 페이지로 이동)
+//     const first = $('<li class="page-item"><a class="page-link" href="#"><<</a></li>');
+//     first.on('click', function (event) {
+//         event.preventDefault();
+//         currentPage = 1;
+//         renderPagination();
+//         fetchBoardData(1);
+//     });
+//     pagination.append(first);
+
+//     // < 버튼 (이전 그룹 이동)
+//     const prevGroup = $('<li class="page-item"><a class="page-link" href="#"><</a></li>');
+//     prevGroup.on('click', function (event) {
+//         event.preventDefault();
+//         const prevStartPage = Math.max(1, startPage - maxPagesToShow);
+//         currentPage = prevStartPage;
+//         renderPagination();
+//         fetchBoardData(currentPage);
+//     });
+//     pagination.append(prevGroup);
+
+//     // 페이지 번호 렌더링
+//     const maxPagesToShow = 5;
+//     let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+//     let endPage = Math.min(totalPage, startPage + maxPagesToShow - 1);
+//     if (endPage - startPage + 1 < maxPagesToShow && startPage > 1) {
+//         startPage = Math.max(1, endPage - maxPagesToShow + 1);
+//     }
+
+//     for (let i = startPage; i <= endPage; i++) {
+//         const pageItem = $(`<li class="page-item${i === currentPage ? ' active' : ''}"><a class="page-link" href="#">${i}</a></li>`);
+//         pageItem.on('click', function (event) {
+//             event.preventDefault();
+//             currentPage = i;
+//             renderPagination();
+//             fetchBoardData(i);
+//         });
+//         pagination.append(pageItem);
+//     }
+
+//     // > 버튼 (다음 그룹 이동)
+//     const nextGroup = $('<li class="page-item"><a class="page-link" href="#">></a></li>');
+//     nextGroup.on('click', function (event) {
+//         event.preventDefault();
+//         const nextStartPage = Math.min(totalPage, startPage + maxPagesToShow);
+//         currentPage = nextStartPage;
+//         renderPagination();
+//         fetchBoardData(currentPage);
+//     });
+//     pagination.append(nextGroup);
+
+//     // >> 버튼 (마지막 페이지로 이동)
+//     const last = $('<li class="page-item"><a class="page-link" href="#">>></a></li>');
+//     last.on('click', function (event) {
+//         event.preventDefault();
+//         currentPage = totalPage;
+//         renderPagination();
+//         fetchBoardData(totalPage);
+//     });
+//     pagination.append(last);
+// }
+
 function renderPagination() {
 
     // 페이지네이션 ui가 들어갈 요소 선택
@@ -161,7 +226,6 @@ function renderPagination() {
         fetchUserData(totalPage);
     });
     pagination.append(last);
-
 }
 
 // 유저 승인 요청 함수
@@ -217,7 +281,7 @@ function detailUser(userIdx) {
 
 function renderUserDetail(user) {
     // 사용자 이름 업데이트
-    $('.userForm h4').text(user.user_name);
+    $('.u_name').text(user.user_name);
 
     // 사용자 정보 업데이트
     $('#userName').text(user.user_name || '없음');

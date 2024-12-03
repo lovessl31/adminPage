@@ -35,6 +35,16 @@ h6 {
   z-index: 1000;
 }
 
+.form-check-input:checked {
+  background-color: #8D4AFF !important; /* 체크된 상태 배경색 */
+  border : none;
+}
+
+.form-check-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 0.1rem rgba(141, 74, 255, 0.5); /* 원하는 색상으로 변경 */
+}
+
 .headerWrap {
   width: 100%;
   height: 100%;
@@ -459,14 +469,32 @@ h6 {
 
 #addCompanySelect, #modifyCompanySelect {
   width: 100%;
-  height: 45px;
-  border: 1px solid #afafaf;
-  font-size: 14px;
+  height: 35px;
   padding: 0px 10px;
+  border-radius: 5px;
+  border: 1px solid #D3D3D3;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease; /* 부드러운 전환 효과 */
 }
 
 #addCompanySelect:focus, #modifyCompanySelect:focus  {
   outline: none;
+}
+
+.placeholder_option {
+  font-size: 14px;
+  color: #606060;
+}
+
+/* 옵션 리스트 배경 및 텍스트 스타일 */
+select.form-select option {
+  background-color: #f8f9fa; /* 배경색 */
+  color: #212529; /* 텍스트 색상 */
+}
+
+/* Hover 상태 스타일 */
+select.form-select option:hover {
+  background-color: #e9ecef; /* Hover 배경색 */
+  color: #495057; /* Hover 텍스트 색상 */
 }
 
 .approveWrap {
@@ -534,20 +562,29 @@ table td {
 }
 
 .modifyBtn {
-  background: #DFF0FF;
-  color: #5073CC;
+  background: #fff;
+  border: 1px solid #eaeaea !important;
+  color: #696969;
+  /* background: #DFF0FF;
+  color: #5073CC; */
   margin-right: 5px;
 }
 
 .deleteBtn {
-  background: #FCE6E6;
-  color: #EF4141;
+  background: #fff;
+  border: 1px solid #eaeaea !important;
+  color: #696969;
+  /* background: #FCE6E6;
+  color: #EF4141; */
   margin-right: 5px;
 }
 
 .detailBtn {
-  background: #f5ffc9;
-  color: #779c18;
+  background: #fff;
+  border: 1px solid #eaeaea !important;
+  color: #696969;
+  /* background: #f5ffc9;
+  color: #779c18; */
   margin-right: 5px;
 }
 
@@ -594,39 +631,77 @@ table td {
 
 /* 페이지네이션 스타일링 */
 
+/*
 .pagination {
   display: flex;
   justify-content: center;
-  /* 중앙 정렬 */
   align-items: center;
   list-style: none;
+  gap: 6px;
 }
 
 .pagination a {
   font-size: 12px;
   color: #b1b1b1;
-  /* 텍스트 색상 */
   padding: 5px 5px;
-  /* 패딩 */
   margin: 0 3px;
-  /* 간격 */
   text-decoration: none;
-  /* 밑줄 제거 */
   transition: background-color 0.3s ease, color 0.3s ease;
-  /* 전환 효과 */
 }
 
 .pagination a:hover {
   background-color: #f0f0f0;
-  /* 마우스 오버 시 배경 색상 */
   color: #007bff;
-  /* 마우스 오버 시 텍스트 색상 */
 }
 
 .pagination a.active {
   font-weight: 800;
   color: #007bff;
-  /* 활성화된 페이지 텍스트 색상 */
+}
+*/
+/* 페이지네이션 컨테이너 */
+/* 페이지네이션 컨테이너 */
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 5px; /* 버튼 간격 */
+  padding: 8px 0; /* 상하 여백 */
+  list-style: none; /* 기본 목록 스타일 제거 */
+  margin: 0; /* 기본 마진 제거 */
+}
+
+/* 페이지네이션 버튼 */
+.pagination .page-link {
+  font-size: 13px; /* 작고 깔끔한 텍스트 크기 */
+  color: #606060; /* 기본 텍스트 색상 */
+  text-decoration: none; /* 밑줄 제거 */
+  padding: 4px 8px; /* 버튼 크기 */
+  background-color: #fff; /* 흰색 배경 */
+  border: 1px solid #ddd; /* 얇은 테두리 */
+  border-radius: 4px; /* 부드러운 모서리 */
+  transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease; /* 부드러운 전환 효과 */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 활성화된 버튼 */
+.pagination .active .page-link {
+  font-weight: bold; /* 굵은 텍스트 */
+  color: #414141; /* 활성화된 텍스트 색상 */
+  background-color: #f3f3f3; /* 활성화된 배경색 */
+  border-color: #e4e4e4; /* 활성화된 테두리 색상 */
+  box-shadow: 0px 2px 4px rgba(103, 67, 114, 0.1); /* 약간의 그림자 */
+  cursor: default; /* 클릭 불가 상태 */
+}
+
+
+/* 마우스 오버 효과 */
+.pagination .page-link:hover {
+  background-color: #f8f9fa; /* 호버 시 약간 밝은 배경색 */
+  color: #8D4AFF; /* 호버 시 텍스트 색상 */
+  border-color: #e4e4e4; /* 호버 시 테두리 색상 */
+  box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1); /* 호버 시 약간의 그림자 */
 }
 
 /* 팝업 레이어 스타일링 */
@@ -731,7 +806,7 @@ table td {
   display: flex;
   flex-direction: column;
   /* justify-content: center; */
-  gap: 20px;
+  /* gap: 10px; */
   max-height: 625px; /* 높이 625픽셀 이상일 때 제한 */
   overflow-y: auto; /* 세로 스크롤 추가 */
   overflow-x: hidden;
@@ -776,6 +851,7 @@ table td {
 }
 
 .cancleBtn {
+  font-size: 14px;
   border: 1px solid #eaeaea !important;
   color: #202124;
   background: #fff;
@@ -844,8 +920,7 @@ table td {
 .infoContent {
   background: #fff;
   border-radius: 5px;
-  padding: 20px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 10px;
 }
 
 .infoRow {
@@ -855,7 +930,7 @@ table td {
 }
 
 .infoTitle {
-  font-size: 14px;
+  font-size: 14px !important;
   color: #a5a5a5;
 }
 
@@ -864,7 +939,14 @@ table td {
 }
 
 .userForm h4 {
+  font-size: 18px;
   font-weight: 700;
+}
+
+.sm_tit {
+  font-size: 14px;
+  color: #A9A9A9;
+  margin-left: 16px;
 }
 
 .pwChangeBtn {
@@ -884,8 +966,9 @@ table td {
 }
 
 .moveBtn {
-  background: #E7F6D4;
-  color: #78C97B;
+  background: #fff;
+  border: 1px solid #eaeaea !important;
+  color: #696969;
 }
 
 .moveBtn a {
@@ -894,8 +977,10 @@ table td {
 }
 
 .approveBtn {
-  background: #EEEAF8;
-  color: #8D73D7;
+  /* background: #EEEAF8;
+  color: #8D73D7; */
+  background-color: #8D4AFF;
+  color: #fff;
 }
 
 .approveCBtn {
@@ -1065,7 +1150,7 @@ table td {
 
 .c_pop_tit {
   display: flex;
-  
+  align-items: center;
 }
 
 .c_pop_content {
@@ -1167,6 +1252,43 @@ table td {
   background: #EBEBEB;
 }
 
+.u_pop_header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  padding-bottom: 20px;
+}
+
+.u_pop_header::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: -30px; /* padding 만큼 확장 */
+  width: calc(100% + 60px); /* padding 30px * 2 만큼 확장 */
+  height: 1px; 
+  background-color: #e4e4e4; 
+}
+
+.u_pop_header::before {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 8px;
+  width: 38px;
+  height: 4px;
+  background-color: #8D4AFF;
+  z-index: 99;
+}
+
+.u_pop_header button {
+  border: none;
+  background: transparent;
+}
+
+.u_pop_content {
+  margin-top: 10px;
+}
 /* 유저 등록 팝업 레이어 */
 
 .c_select_wrap {
@@ -2202,9 +2324,9 @@ hr {
 }
 
 .post-footer>div>button:nth-of-type(2) {
-  border: none;
-  background: #739AFF;
-  color: #fff;
+  border: 1px solid #EBECF0;
+  background: #fff;
+  color: #606060;
 }
 
 .post-footer>div>button:nth-of-type(1):hover {
@@ -2212,7 +2334,7 @@ hr {
 }
 
 .post-footer>div>button:nth-of-type(2):hover {
-  background-color: #5982eb;
+  background-color: #EBECF0;
 }
 
 
@@ -2344,7 +2466,7 @@ hr {
 
 .cmt_reg button {
   border: none;
-  background: #1C9DEA;
+  background: #8D4AFF;
   color: #fff;
   border-radius: 3px;
   padding: 8px 10px;
@@ -3971,4 +4093,28 @@ em {
   border-radius: 4px;
   background-color: rgba(32, 33, 36, 0.493);
   line-height: 0;
+}
+
+
+/* 확인,수정 버튼 */
+
+.btn_confirm,.btn_cancle {
+  padding: 0px 10px;
+  height: 32px;
+  background: #fff;
+  border: 1px solid #e6e6e6;
+  border-radius: 4px;
+  font-size: 12px;
+  margin-right: 5px;
+  font-weight: 500;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease; /* 부드러운 전환 효과 */
+}
+
+.btn_confirm:hover,.btn_cancle:hover  {
+  border: 1px solid #F0F0F0;
+}
+
+.btn_confirm:active, .btn_cancle:active {
+  border: 1px solid #515151;
+  transform: scale(0.98); /* 약간 눌리는 효과 */
 }
